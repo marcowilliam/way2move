@@ -36,10 +36,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<AppFailure, AppUser>> signIn(
       String email, String password) async {
     try {
-      final credential =
-          await _datasource.signInWithEmail(email, password);
-      final user =
-          await _fetchUserDoc(credential.user!.uid);
+      final credential = await _datasource.signInWithEmail(email, password);
+      final user = await _fetchUserDoc(credential.user!.uid);
       return Right(user ?? _userFromCredential(credential));
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(e.code));
@@ -52,8 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<AppFailure, AppUser>> signUp(
       String email, String password, String name) async {
     try {
-      final credential =
-          await _datasource.signUpWithEmail(email, password);
+      final credential = await _datasource.signUpWithEmail(email, password);
       await _datasource.updateDisplayName(name);
       // onUserCreate Cloud Function creates the Firestore doc.
       // We return a local entity while the function runs.
@@ -113,8 +110,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   Future<AppUser?> _fetchUserDoc(String uid) async {
-    final doc =
-        await _firestore.collection('users').doc(uid).get();
+    final doc = await _firestore.collection('users').doc(uid).get();
     if (!doc.exists) return null;
     return UserModel.fromFirestore(doc).toEntity();
   }

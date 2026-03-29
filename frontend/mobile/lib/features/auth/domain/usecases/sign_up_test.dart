@@ -49,8 +49,7 @@ void main() {
 
       await signUp('new@way2move.com', 'Pass1234!', 'New User');
 
-      verify(() =>
-              mockRepo.signUp('new@way2move.com', 'Pass1234!', 'New User'))
+      verify(() => mockRepo.signUp('new@way2move.com', 'Pass1234!', 'New User'))
           .called(1);
     });
   });

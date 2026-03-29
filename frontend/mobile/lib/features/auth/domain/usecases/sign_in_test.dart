@@ -36,8 +36,8 @@ void main() {
     });
 
     test('returns AuthFailure when wrong password', () async {
-      when(() => mockRepo.signIn(any(), any())).thenAnswer(
-          (_) async => const Left(AuthFailure('wrong-password')));
+      when(() => mockRepo.signIn(any(), any()))
+          .thenAnswer((_) async => const Left(AuthFailure('wrong-password')));
 
       final result = await signIn('test@way2move.com', 'wrong');
 
@@ -45,8 +45,8 @@ void main() {
     });
 
     test('returns AuthFailure when user not found', () async {
-      when(() => mockRepo.signIn(any(), any())).thenAnswer(
-          (_) async => const Left(AuthFailure('user-not-found')));
+      when(() => mockRepo.signIn(any(), any()))
+          .thenAnswer((_) async => const Left(AuthFailure('user-not-found')));
 
       final result = await signIn('unknown@way2move.com', 'password');
 

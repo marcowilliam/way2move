@@ -17,8 +17,7 @@ void main() {
 
   group('SignOut', () {
     test('delegates sign out to repository', () async {
-      when(() => mockRepo.signOut())
-          .thenAnswer((_) async => const Right(unit));
+      when(() => mockRepo.signOut()).thenAnswer((_) async => const Right(unit));
 
       final result = await signOut();
 

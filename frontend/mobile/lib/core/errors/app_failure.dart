@@ -7,8 +7,7 @@ class AuthFailure extends AppFailure {
   const AuthFailure(this.code);
 
   @override
-  bool operator ==(Object other) =>
-      other is AuthFailure && other.code == code;
+  bool operator ==(Object other) => other is AuthFailure && other.code == code;
 
   @override
   int get hashCode => code.hashCode;

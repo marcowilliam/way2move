@@ -80,9 +80,8 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref
-                              .read(exerciseSearchQueryProvider.notifier)
-                              .state = '';
+                          ref.read(exerciseSearchQueryProvider.notifier).state =
+                              '';
                         },
                       )
                     : null,
@@ -96,19 +95,18 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
             child: exercisesAsync.when(
               data: (exercises) => exercises.isEmpty
                   ? _EmptyState(
-                      isFiltered: !filter.isEmpty ||
-                          _searchController.text.isNotEmpty)
+                      isFiltered:
+                          !filter.isEmpty || _searchController.text.isNotEmpty)
                   : _ExerciseListView(
                       exercises: exercises,
                       animation: _listController,
                     ),
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Text(
                   'Could not load exercises',
-                  style:
-                      theme.textTheme.bodyMedium?.copyWith(color: AppColors.accentRed),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.accentRed),
                 ),
               ),
             ),
@@ -387,9 +385,7 @@ class _FilterSheet extends ConsumerWidget {
                           label: Text(d.name),
                           selected: filter.difficulty == d,
                           onSelected: (v) {
-                            ref
-                                .read(exerciseFilterProvider.notifier)
-                                .state = v
+                            ref.read(exerciseFilterProvider.notifier).state = v
                                 ? filter.copyWith(difficulty: d)
                                 : filter.copyWith(clearDifficulty: true);
                           },
@@ -481,8 +477,7 @@ class _AddExerciseDialog extends ConsumerStatefulWidget {
   const _AddExerciseDialog();
 
   @override
-  ConsumerState<_AddExerciseDialog> createState() =>
-      _AddExerciseDialogState();
+  ConsumerState<_AddExerciseDialog> createState() => _AddExerciseDialogState();
 }
 
 class _AddExerciseDialogState extends ConsumerState<_AddExerciseDialog> {
@@ -587,8 +582,7 @@ class _AddExerciseDialogState extends ConsumerState<_AddExerciseDialog> {
       isCustom: true,
     );
 
-    final success =
-        await ref.read(addExerciseProvider.notifier).add(exercise);
+    final success = await ref.read(addExerciseProvider.notifier).add(exercise);
     if (!mounted) return;
     setState(() => _isLoading = false);
 

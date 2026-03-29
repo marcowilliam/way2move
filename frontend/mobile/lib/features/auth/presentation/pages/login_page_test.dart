@@ -54,8 +54,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      await tester.enterText(
-          find.byKey(AppKeys.emailField), 'not-an-email');
+      await tester.enterText(find.byKey(AppKeys.emailField), 'not-an-email');
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
 
@@ -75,8 +74,8 @@ void main() {
     });
 
     testWidgets('shows auth error message on wrong password', (tester) async {
-      when(() => mockRepo.signIn(any(), any())).thenAnswer(
-          (_) async => const Left(AuthFailure('wrong-password')));
+      when(() => mockRepo.signIn(any(), any()))
+          .thenAnswer((_) async => const Left(AuthFailure('wrong-password')));
 
       await tester.pumpWidget(buildSubject());
       await tester.pump();
