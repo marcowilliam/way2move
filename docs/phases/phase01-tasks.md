@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 32 passing** (auth use cases: 7, auth widget: 14, exercise use cases: 6, exercise widget: 5, placeholder: 1)
+**Current test count: 75 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, placeholder: 1)
 
 ---
 
@@ -62,21 +62,21 @@
 
 ---
 
-## Block 4 — Assessment System ⚠️ (2 of 12 files done)
+## Block 4 — Assessment System ✅
 
 - [x] Domain: Assessment entity (id, userId, date, answers, compensationResults, movementScores)
 - [x] Domain: AssessmentRepository interface (create, getLatest, getHistory)
-- [ ] Domain: CreateAssessment, GetLatestAssessment, GetAssessmentHistory use cases
-- [ ] Tests: unit tests for CreateAssessment, GetLatestAssessment, GetAssessmentHistory (TDD — write first)
-- [ ] Data: AssessmentModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreAssessmentDatasource
-- [ ] Data: AssessmentRepositoryImpl (with provider)
-- [ ] Presentation: assessment_providers.dart
-- [ ] Presentation: InitialAssessmentFlow (multi-step: answer questions, view results)
-- [ ] Presentation: AssessmentHistoryPage (list past assessments with scores)
-- [ ] Presentation: WeeklyPulseDialog (4 sliders: energy, soreness, motivation, sleep)
-- [ ] Compensation detection logic (rule-based from questionnaire answers — see rules below)
-- [ ] Tests: widget tests for assessment flow and weekly pulse
+- [x] Domain: CreateAssessment, GetLatestAssessment, GetAssessmentHistory use cases
+- [x] Tests: unit tests for CreateAssessment, GetLatestAssessment, GetAssessmentHistory
+- [x] Data: AssessmentModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreAssessmentDatasource
+- [x] Data: AssessmentRepositoryImpl (with provider)
+- [x] Presentation: assessment_providers.dart
+- [x] Presentation: InitialAssessmentFlow (multi-step: answer questions, view results)
+- [x] Presentation: AssessmentHistoryPage (list past assessments with scores)
+- [x] Presentation: WeeklyPulseDialog (4 sliders: energy, soreness, motivation, sleep)
+- [x] Compensation detection logic (rule-based from questionnaire answers — see rules below)
+- [x] Tests: widget tests for assessment flow and weekly pulse
 
 > **Compensation detection rules** (map questionnaire answers → CompensationPattern enum):
 > - Desk job + neck pain → `forwardHeadPosture`, `roundedShoulders`
@@ -90,22 +90,22 @@
 
 ---
 
-## Block 5 — Programs
+## Block 5 — Programs ✅
 
-- [ ] Domain: Program entity (id, userId, name, goal, durationWeeks, weekTemplate, isActive, createdAt)
-- [ ] Domain: WeekTemplate entity (days: Map of DayTemplate)
-- [ ] Domain: DayTemplate entity (focus, exerciseBlocks: list of planned exercises with sets/reps)
-- [ ] Domain: ProgramRepository interface (create, getActive, update, deactivate, getHistory)
-- [ ] Domain: CreateProgram, GetActiveProgram, UpdateProgram, DeactivateProgram use cases
-- [ ] Data: ProgramModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreProgramDatasource
-- [ ] Data: ProgramRepositoryImpl
-- [ ] Presentation: ProgramBuilderPage (set name, goal, duration, weekly template)
-- [ ] Presentation: WeekTemplateEditor (assign focus + exercises to each training day)
-- [ ] Presentation: ProgramDetailPage (view active program, weekly overview, progress)
-- [ ] Auto-generate starter program from assessment results (map compensations to corrective exercises)
-- [ ] Tests: unit tests for use cases and program generation logic
-- [ ] Tests: widget tests for program builder and detail pages
+- [x] Domain: Program entity (id, userId, name, goal, durationWeeks, weekTemplate, isActive, createdAt)
+- [x] Domain: WeekTemplate entity (days: Map<int, DayTemplate> 0=Mon…6=Sun)
+- [x] Domain: DayTemplate entity (focus, exerciseEntries: list of ExerciseEntry with sets/reps)
+- [x] Domain: ProgramRepository interface (create, getActive, update, deactivate, getHistory)
+- [x] Domain: CreateProgram, GetActiveProgram, UpdateProgram, DeactivateProgram use cases
+- [x] Data: ProgramModel (fromFirestore/toFirestore/toEntity) with string day-key serialization
+- [x] Data: FirestoreProgramDatasource
+- [x] Data: ProgramRepositoryImpl
+- [x] Presentation: ProgramBuilderPage (name/goal/duration form + WeekTemplateEditor, auto-generates from assessment)
+- [x] Presentation: WeekTemplateEditor widget (animated day chips + training day detail cards)
+- [x] Presentation: ProgramDetailPage (gradient header, week schedule, deactivate flow)
+- [x] Auto-generate starter program from assessment results (GenerateProgramFromAssessment)
+- [x] Tests: unit tests for use cases and program generation logic
+- [x] Tests: widget tests for program builder and detail pages
 
 > **Auto-generation mapping** (CompensationPattern → exercise IDs from seed data):
 > - `forwardHeadPosture` → `ex_chin_tuck`, `ex_dns_prone_forearm`
