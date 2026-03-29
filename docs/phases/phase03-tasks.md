@@ -1,42 +1,49 @@
-# Phase 3 — Nutrition: Implementation Checklist
+# Phase 3 — Advanced Nutrition: Implementation Checklist
 
-> **Depends on:** Phase 1 (User system, profile)
+> **Depends on:** Phase 1 (User system, profile, nutrition MVP with meals + stomach tracking)
 > **Can run parallel with:** Phase 2, Phase 5
-> **Blocks:** Phase 4 (partially — recovery score uses nutrition data)
+> **Blocks:** Phase 4 (partially — recovery score uses full nutrition data)
 
 ---
 
-## Block 0 — External AI API Setup
+## Block 0 — Cloud Speech-to-Text Upgrade
+
+- [ ] Evaluate cloud STT APIs (Google Cloud Speech-to-Text, Whisper API, Deepgram)
+- [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
+- [ ] Replace device speech_to_text with cloud API for all voice features app-wide
+- [ ] Maintain device STT as offline fallback
+- [ ] A/B comparison: measure accuracy improvement over device STT
+- [ ] Tests: unit tests for cloud STT integration
+
+---
+
+## Block 1 — External AI API Setup & Photo Food Recognition
 
 - [ ] Evaluate food recognition APIs (Google Cloud Vision, Clarifai, LogMeal, or similar)
 - [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
-- [ ] Define FoodRecognitionResult model (food items, estimated portions, confidence scores)
-- [ ] Implement fallback for low-confidence results (manual entry prompt)
-- [ ] Tests: unit tests for API response parsing
-
----
-
-## Block 1 — Photo Capture and Food Recognition
-
+- [ ] Define FoodRecognitionResult model (food items, estimated portions, confidence scores, macros)
 - [ ] Camera integration for meal photo capture
 - [ ] Send photo to recognition API via callable Cloud Function
-- [ ] Display recognized food items with confidence and portion estimates
+- [ ] Display recognized food items with confidence, portion estimates, and macros
 - [ ] Allow user to confirm, edit, or reject each recognized item
 - [ ] Gallery picker as alternative to camera
+- [ ] Implement fallback for low-confidence results (manual entry prompt)
+- [ ] Tests: unit tests for API response parsing
 - [ ] Tests: widget tests for photo capture and review flow
 
 ---
 
-## Block 2 — Meal Tracking
+## Block 2 — Full Meal Tracking (Macro Upgrade)
 
-- [ ] Domain: Meal entity (id, userId, date, mealType, items, photoUrl, totalMacros)
+- [ ] Upgrade Meal entity: add calories, protein, carbs, fat, foodItems array
 - [ ] Domain: FoodItem entity (name, portion, calories, protein, carbs, fat)
-- [ ] Domain: MealRepository interface (create, update, delete, getByDate, getHistory)
-- [ ] Data: MealModel, FirestoreMealDatasource, MealRepositoryImpl
-- [ ] Presentation: MealEntryPage (photo or manual entry, edit items, set meal type)
-- [ ] Presentation: DailyMealsView (list all meals for a day with running totals)
+- [ ] Upgrade MealRepository with macro-aware methods
+- [ ] Food database search (external API or open-source nutritional data)
+- [ ] Presentation: MealEntryPage upgrade — photo or manual entry, edit items with macros, set meal type
+- [ ] Presentation: DailyMealsView upgrade — list all meals with running macro totals
 - [ ] Manual food search and entry (text-based lookup from food database)
-- [ ] Tests: unit tests for use cases, widget tests for meal entry
+- [ ] Carry forward stomach feeling tracking from Phase 1 nutrition MVP
+- [ ] Tests: unit tests for upgraded use cases, widget tests for meal entry
 
 ---
 
@@ -53,8 +60,9 @@
 
 ## Block 4 — Daily/Weekly Nutrition Dashboard
 
-- [ ] Daily view: macro ring charts (protein, carbs, fat vs targets), calorie bar
+- [ ] Daily view: macro ring charts (protein, carbs, fat vs targets), calorie bar, stomach feeling trend
 - [ ] Weekly view: average daily intake, consistency score, trend lines
+- [ ] Stomach-food correlation view: highlight foods that correlate with poor stomach ratings
 - [ ] Meal history list with quick-add from previous meals
 - [ ] Streak tracking for logging consistency
 - [ ] Tests: widget tests for dashboard components

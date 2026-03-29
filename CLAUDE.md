@@ -2,7 +2,7 @@
 
 ## What is this project?
 Way2Move is a movement-first training platform for normal life athletes.
-Think "the movement operating system" — assess compensations, build corrective programs, track training, nutrition, and sleep.
+Think "the movement operating system" — build body awareness through voice-first journaling, track compensations and movement goals, follow PRI/DNS-based corrective programs, log training + recovery sessions, track nutrition (with IBS/gut awareness), sleep, and progress photos. Gait cycle education teaches users to move from the ground up.
 
 ## Repo structure
 ```
