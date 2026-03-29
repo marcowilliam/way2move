@@ -6,7 +6,7 @@ abstract class Routes {
   static const profile = '/profile';
   static const session = '/session';
   static const exercises = '/exercises';
-  static const exerciseDetail = '/exercises/:exerciseId';
+  static String exerciseDetail(String id) => '/exercises/$id';
   static const programs = '/programs';
   static const programDetail = '/programs/:programId';
   static const programBuilder = '/programs/new';

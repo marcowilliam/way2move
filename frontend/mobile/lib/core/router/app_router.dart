@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
+import '../../features/exercises/presentation/pages/exercise_list_page.dart';
 import 'routes.dart';
 
 // Placeholder pages — replaced in their respective blocks
@@ -79,9 +81,21 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.exercises,
             pageBuilder: (_, state) => CustomTransitionPage(
               key: state.pageKey,
-              child: const _PlaceholderPage(title: 'Exercises'),
+              child: const ExerciseListPage(),
               transitionsBuilder: _fadeTransition,
             ),
+            routes: [
+              GoRoute(
+                path: ':exerciseId',
+                pageBuilder: (_, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: ExerciseDetailPage(
+                    exerciseId: state.pathParameters['exerciseId']!,
+                  ),
+                  transitionsBuilder: _slideTransition,
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: Routes.progress,
