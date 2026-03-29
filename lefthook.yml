@@ -1,0 +1,22 @@
+pre-commit:
+  parallel: false
+  commands:
+    dart-format:
+      glob: "frontend/mobile/**/*.dart"
+      run: cd frontend/mobile && dart format --set-exit-if-changed .
+    flutter-analyze:
+      glob: "frontend/mobile/**/*.dart"
+      run: cd frontend/mobile && flutter analyze --fatal-infos
+    ts-lint:
+      glob: "backend/functions/src/**/*.ts"
+      run: cd backend/functions && npm run lint
+
+pre-push:
+  parallel: false
+  commands:
+    flutter-test:
+      glob: "frontend/mobile/**/*.dart"
+      run: cd frontend/mobile && flutter test
+    functions-test:
+      glob: "backend/functions/src/**/*.ts"
+      run: cd backend/functions && npm test
