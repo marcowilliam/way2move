@@ -35,7 +35,8 @@ abstract class AppKeys {
   static const startWorkoutButton = Key('start_workout_button');
   static const sessionNotesField = Key('session_notes_field');
   static const sessionDoneButton = Key('session_done_button');
-  static const addExerciseToSessionButton = Key('add_exercise_to_session_button');
+  static const addExerciseToSessionButton =
+      Key('add_exercise_to_session_button');
 
   // Assessment
   static const assessmentFlow = Key('assessment_flow');
@@ -62,4 +63,36 @@ abstract class AppKeys {
   // Sleep
   static const sleepEntryWidget = Key('sleep_entry_widget');
   static const sleepHistoryChart = Key('sleep_history_chart');
+
+  // Compensation
+  static const compensationProfilePage = Key('compensation_profile_page');
+  static const compensationDetailPage = Key('compensation_detail_page');
+  static const compensationBodyMap = Key('compensation_body_map');
+  static const compensationAddButton = Key('compensation_add_button');
+  static const compensationMarkImprovingButton =
+      Key('compensation_mark_improving_button');
+  static const compensationMarkResolvedButton =
+      Key('compensation_mark_resolved_button');
+
+  // Goals
+  static const goalListPage = Key('goal_list_page');
+  static const goalDetailPage = Key('goal_detail_page');
+  static const goalSetupPage = Key('goal_setup_page');
+  static const addGoalDialog = Key('add_goal_dialog');
+  static const goalNameField = Key('goal_name_field');
+  static const goalTargetValueField = Key('goal_target_value_field');
+  static const goalUnitField = Key('goal_unit_field');
+  static const goalSaveButton = Key('goal_save_button');
+  static const goalMarkAchievedButton = Key('goal_mark_achieved_button');
+  static const goalAddButton = Key('goal_add_button');
+  static const goalSetupDoneButton = Key('goal_setup_done_button');
+
+  // Calendar
+  static const calendarPage = Key('calendar_page');
+  static const calendarMonthGrid = Key('calendar_month_grid');
+  static const calendarWeekStrip = Key('calendar_week_strip');
+  static const calendarMonthToggle = Key('calendar_month_toggle');
+  static const calendarWeekToggle = Key('calendar_week_toggle');
+  static const daySessionsSheet = Key('day_sessions_sheet');
+  static const startNewSessionButton = Key('start_new_session_button');
 }
