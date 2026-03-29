@@ -13,5 +13,6 @@ abstract class Routes {
   static const calendar = '/calendar';
   static const progress = '/progress';
   static const assessment = '/assessment';
+  static const assessmentHistory = '/assessment/history';
   static const sleep = '/sleep';
 }
