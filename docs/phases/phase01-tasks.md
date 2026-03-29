@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 75 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, placeholder: 1)
+**Current test count: 99 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, placeholder: 1)
 
 ---
 
@@ -155,21 +155,30 @@
 
 ---
 
-## Block 6 — Sessions
+## Block 6 — Sessions ✅
 
-- [ ] Domain: Session entity (id, userId, programId, date, status, exerciseBlocks, notes, duration)
-- [ ] Domain: ExerciseBlock entity (exerciseId, plannedSets, actualSets, rpe, notes)
-- [ ] Domain: SessionRepository interface (create, complete, getByDate, getHistory)
-- [ ] Domain: CreateSession, CompleteSession, GetSessionsByDate, GetSessionHistory use cases
-- [ ] Data: SessionModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreSessionDatasource
-- [ ] Data: SessionRepositoryImpl
-- [ ] Presentation: SessionView (today's workout — exercise list with sets/reps, mark complete, RPE input)
-- [ ] Presentation: SessionSummaryPage (post-workout: planned vs actual, notes)
-- [ ] Presentation: CreateStandaloneSessionPage (quick workout without program — pick exercises freely)
-- [ ] Session generation from program weekly template (auto-create session for today based on active program)
-- [ ] Tests: unit tests for use cases and session generation logic
-- [ ] Tests: widget tests for session view and summary pages
+- [x] Domain: Session entity (id, userId, programId, focus, date, status, exerciseBlocks, notes, durationMinutes)
+- [x] Domain: ExerciseBlock entity (exerciseId, plannedSets, plannedReps, actualSets, rpe, notes)
+- [x] Domain: SetEntry entity (setNumber, reps, weight, completed)
+- [x] Domain: SessionRepository interface (createSession, updateSession, watchSessionsByDate, getSessionHistory)
+- [x] Domain: CreateSession, UpdateSession, GetSessionsByDate, GetSessionHistory use cases
+- [x] Domain: GenerateSessionFromProgram use case (pure, no repo — maps program DayTemplate → Session for today)
+- [x] Data: SessionModel / ExerciseBlockModel / SetEntryModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreSessionDatasource
+- [x] Data: SessionRepositoryImpl (with provider)
+- [x] Presentation: ActiveSessionNotifier (in-progress state: record sets, RPE, block notes, complete)
+- [x] Presentation: SessionView (SliverAppBar with progress chip, exercise block cards with inline set rows, RPE selector 1–10, Complete Workout bottom sheet)
+- [x] Presentation: SessionSummaryPage (celebration animation, stats row, planned vs actual, notes)
+- [x] Presentation: CreateStandaloneSessionPage (exercise picker with search, sets/reps per exercise, Start Workout)
+- [x] Session generation from program weekly template (auto-create session for today based on active program)
+- [x] Routes: /session/active, /session/standalone, /session/summary/:sessionId added to GoRouter
+- [x] Tests: unit tests for CreateSession, UpdateSession, GetSessionsByDate, GetSessionHistory, GenerateSessionFromProgram (all paths)
+- [x] Tests: widget tests for SessionView and SessionSummaryPage
+
+### UI — What to test
+- **SessionView** (`/session/active`, full-screen outside shell): SliverAppBar with focus title + date + "X / Y" progress chip; exercise block cards (tap to expand → set rows with reps/weight inputs, checkmark per set, RPE 1–10 selector); "Complete Workout" button enabled only after at least one set completed; sheet on complete asks for notes → saves and navigates to summary
+- **SessionSummaryPage** (`/session/summary/:id`, full-screen): celebration icon animation, "Workout Complete!" headline, focus name, stats row (exercises / sets done / duration), notes card if present, per-exercise summary tiles with planned→actual set count, "Back to Home" button
+- **CreateStandaloneSessionPage** (`/session/standalone`, full-screen): search field filters exercise list in real time, tap "+" to add exercise to workout, sets/reps spinners in selected list, "Start Workout (N exercises)" button opens SessionView
 
 ---
 

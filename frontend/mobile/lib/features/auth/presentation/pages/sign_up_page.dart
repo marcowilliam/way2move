@@ -112,8 +112,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
             ),
             validator: (v) {
               if (v == null || v.trim().isEmpty) return 'Name is required';
-              if (v.trim().length < 2)
+              if (v.trim().length < 2) {
                 return 'Name must be at least 2 characters';
+              }
               return null;
             },
           ),
