@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 99 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, placeholder: 1)
+**Current test count: 131 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32)
 
 ---
 
@@ -182,17 +182,37 @@
 
 ---
 
-## Block 7 — User Profile & Onboarding
+## Block 7 — User Profile & Onboarding ✅
 
-- [ ] Domain: UserProfile entity (full profile with goals, sports, equipment, injuries)
-- [ ] Domain: ProfileRepository interface (getProfile, updateProfile)
-- [ ] Domain: GetProfile, UpdateProfile use cases
-- [ ] Data: UserProfileModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: ProfileRepositoryImpl
-- [ ] Presentation: OnboardingFlow (multi-step: name, age, goals, sports, equipment, training days, injuries)
-- [ ] Presentation: ProfileEditPage (edit all profile fields)
-- [ ] Tests: unit tests for profile use cases
-- [ ] Tests: widget tests for onboarding flow
+- [x] Domain: UserProfile entity (id, name, email, avatarUrl, age, height, weight, activityLevel, trainingGoal, sportsTags, trainingDaysPerWeek, availableEquipment, injuries, onboardingComplete)
+- [x] Domain: Injury entity (bodyRegion, description, severity, isActive) + enums (InjurySeverity, ActivityLevel, TrainingGoal)
+- [x] Domain: ProfileRepository interface (getProfile, updateProfile, watchProfile)
+- [x] Domain: GetProfile, UpdateProfile use cases
+- [x] Data: UserProfileModel + InjuryModel (fromFirestore/toFirestore/toEntity, handles both camelCase and snake_case from Firestore)
+- [x] Data: FirestoreProfileDatasource
+- [x] Data: ProfileRepositoryImpl (with provider)
+- [x] Presentation: profile_provider.dart (profileStreamProvider, profileNotifierProvider, hasCompletedOnboardingProvider)
+- [x] Presentation: OnboardingFlow (6-step: welcome, basic info, goal, activity level, sports, equipment) with animated PageView + progress bar
+- [x] Presentation: ProfileEditPage (edit all profile fields — name, age, height, weight, goal, activity, sports, equipment, training days)
+- [x] Routes: /onboarding and /profile/edit added to GoRouter with slide transitions
+- [x] Tests: unit tests for GetProfile, UpdateProfile use cases (7 tests)
+- [x] Tests: model tests for UserProfileModel and InjuryModel (9 tests)
+- [x] Tests: widget tests for OnboardingFlow (8 tests) and ProfileEditPage (7 tests)
+
+### UI — What to test
+- **OnboardingFlow** (`/onboarding`, full-screen outside shell):
+  - Step 0 — Welcome: "Welcome to Way2Move" title, running icon, "Continue" button, "Skip" button top-right
+  - Step 1 — Basic Info: "About You" title, Display Name / Age / Height / Weight text fields (all optional)
+  - Step 2 — Goal: "What's your main goal?" title, 6 selection tiles (General Fitness, Strength, Mobility, Longevity, Sport-Specific, Rehab) with icons; Continue disabled until one selected
+  - Step 3 — Activity Level: "How active are you currently?" title, 5 selection tiles (Sedentary to Extremely Active); training days per week selector (1-7 circles)
+  - Step 4 — Sports: "What sports or activities do you do?" title, multi-select FilterChips (Running, Climbing, Swimming, etc.)
+  - Step 5 — Equipment: "What equipment do you have access to?" title, multi-select FilterChips (Bodyweight, Dumbbells, Barbell, etc.); "Get Started" button
+  - Back button appears on all steps except Welcome; animated progress bar updates with each step
+  - Skip button (top-right) on any step → saves profile with `onboardingComplete: true` → navigates to Home
+- **ProfileEditPage** (`/profile/edit`, full-screen):
+  - AppBar with "Edit Profile" title and "Save" text button
+  - Sections: Basic Info (name, age, height, weight), Training Goal (ChoiceChips), Activity Level (ChoiceChips), Training Days per Week (1-7 number circles), Sports & Activities (FilterChips), Available Equipment (FilterChips)
+  - Save button calls updateProfile → shows "Profile updated" SnackBar → pops back
 
 ---
 
