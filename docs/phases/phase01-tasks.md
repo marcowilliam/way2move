@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 208 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39)
+**Current test count: 218 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10)
 
 ---
 
@@ -365,16 +365,30 @@
 
 ---
 
-## Block 16 — Calendar
+## Block 16 — Calendar ✅ (core implemented)
 
-- [ ] Calendar view (month + week toggle modes) showing scheduled sessions (training + recovery)
-- [ ] Tap day to view existing sessions or create new session
-- [ ] Color-coded by status (planned=blue, completed=green, skipped=gray, recovery=purple, rest=transparent)
-- [ ] Session type icons (training, recovery, mobility, breathing)
-- [ ] Journal indicators on calendar days (show which days have journal entries)
-- [ ] Google Calendar sync (one-way push via Google Calendar API)
-- [ ] Apple Calendar sync (one-way push via device_calendar package)
-- [ ] Tests: widget tests for calendar rendering and day tap interaction
+- [x] Calendar view (month + week toggle modes) showing scheduled sessions (training + recovery)
+- [x] Tap day to view existing sessions or create new session (DaySessionsSheet bottom sheet)
+- [x] Color-coded dots by status (planned=blue, completed=green, skipped=gray, recovery=purple)
+- [x] Session type icons in week strip (training, recovery, completed, skipped)
+- [x] Month navigation with slide left/right animation
+- [x] Week/Month toggle with AnimatedContainer transition
+- [x] Day tap: ink ripple + bottom sheet slides up with curve
+- [x] Session dots: staggered fade-in entrance on month load
+- [x] CalendarPage with selectedDateProvider + calendarModeProvider (StateProviders)
+- [x] sessionsForMonthProvider (StreamProvider.family), sessionsForDayProvider (derived)
+- [x] CalendarMonthGrid widget, CalendarWeekStrip widget, DaySessionsSheet widget
+- [x] Routes: /calendar wired to CalendarPage (was placeholder)
+- [x] Tests: widget tests for CalendarPage (5 tests) and DaySessionsSheet (5 tests)
+- [ ] Journal indicators on calendar days (deferred — requires Block 10)
+- [ ] Google Calendar sync (deferred — Phase 2+)
+- [ ] Apple Calendar sync (deferred — Phase 2+)
+
+### UI — What to test
+- **CalendarPage** (`/calendar`, inside shell via bottom nav): month name + year centered in top bar, left/right chevrons to navigate months (smooth slide animation), Month/Week toggle buttons top-right
+  - **Month view** (default): 7-column grid, day numbers, colored dot indicators (green=completed, blue=planned, gray=skipped, purple=recovery); selected day highlighted in primary color; today highlighted with subtle primary tint; tap any day → bottom sheet slides up
+  - **Week view**: 7-day horizontal strip showing day label (Mo/Tu...) + day number + session type icon; tapping "Week" toggle animates height change
+- **DaySessionsSheet** (bottom sheet): drag handle at top, date header (e.g. "Saturday, March 15"), session cards each showing focus name + status chip + duration; empty state shows "No sessions. Tap 'Start New Session' to add one."; "Start New Session" / "Log Session" filled button navigates to `/session/standalone`
 
 ---
 

@@ -7,6 +7,7 @@ import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/compensations/presentation/pages/compensation_detail_page.dart';
 import '../../features/compensations/presentation/pages/compensation_profile_page.dart';
+import '../../features/calendar/presentation/pages/calendar_page.dart';
 import '../../features/goals/presentation/pages/goal_detail_page.dart';
 import '../../features/goals/presentation/pages/goal_list_page.dart';
 import '../../features/goals/presentation/pages/goal_setup_page.dart';
@@ -86,7 +87,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.calendar,
             pageBuilder: (_, state) => CustomTransitionPage(
               key: state.pageKey,
-              child: const _PlaceholderPage(title: 'Calendar'),
+              child: const CalendarPage(),
               transitionsBuilder: _fadeTransition,
             ),
           ),
