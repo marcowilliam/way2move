@@ -1,0 +1,81 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
+
+class SignInCancelledException implements Exception {
+  const SignInCancelledException();
+}
+
+class FirebaseAuthDatasource {
+  final FirebaseAuth _auth;
+  final GoogleSignIn _googleSignIn;
+
+  FirebaseAuthDatasource(this._auth, this._googleSignIn);
+
+  User? get currentFirebaseUser => _auth.currentUser;
+
+  Stream<User?> authStateChanges() => _auth.authStateChanges();
+
+  Future<UserCredential> signInWithEmail(
+          String email, String password) =>
+      _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+
+  Future<UserCredential> signUpWithEmail(
+          String email, String password) =>
+      _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+
+  Future<UserCredential> signInWithGoogle() async {
+    final googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) throw const SignInCancelledException();
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return _auth.signInWithCredential(credential);
+  }
+
+  Future<UserCredential> signInWithApple() async {
+    final nonce = _generateNonce();
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: _sha256ofString(nonce),
+    );
+    final oAuthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: nonce,
+    );
+    return _auth.signInWithCredential(oAuthCredential);
+  }
+
+  Future<void> updateDisplayName(String name) async {
+    await _auth.currentUser?.updateDisplayName(name);
+  }
+
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
+
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+}
