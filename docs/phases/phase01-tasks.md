@@ -1,4 +1,4 @@
-# Phase 1 — Training System (MVP): Implementation Checklist
+# Phase 1 — Training + Body Awareness MVP: Implementation Checklist
 
 > **Depends on:** nothing (first phase)
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
@@ -182,7 +182,108 @@
 
 ---
 
-## Block 7 — Sleep Logging
+## Block 7 — User Profile & Onboarding
+
+- [ ] Domain: UserProfile entity (full profile with goals, sports, equipment, injuries)
+- [ ] Domain: ProfileRepository interface (getProfile, updateProfile)
+- [ ] Domain: GetProfile, UpdateProfile use cases
+- [ ] Data: UserProfileModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: ProfileRepositoryImpl
+- [ ] Presentation: OnboardingFlow (multi-step: name, age, goals, sports, equipment, training days, injuries)
+- [ ] Presentation: ProfileEditPage (edit all profile fields)
+- [ ] Tests: unit tests for profile use cases
+- [ ] Tests: widget tests for onboarding flow
+
+---
+
+## Block 8 — Compensation Profile
+
+- [ ] Domain: Compensation entity (id, userId, name, type, region, severity, status, source, relatedGoalIds, relatedExerciseIds, history, detectedAt, resolvedAt)
+- [ ] Domain: CompensationRepository interface (create, update, getActive, getByRegion, getHistory, markImproving, markResolved)
+- [ ] Domain: CreateCompensation, UpdateCompensation, GetActiveCompensations, MarkCompensationImproving, MarkCompensationResolved use cases
+- [ ] Data: CompensationModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: FirestoreCompensationDatasource
+- [ ] Data: CompensationRepositoryImpl
+- [ ] Presentation: CompensationProfilePage — body map showing active compensations with severity indicators
+- [ ] Presentation: CompensationDetailPage — history, related goals, related exercises, severity timeline
+- [ ] Presentation: CompensationBodyMap widget — interactive body outline with tap regions
+- [ ] Logic: parse journal entries for compensation-related mentions (keyword-based Phase 1)
+- [ ] Tests: unit tests for compensation use cases and journal parsing logic
+- [ ] Tests: widget tests for compensation profile and body map
+
+---
+
+## Block 9 — Goal System
+
+- [ ] Domain: Goal entity (id, userId, name, description, category, targetMetric, targetValue, currentValue, unit, sport, compensationIds, exerciseIds, source, status, achievedAt)
+- [ ] Domain: GoalRepository interface (create, update, getAll, getByStatus, getByCompensation, markAchieved)
+- [ ] Domain: CreateGoal, UpdateGoal, GetGoals, GetGoalsByCompensation, MarkGoalAchieved use cases
+- [ ] Data: GoalModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: FirestoreGoalDatasource
+- [ ] Data: GoalRepositoryImpl
+- [ ] Logic: generate suggested goals from compensation profile + user sport (rule-based mapping)
+- [ ] Seed data: create suggested_goals.json with goal templates linked to common compensations
+- [ ] Presentation: GoalSetupPage — shown after initial assessment, suggested + custom goals
+- [ ] Presentation: GoalListPage — goal cards with progress bars, linked exercises and compensations
+- [ ] Presentation: GoalDetailPage — target vs current, exercise path, compensation links, achievement history
+- [ ] Presentation: AddGoalDialog — custom goal creation with compensation and exercise linking
+- [ ] Tests: unit tests for goal use cases and suggestion logic
+- [ ] Tests: widget tests for goal pages
+
+---
+
+## Block 10 — Journaling System (Voice-First)
+
+- [ ] Domain: Journal entity (id, userId, date, type, content, audioUrl, mood, energyLevel, painPoints, linkedSessionId, autoCreatedEntities)
+- [ ] Domain: JournalRepository interface (create, getByDate, getByType, getForSession, getHistory)
+- [ ] Domain: CreateJournal, GetJournalsByDate, GetJournalsForSession use cases
+- [ ] Data: JournalModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: FirestoreJournalDatasource
+- [ ] Data: JournalRepositoryImpl
+- [ ] Voice input: integrate speech_to_text package for on-device transcription
+- [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, for reference)
+- [ ] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
+- [ ] Presentation: JournalHistoryPage — chronological list with type filters
+- [ ] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
+- [ ] Link pre/post-session journals to specific sessions
+- [ ] Tests: unit tests for journal use cases
+- [ ] Tests: widget tests for journal entry and history pages
+
+---
+
+## Block 11 — Voice Daily Summary & Auto-Creation
+
+- [ ] Entity extraction service: parse transcribed text for training activities (exercises, duration, body areas, type)
+- [ ] Entity extraction service: parse transcribed text for meal descriptions (food, meal type, stomach feeling)
+- [ ] Auto-create Session documents from parsed training activities (source: 'voice')
+- [ ] Auto-create Meal documents from parsed food descriptions (source: 'voice')
+- [ ] Store references in journal's autoCreatedEntities field
+- [ ] Presentation: ReviewAutoCreatedPage — show parsed entities, allow user to edit/confirm/delete before saving
+- [ ] Presentation: inline notification when entities are auto-created ("Created 2 sessions and 3 meals from your journal")
+- [ ] Compensation profile update: parse journal for body awareness mentions (pain, tightness, improvements)
+- [ ] Tests: unit tests for entity extraction parsing logic (various input patterns)
+- [ ] Tests: widget tests for review page
+
+---
+
+## Block 12 — Nutrition MVP
+
+- [ ] Domain: Meal entity (id, userId, date, mealType, description, stomachFeeling, stomachNotes, source, linkedJournalId)
+- [ ] Domain: MealRepository interface (create, update, delete, getByDate, getHistory)
+- [ ] Domain: CreateMeal, UpdateMeal, DeleteMeal, GetMealsByDate use cases
+- [ ] Data: MealModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: FirestoreMealDatasource
+- [ ] Data: MealRepositoryImpl
+- [ ] Presentation: MealLogPage — add meal (voice/text/manual), select meal type, stomach feeling (1-5), stomach notes
+- [ ] Presentation: DailyMealsView — list all meals for a day with stomach feeling indicators
+- [ ] Presentation: StomachPatternView — simple view showing stomach feeling trends over time (which meals correlate with bad feelings)
+- [ ] Voice meal input: use speech_to_text, parse for meal description and stomach state
+- [ ] Tests: unit tests for meal use cases
+- [ ] Tests: widget tests for meal log and daily view
+
+---
+
+## Block 13 — Sleep Logging
 
 - [ ] Domain: SleepLog entity (id, userId, bedTime, wakeTime, quality, notes, date)
 - [ ] Domain: SleepRepository interface (log, getLogs, getAverageQuality)
@@ -197,40 +298,70 @@
 
 ---
 
-## Block 8 — Auto-Progression
+## Block 14 — Progress Photos & Weight
+
+- [ ] Domain: ProgressPhoto entity (id, userId, date, photoUrl, angle, notes)
+- [ ] Domain: WeightLog entity (id, userId, date, weight, notes)
+- [ ] Domain: ProgressPhotoRepository interface (capture, getByDate, getTimeline, getByAngle)
+- [ ] Domain: WeightLogRepository interface (log, getLogs, getTrend)
+- [ ] Domain: CaptureProgressPhoto, GetPhotoTimeline, LogWeight, GetWeightTrend use cases
+- [ ] Data: ProgressPhotoModel, WeightLogModel (fromFirestore/toFirestore/toEntity)
+- [ ] Data: FirestoreProgressPhotoDatasource, FirestoreWeightLogDatasource
+- [ ] Data: ProgressPhotoRepositoryImpl, WeightLogRepositoryImpl
+- [ ] Presentation: PhotoCapturePage — guided capture (front, side left, side right, back) with overlay guides
+- [ ] Presentation: PhotoTimelinePage — chronological gallery, tap to compare side-by-side
+- [ ] Presentation: PhotoComparisonView — side-by-side before/after with date labels
+- [ ] Presentation: WeightLogEntry — quick weight input
+- [ ] Presentation: WeightTrendChart — line chart over time with trend line
+- [ ] Firebase Storage: upload photos, generate thumbnail URLs
+- [ ] Tests: unit tests for use cases
+- [ ] Tests: widget tests for photo capture, timeline, and weight pages
+
+---
+
+## Block 15 — Auto-Progression
 
 - [ ] Domain: ProgressionRule entity (exerciseId, completionThreshold, sleepThreshold, pulseThreshold)
 - [ ] Domain: ProgressionService (evaluate readiness, suggest next step)
 - [ ] Logic: check completion count (default 3x successful completions before advancing)
 - [ ] Logic: check sleep quality (average over last 3 days must meet threshold)
 - [ ] Logic: check weekly pulse score (energy + soreness + motivation composite)
+- [ ] Logic: check stomach/gut trends (consistent gut issues may suggest deload)
 - [ ] Progression actions: increase reps, increase load, advance to harder variation (via progressionIds)
-- [ ] Deload triggers: poor sleep trend, low pulse score, pain reported in weekly pulse
+- [ ] Deload triggers: poor sleep trend, low pulse score, pain reported in weekly pulse, persistent gut issues
+- [ ] Goal progress update: when exercise progression happens, update related goal currentValue
 - [ ] Presentation: ProgressionSettingsPage (configure thresholds per exercise or globally)
 - [ ] Presentation: ProgressionSuggestionCard (shown after session completion — accept/dismiss/modify)
 - [ ] Tests: unit tests for progression logic (all paths: advance, hold, deload)
 
 ---
 
-## Block 9 — Calendar
+## Block 16 — Calendar
 
-- [ ] Calendar view (month + week toggle modes) showing scheduled sessions
+- [ ] Calendar view (month + week toggle modes) showing scheduled sessions (training + recovery)
 - [ ] Tap day to view existing sessions or create new session
-- [ ] Color-coded by status (planned=blue, completed=green, skipped=gray, rest=transparent)
+- [ ] Color-coded by status (planned=blue, completed=green, skipped=gray, recovery=purple, rest=transparent)
+- [ ] Session type icons (training, recovery, mobility, breathing)
+- [ ] Journal indicators on calendar days (show which days have journal entries)
 - [ ] Google Calendar sync (one-way push via Google Calendar API)
 - [ ] Apple Calendar sync (one-way push via device_calendar package)
 - [ ] Tests: widget tests for calendar rendering and day tap interaction
 
 ---
 
-## Block 10 — Dashboard & Navigation
+## Block 17 — Dashboard & Navigation
 
-- [ ] Home dashboard: today's session card, current program progress bar, streak counter, weekly overview (days trained vs planned)
-- [ ] Bottom navigation: Home, Calendar, Exercises, Progress, Profile
+- [ ] Home dashboard: today's sessions (training + recovery), journal prompts, goal progress cards, weekly overview, monthly glance
+- [ ] Missed-day motivation: if user missed yesterday, show encouraging message with goal reminder (not guilt)
+- [ ] Quick actions: start journal (voice), log meal, log sleep, take progress photo
+- [ ] Streak counter (counts training + recovery + journal days, not just training)
+- [ ] Weekly overview: days active vs planned, training/recovery balance
+- [ ] Monthly glance: heat map or simple grid showing activity density
+- [ ] Goal progress visualization: progress bars toward movement goals
+- [ ] Bottom navigation: Home, Calendar, Exercises, Goals, Profile
 - [ ] GoRouter setup with all routes and auth guard
-- [ ] Progress page: consistency charts, assessment score comparison over time, total sessions count
 - [ ] Profile page: edit name, avatar, training preferences, notification settings
-- [ ] App theme and styling (dark-mode-first, high contrast, generous tap targets)
+- [ ] App theme and styling (light-mode-first, high contrast, generous tap targets, earth tones)
 - [ ] Animated screen transitions (no raw MaterialPageRoute — use PageRouteBuilder)
 - [ ] Tests: widget tests for dashboard, navigation, and profile page
 

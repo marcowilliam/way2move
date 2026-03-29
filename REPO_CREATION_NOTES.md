@@ -182,7 +182,45 @@ Create root Firebase files:
 
 Standard ignores for: node_modules, build outputs, IDE files, OS files, Firebase logs, .env files, Flutter generated files, coverage.
 
-### Step 11: Initial commit
+### Step 11: Create the CLI worktree switcher script
+
+Create `scripts/w<abbrev>.sh` (e.g. `w2m.sh` for Way2Move, `w2f.sh` for Way2Fly).
+This gives you a single command to switch branches, start the emulator + Flutter web, seed data, stop everything, and check status.
+
+```bash
+mkdir -p /projects/<project-name>/main/scripts
+# copy scripts/w2f.sh from way2fly as a template, then:
+#   - replace W2F_ → W<ABBREV>_ throughout
+#   - replace W2F_ROOT with /projects/<project-name>
+#   - replace the function name w2f → w<abbrev>
+#   - replace internal helper names _w2f_ → _w<abbrev>_
+#   - update the header comment
+#   - set W2M_EMU_DATA to a project-specific path (e.g. ~/way2move-emulator-data)
+#     so each project has its own emulator snapshot directory
+```
+
+Then source it in `~/.zshrc`:
+
+```bash
+# Way2Move environment switcher
+source /projects/<project-name>/main/scripts/w<abbrev>.sh
+```
+
+Reload the shell:
+```bash
+source ~/.zshrc
+```
+
+**Script capabilities:**
+- `w<abbrev> <branch>` — stop current, build functions, start emulator, start Flutter web
+- `w<abbrev> <branch> --seed` — same + seed the database
+- `w<abbrev> stop` — gracefully stop emulator (exports data) + kill Flutter
+- `w<abbrev> ls` — list all available worktrees
+- `w<abbrev> status` — show what's currently running
+
+Logs go to `/tmp/w<abbrev>/` (emulator.log, flutter.log). Emulator data is persisted across restarts via `--import`/`--export-on-exit`.
+
+### Step 12: Initial commit
 
 ```bash
 cd /projects/<project-name>/main
@@ -238,7 +276,8 @@ An agent that automates this process would need:
 7. Agent generates: security rules (from data model)
 8. Agent runs: git init, flutter create, mkdir
 9. Agent generates: seed data scaffolds
-10. Agent commits: initial scaffold
+10. Agent generates: CLI switcher script (scripts/w<abbrev>.sh) and adds source line to ~/.zshrc
+11. Agent commits: initial scaffold
 ```
 
 Total files created: ~30-40
