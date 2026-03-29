@@ -31,6 +31,11 @@ abstract class AppKeys {
   static const sessionView = Key('session_view');
   static const completeSessionButton = Key('complete_session_button');
   static const sessionSummaryPage = Key('session_summary_page');
+  static const standaloneSessionPage = Key('standalone_session_page');
+  static const startWorkoutButton = Key('start_workout_button');
+  static const sessionNotesField = Key('session_notes_field');
+  static const sessionDoneButton = Key('session_done_button');
+  static const addExerciseToSessionButton = Key('add_exercise_to_session_button');
 
   // Assessment
   static const assessmentFlow = Key('assessment_flow');

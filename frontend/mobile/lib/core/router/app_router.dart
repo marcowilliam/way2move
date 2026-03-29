@@ -11,6 +11,9 @@ import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
 import '../../features/programs/presentation/pages/program_builder_page.dart';
 import '../../features/programs/presentation/pages/program_detail_page.dart';
+import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
+import '../../features/sessions/presentation/pages/session_summary_page.dart';
+import '../../features/sessions/presentation/pages/session_view.dart';
 import 'routes.dart';
 
 // Placeholder pages — replaced in their respective blocks
@@ -132,6 +135,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           key: state.pageKey,
           child: ProgramBuilderPage(
             fromAssessmentId: state.uri.queryParameters['fromAssessment'],
+          ),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.sessionActive,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const SessionView(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.sessionStandalone,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const CreateStandaloneSessionPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: '/session/summary/:sessionId',
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: SessionSummaryPage(
+            sessionId: state.pathParameters['sessionId']!,
           ),
           transitionsBuilder: _slideTransition,
         ),
