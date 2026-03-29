@@ -29,8 +29,7 @@ Widget _buildPage(MockGoalRepository mockRepo) {
           ),
           GoRoute(
             path: '/',
-            builder: (_, __) =>
-                const Scaffold(body: Text('Home')),
+            builder: (_, __) => const Scaffold(body: Text('Home')),
           ),
         ],
       ),

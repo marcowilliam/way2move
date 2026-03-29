@@ -96,8 +96,7 @@ void main() {
 
   testWidgets('shows goal cards when goals are present', (tester) async {
     final goals = [_goal('g1'), _goal('g2')];
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right(goals));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right(goals));
 
     await tester.pumpWidget(_buildPage(mockRepo));
     await tester.pumpAndSettle();
@@ -117,8 +116,7 @@ void main() {
 
   testWidgets('tapping a goal card navigates to detail page', (tester) async {
     final goals = [_goal('g1')];
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right(goals));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right(goals));
 
     await tester.pumpWidget(_buildPage(mockRepo));
     await tester.pumpAndSettle();

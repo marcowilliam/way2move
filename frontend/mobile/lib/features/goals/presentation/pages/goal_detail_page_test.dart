@@ -79,8 +79,7 @@ void main() {
 
   testWidgets('shows goal detail page key', (tester) async {
     final goal = _goal();
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right([goal]));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right([goal]));
 
     await tester.pumpWidget(_buildPage(mockRepo, 'g1'));
     await tester.pumpAndSettle();
@@ -90,8 +89,7 @@ void main() {
 
   testWidgets('shows goal name and target metric', (tester) async {
     final goal = _goal();
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right([goal]));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right([goal]));
 
     await tester.pumpWidget(_buildPage(mockRepo, 'g1'));
     await tester.pumpAndSettle();
@@ -102,8 +100,7 @@ void main() {
 
   testWidgets('shows mark achieved button for active goal', (tester) async {
     final goal = _goal();
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right([goal]));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right([goal]));
 
     await tester.pumpWidget(_buildPage(mockRepo, 'g1'));
     await tester.pumpAndSettle();
@@ -118,8 +115,7 @@ void main() {
       current: 20,
       achievedAt: DateTime(2025, 1, 1),
     );
-    when(() => mockRepo.getAll(any()))
-        .thenAnswer((_) async => Right([goal]));
+    when(() => mockRepo.getAll(any())).thenAnswer((_) async => Right([goal]));
 
     await tester.pumpWidget(_buildPage(mockRepo, 'g1'));
     await tester.pumpAndSettle();
