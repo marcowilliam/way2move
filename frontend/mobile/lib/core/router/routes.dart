@@ -20,4 +20,12 @@ abstract class Routes {
   static const sleep = '/sleep';
   static const onboarding = '/onboarding';
   static const profileEdit = '/profile/edit';
+  static const compensationProfile = '/compensations';
+  static const compensationAdd = '/compensations/add';
+  static String compensationDetail(String id) => '/compensations/$id';
+
+  // Goals
+  static const goals = '/goals';
+  static const goalsSetup = '/goals/setup';
+  static String goalDetail(String id) => '/goals/$id';
 }

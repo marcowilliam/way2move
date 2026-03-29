@@ -5,6 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/compensations/presentation/pages/compensation_detail_page.dart';
+import '../../features/compensations/presentation/pages/compensation_profile_page.dart';
+import '../../features/goals/presentation/pages/goal_detail_page.dart';
+import '../../features/goals/presentation/pages/goal_list_page.dart';
+import '../../features/goals/presentation/pages/goal_setup_page.dart';
 import '../../features/profile/presentation/pages/onboarding_flow.dart';
 import '../../features/profile/presentation/pages/profile_edit_page.dart';
 import '../../features/assessments/presentation/pages/assessment_history_page.dart';
@@ -129,6 +134,26 @@ final routerProvider = Provider<GoRouter>((ref) {
               transitionsBuilder: _fadeTransition,
             ),
           ),
+          GoRoute(
+            path: Routes.goals,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const GoalListPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+            routes: [
+              GoRoute(
+                path: ':goalId',
+                pageBuilder: (_, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: GoalDetailPage(
+                    goalId: state.pathParameters['goalId']!,
+                  ),
+                  transitionsBuilder: _slideTransition,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -198,6 +223,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const ProfileEditPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.compensationProfile,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const CompensationProfilePage(),
+          transitionsBuilder: _slideTransition,
+        ),
+        routes: [
+          GoRoute(
+            path: ':compensationId',
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: CompensationDetailPage(
+                compensationId: state.pathParameters['compensationId']!,
+              ),
+              transitionsBuilder: _slideTransition,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.goalsSetup,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: GoalSetupPage(
+            fromAssessmentId: state.uri.queryParameters['fromAssessment'],
+          ),
           transitionsBuilder: _slideTransition,
         ),
       ),
