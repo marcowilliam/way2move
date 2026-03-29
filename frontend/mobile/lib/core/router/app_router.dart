@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/profile/presentation/pages/onboarding_flow.dart';
+import '../../features/profile/presentation/pages/profile_edit_page.dart';
 import '../../features/assessments/presentation/pages/assessment_history_page.dart';
 import '../../features/assessments/presentation/pages/initial_assessment_flow.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
@@ -182,6 +184,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: Routes.onboarding,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const OnboardingFlow(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.profileEdit,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ProfileEditPage(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
     ],
   );

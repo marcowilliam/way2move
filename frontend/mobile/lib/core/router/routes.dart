@@ -18,4 +18,6 @@ abstract class Routes {
   static const assessment = '/assessment';
   static const assessmentHistory = '/assessment/history';
   static const sleep = '/sleep';
+  static const onboarding = '/onboarding';
+  static const profileEdit = '/profile/edit';
 }
