@@ -68,8 +68,7 @@ final exerciseListProvider = FutureProvider<List<Exercise>>((ref) async {
       sportTags: filter.sportTags.isEmpty ? null : filter.sportTags,
       typeTags: filter.typeTags.isEmpty ? null : filter.typeTags,
       regionTags: filter.regionTags.isEmpty ? null : filter.regionTags,
-      equipmentTags:
-          filter.equipmentTags.isEmpty ? null : filter.equipmentTags,
+      equipmentTags: filter.equipmentTags.isEmpty ? null : filter.equipmentTags,
       difficulty: filter.difficulty,
     );
     return result.fold((_) => [], (list) => list);

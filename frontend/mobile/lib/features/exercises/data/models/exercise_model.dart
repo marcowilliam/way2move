@@ -101,24 +101,24 @@ class ExerciseModel {
         description: description,
         videoUrl: videoUrl,
         sportTags: sportTags
-            .map((t) => SportTag.values
-                .firstWhere((e) => e.name == t, orElse: () => SportTag.generalFitness))
+            .map((t) => SportTag.values.firstWhere((e) => e.name == t,
+                orElse: () => SportTag.generalFitness))
             .toList(),
         patternTags: patternTags
-            .map((t) => MovementPattern.values
-                .firstWhere((e) => e.name == t, orElse: () => MovementPattern.squat))
+            .map((t) => MovementPattern.values.firstWhere((e) => e.name == t,
+                orElse: () => MovementPattern.squat))
             .toList(),
         regionTags: regionTags
-            .map((t) => BodyRegion.values
-                .firstWhere((e) => e.name == t, orElse: () => BodyRegion.fullBody))
+            .map((t) => BodyRegion.values.firstWhere((e) => e.name == t,
+                orElse: () => BodyRegion.fullBody))
             .toList(),
         typeTags: typeTags
-            .map((t) => ExerciseType.values
-                .firstWhere((e) => e.name == t, orElse: () => ExerciseType.corrective))
+            .map((t) => ExerciseType.values.firstWhere((e) => e.name == t,
+                orElse: () => ExerciseType.corrective))
             .toList(),
         equipmentTags: equipmentTags
-            .map((t) => EquipmentTag.values
-                .firstWhere((e) => e.name == t, orElse: () => EquipmentTag.bodyweight))
+            .map((t) => EquipmentTag.values.firstWhere((e) => e.name == t,
+                orElse: () => EquipmentTag.bodyweight))
             .toList(),
         difficulty: ExerciseDifficulty.values.firstWhere(
           (e) => e.name == difficulty,

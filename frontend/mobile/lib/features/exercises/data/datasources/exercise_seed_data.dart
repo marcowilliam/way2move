@@ -61,7 +61,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_deadbug_arms_legs',
     'name': 'Dead Bug (Full)',
-    'description': 'Dead Bug with full arm and leg extension for greater lever challenge.',
+    'description':
+        'Dead Bug with full arm and leg extension for greater lever challenge.',
     'videoUrl': '',
     'typeTags': ['stability'],
     'regionTags': ['core'],
@@ -116,7 +117,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_bird_dog_row',
     'name': 'Bird Dog Row',
-    'description': 'Bird Dog with band row to add upper-back and shoulder challenge.',
+    'description':
+        'Bird Dog with band row to add upper-back and shoulder challenge.',
     'videoUrl': '',
     'typeTags': ['stability', 'strength'],
     'regionTags': ['core', 'shoulder'],
@@ -151,7 +153,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_hip_90_90_lift',
     'name': '90/90 Hip Lift',
-    'description': 'Active internal/external rotation from 90/90 position for hip strength.',
+    'description':
+        'Active internal/external rotation from 90/90 position for hip strength.',
     'videoUrl': '',
     'typeTags': ['mobility', 'activation'],
     'regionTags': ['hip'],
@@ -187,7 +190,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_couch_stretch',
     'name': 'Couch Stretch',
-    'description': 'Hip flexor and quad stretch — addresses anterior hip tightness from sitting.',
+    'description':
+        'Hip flexor and quad stretch — addresses anterior hip tightness from sitting.',
     'videoUrl': '',
     'typeTags': ['mobility'],
     'regionTags': ['hip', 'knee'],
@@ -206,7 +210,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_hip_hinge',
     'name': 'Hip Hinge',
-    'description': 'Fundamental hinge movement pattern with dowel for feedback.',
+    'description':
+        'Fundamental hinge movement pattern with dowel for feedback.',
     'videoUrl': '',
     'typeTags': ['corrective', 'mobility'],
     'regionTags': ['lumbar', 'hip'],
@@ -225,7 +230,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_rdl',
     'name': 'Romanian Deadlift',
-    'description': 'Hip hinge with load — emphasises posterior chain stretch and tension.',
+    'description':
+        'Hip hinge with load — emphasises posterior chain stretch and tension.',
     'videoUrl': '',
     'typeTags': ['strength'],
     'regionTags': ['hip', 'lumbar'],
@@ -263,7 +269,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_kb_swing',
     'name': 'Kettlebell Swing',
-    'description': 'Ballistic hip hinge — develops posterior chain power and endurance.',
+    'description':
+        'Ballistic hip hinge — develops posterior chain power and endurance.',
     'videoUrl': '',
     'typeTags': ['strength', 'activation'],
     'regionTags': ['hip', 'lumbar'],
@@ -283,7 +290,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_goblet_squat',
     'name': 'Goblet Squat',
-    'description': 'Counter-balance squat — teaches thoracic extension and hip depth.',
+    'description':
+        'Counter-balance squat — teaches thoracic extension and hip depth.',
     'videoUrl': '',
     'typeTags': ['mobility', 'strength'],
     'regionTags': ['hip', 'knee', 'thoracic'],
@@ -302,7 +310,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_box_squat',
     'name': 'Box Squat',
-    'description': 'Squat to elevated surface — reduces range demand and teaches hinge component.',
+    'description':
+        'Squat to elevated surface — reduces range demand and teaches hinge component.',
     'videoUrl': '',
     'typeTags': ['corrective', 'mobility'],
     'regionTags': ['hip', 'knee'],
@@ -359,7 +368,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_thoracic_extension_bench',
     'name': 'Thoracic Extension over Bench',
-    'description': 'Passive thoracic extension to restore sagittal T-spine mobility.',
+    'description':
+        'Passive thoracic extension to restore sagittal T-spine mobility.',
     'videoUrl': '',
     'typeTags': ['mobility'],
     'regionTags': ['thoracic'],
@@ -377,7 +387,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_cat_cow',
     'name': 'Cat-Cow',
-    'description': 'Spinal articulation for full-range spinal mobility and breath coordination.',
+    'description':
+        'Spinal articulation for full-range spinal mobility and breath coordination.',
     'videoUrl': '',
     'typeTags': ['mobility', 'corrective'],
     'regionTags': ['thoracic', 'lumbar'],
@@ -395,7 +406,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_shoulder_car',
     'name': 'Shoulder CAR',
-    'description': 'Controlled articular rotation of the shoulder for active range maintenance.',
+    'description':
+        'Controlled articular rotation of the shoulder for active range maintenance.',
     'videoUrl': '',
     'typeTags': ['mobility'],
     'regionTags': ['shoulder'],
@@ -431,7 +443,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_ys_ts',
     'name': 'Y/T Raises (Prone)',
-    'description': 'Prone lower/middle trap and scapular stabiliser activation.',
+    'description':
+        'Prone lower/middle trap and scapular stabiliser activation.',
     'videoUrl': '',
     'typeTags': ['activation', 'corrective'],
     'regionTags': ['shoulder', 'thoracic'],
@@ -449,7 +462,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_face_pull',
     'name': 'Face Pull',
-    'description': 'External rotation and scapular retraction — shoulder health staple.',
+    'description':
+        'External rotation and scapular retraction — shoulder health staple.',
     'videoUrl': '',
     'typeTags': ['corrective', 'activation'],
     'regionTags': ['shoulder'],
@@ -469,7 +483,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_pushup',
     'name': 'Push-Up',
-    'description': 'Full-body push pattern — serratus anterior, pec, and tricep.',
+    'description':
+        'Full-body push pattern — serratus anterior, pec, and tricep.',
     'videoUrl': '',
     'typeTags': ['strength', 'stability'],
     'regionTags': ['shoulder', 'core'],
@@ -509,7 +524,10 @@ const List<Map<String, dynamic>> kSeedExercises = [
     'patternTags': ['push'],
     'equipmentTags': ['bodyweight'],
     'difficulty': 'advanced',
-    'cues': ['Have partner place weight at mid-scapula', 'Maintain rigid torso'],
+    'cues': [
+      'Have partner place weight at mid-scapula',
+      'Maintain rigid torso'
+    ],
     'progressionIds': [],
     'regressionIds': ['ex_pushup'],
   },
@@ -517,7 +535,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_band_pull_apart',
     'name': 'Band Pull-Apart',
-    'description': 'Horizontal pull for posterior shoulder and upper back strength.',
+    'description':
+        'Horizontal pull for posterior shoulder and upper back strength.',
     'videoUrl': '',
     'typeTags': ['activation', 'corrective'],
     'regionTags': ['shoulder'],
@@ -535,7 +554,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_inverted_row',
     'name': 'Inverted Row',
-    'description': 'Bodyweight horizontal pull — back, biceps, scapular retractors.',
+    'description':
+        'Bodyweight horizontal pull — back, biceps, scapular retractors.',
     'videoUrl': '',
     'typeTags': ['strength'],
     'regionTags': ['shoulder'],
@@ -553,7 +573,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_pullup',
     'name': 'Pull-Up',
-    'description': 'Vertical pull — latissimus dorsi, biceps, scapular depressors.',
+    'description':
+        'Vertical pull — latissimus dorsi, biceps, scapular depressors.',
     'videoUrl': '',
     'typeTags': ['strength'],
     'regionTags': ['shoulder'],
@@ -573,7 +594,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_ankle_car',
     'name': 'Ankle CAR',
-    'description': 'Controlled articular rotation of the ankle for active range development.',
+    'description':
+        'Controlled articular rotation of the ankle for active range development.',
     'videoUrl': '',
     'typeTags': ['mobility'],
     'regionTags': ['ankle'],
@@ -590,7 +612,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_calf_stretch',
     'name': 'Calf Stretch (Wall)',
-    'description': 'Soleus and gastroc stretch for ankle dorsiflexion improvement.',
+    'description':
+        'Soleus and gastroc stretch for ankle dorsiflexion improvement.',
     'videoUrl': '',
     'typeTags': ['mobility'],
     'regionTags': ['ankle'],
@@ -608,7 +631,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_glute_bridge',
     'name': 'Glute Bridge',
-    'description': 'Supine hip extension — activates glutes and teaches hip dissociation.',
+    'description':
+        'Supine hip extension — activates glutes and teaches hip dissociation.',
     'videoUrl': '',
     'typeTags': ['activation', 'strength'],
     'regionTags': ['hip', 'lumbar'],
@@ -678,7 +702,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_farmers_carry',
     'name': 'Farmer\'s Carry',
-    'description': 'Loaded carry for total body stability, grip, and gait integration.',
+    'description':
+        'Loaded carry for total body stability, grip, and gait integration.',
     'videoUrl': '',
     'typeTags': ['strength', 'stability'],
     'regionTags': ['fullBody', 'core'],
@@ -696,7 +721,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_suitcase_carry',
     'name': 'Suitcase Carry',
-    'description': 'Unilateral loaded carry — lateral core stability and anti-lateral-flexion.',
+    'description':
+        'Unilateral loaded carry — lateral core stability and anti-lateral-flexion.',
     'videoUrl': '',
     'typeTags': ['stability', 'strength'],
     'regionTags': ['core'],
@@ -714,7 +740,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_chin_tuck',
     'name': 'Chin Tuck',
-    'description': 'Deep cervical flexor activation — addresses forward head posture.',
+    'description':
+        'Deep cervical flexor activation — addresses forward head posture.',
     'videoUrl': '',
     'typeTags': ['corrective', 'activation'],
     'regionTags': ['neck'],
@@ -732,7 +759,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_split_squat',
     'name': 'Split Squat',
-    'description': 'Stationary lunge pattern for unilateral hip, knee, and ankle training.',
+    'description':
+        'Stationary lunge pattern for unilateral hip, knee, and ankle training.',
     'videoUrl': '',
     'typeTags': ['strength', 'mobility'],
     'regionTags': ['hip', 'knee', 'ankle'],
@@ -750,7 +778,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_bulgarian_split_squat',
     'name': 'Bulgarian Split Squat',
-    'description': 'Rear-foot elevated split squat — higher hip flexor and quad demand.',
+    'description':
+        'Rear-foot elevated split squat — higher hip flexor and quad demand.',
     'videoUrl': '',
     'typeTags': ['strength'],
     'regionTags': ['hip', 'knee'],
@@ -786,7 +815,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_rkg_plank',
     'name': 'RKG Plank',
-    'description': 'Posterior pelvic tilt plank with glute and ab co-contraction.',
+    'description':
+        'Posterior pelvic tilt plank with glute and ab co-contraction.',
     'videoUrl': '',
     'typeTags': ['stability'],
     'regionTags': ['core'],
@@ -821,7 +851,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_all_fours_belly_lift',
     'name': 'All Fours Belly Lift',
-    'description': 'PRI-based abdominal activation in quadruped — restores IAP and neutral pelvis.',
+    'description':
+        'PRI-based abdominal activation in quadruped — restores IAP and neutral pelvis.',
     'videoUrl': '',
     'typeTags': ['breathing', 'corrective', 'activation'],
     'regionTags': ['core', 'lumbar'],
@@ -839,7 +870,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_supine_foot_on_wall',
     'name': 'Supine Foot on Wall (PRI)',
-    'description': 'Left AIC/right BC reset — restores pelvic symmetry via unilateral hamstring activation.',
+    'description':
+        'Left AIC/right BC reset — restores pelvic symmetry via unilateral hamstring activation.',
     'videoUrl': '',
     'typeTags': ['corrective', 'breathing'],
     'regionTags': ['hip', 'lumbar'],
@@ -857,7 +889,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_active_straight_leg_raise',
     'name': 'Active Straight Leg Raise',
-    'description': 'Active hamstring and hip flexor range — avoids passive end range loading for hypermobile athletes.',
+    'description':
+        'Active hamstring and hip flexor range — avoids passive end range loading for hypermobile athletes.',
     'videoUrl': '',
     'typeTags': ['mobility', 'activation'],
     'regionTags': ['hip'],
@@ -874,7 +907,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_wall_sit',
     'name': 'Wall Sit',
-    'description': 'Isometric quad load — safe closed-chain knee stability for hypermobile knees.',
+    'description':
+        'Isometric quad load — safe closed-chain knee stability for hypermobile knees.',
     'videoUrl': '',
     'typeTags': ['stability', 'strength'],
     'regionTags': ['knee', 'hip'],
@@ -893,7 +927,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_a_march',
     'name': 'A-March',
-    'description': 'Running drills — hip flexion, knee lift, and arm swing coordination.',
+    'description':
+        'Running drills — hip flexion, knee lift, and arm swing coordination.',
     'videoUrl': '',
     'typeTags': ['activation', 'corrective'],
     'regionTags': ['hip', 'knee'],
@@ -912,7 +947,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_a_skip',
     'name': 'A-Skip',
-    'description': 'Plyometric running drill for hip drive and elastic stiffness.',
+    'description':
+        'Plyometric running drill for hip drive and elastic stiffness.',
     'videoUrl': '',
     'typeTags': ['activation'],
     'regionTags': ['hip', 'ankle'],
@@ -928,7 +964,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_dns_prone_forearm',
     'name': 'DNS Prone on Forearms',
-    'description': 'DNS 4-month prone position — establishes upper limb support, thoracic extension, and shoulder stability.',
+    'description':
+        'DNS 4-month prone position — establishes upper limb support, thoracic extension, and shoulder stability.',
     'videoUrl': '',
     'typeTags': ['corrective', 'stability', 'activation'],
     'regionTags': ['shoulder', 'thoracic', 'neck'],
@@ -945,7 +982,8 @@ const List<Map<String, dynamic>> kSeedExercises = [
   {
     'id': 'ex_dns_tripod_sit',
     'name': 'DNS Tripod Sit',
-    'description': 'DNS sitting position — integrates spinal stabilisation with upper extremity loading.',
+    'description':
+        'DNS sitting position — integrates spinal stabilisation with upper extremity loading.',
     'videoUrl': '',
     'typeTags': ['corrective', 'stability'],
     'regionTags': ['core', 'shoulder'],

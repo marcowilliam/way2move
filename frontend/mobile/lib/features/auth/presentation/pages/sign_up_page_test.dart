@@ -59,8 +59,7 @@ void main() {
       await tester.enterText(find.byKey(AppKeys.nameField), 'Test User');
       await tester.enterText(
           find.byKey(AppKeys.emailField), 'test@way2move.com');
-      await tester.enterText(
-          find.byKey(AppKeys.passwordField), 'Password1!');
+      await tester.enterText(find.byKey(AppKeys.passwordField), 'Password1!');
       await tester.enterText(
           find.byKey(AppKeys.confirmPasswordField), 'DifferentPass!');
       await tester.tap(find.byKey(AppKeys.submitButton));
@@ -85,8 +84,8 @@ void main() {
     });
 
     testWidgets('shows email-in-use error from repository', (tester) async {
-      when(() => mockRepo.signUp(any(), any(), any())).thenAnswer((_) async =>
-          const Left(AuthFailure('email-already-in-use')));
+      when(() => mockRepo.signUp(any(), any(), any())).thenAnswer(
+          (_) async => const Left(AuthFailure('email-already-in-use')));
 
       await tester.pumpWidget(buildSubject());
       await tester.pump();
@@ -94,16 +93,14 @@ void main() {
       await tester.enterText(find.byKey(AppKeys.nameField), 'Test User');
       await tester.enterText(
           find.byKey(AppKeys.emailField), 'existing@way2move.com');
-      await tester.enterText(
-          find.byKey(AppKeys.passwordField), 'Password1!');
+      await tester.enterText(find.byKey(AppKeys.passwordField), 'Password1!');
       await tester.enterText(
           find.byKey(AppKeys.confirmPasswordField), 'Password1!');
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      expect(
-          find.text('An account with this email already exists.'),
+      expect(find.text('An account with this email already exists.'),
           findsOneWidget);
     });
   });

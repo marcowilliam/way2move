@@ -68,8 +68,10 @@ class _DifficultyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch (difficulty) {
       ExerciseDifficulty.beginner => ('Beginner', AppColors.difficultyBeginner),
-      ExerciseDifficulty.intermediate =>
-        ('Intermediate', AppColors.difficultyIntermediate),
+      ExerciseDifficulty.intermediate => (
+          'Intermediate',
+          AppColors.difficultyIntermediate
+        ),
       ExerciseDifficulty.advanced => ('Advanced', AppColors.difficultyAdvanced),
     };
     return Container(
@@ -104,10 +106,7 @@ class _TagRow extends StatelessWidget {
     return Wrap(
       spacing: 6,
       runSpacing: 4,
-      children: tags
-          .take(4)
-          .map((label) => _Chip(label: label))
-          .toList(),
+      children: tags.take(4).map((label) => _Chip(label: label)).toList(),
     );
   }
 

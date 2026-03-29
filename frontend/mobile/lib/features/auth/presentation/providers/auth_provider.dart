@@ -50,15 +50,13 @@ class AuthNotifier extends AsyncNotifier<AppUser?> {
   }
 
   Future<Either<AppFailure, AppUser>> signInWithGoogle() async {
-    final result =
-        await ref.read(authRepositoryProvider).signInWithGoogle();
+    final result = await ref.read(authRepositoryProvider).signInWithGoogle();
     result.fold((_) {}, (user) => state = AsyncData(user));
     return result;
   }
 
   Future<Either<AppFailure, AppUser>> signInWithApple() async {
-    final result =
-        await ref.read(authRepositoryProvider).signInWithApple();
+    final result = await ref.read(authRepositoryProvider).signInWithApple();
     result.fold((_) {}, (user) => state = AsyncData(user));
     return result;
   }

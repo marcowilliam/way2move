@@ -68,8 +68,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
         child: SlideTransition(
           position: _slideAnimation,
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -113,7 +112,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
             ),
             validator: (v) {
               if (v == null || v.trim().isEmpty) return 'Name is required';
-              if (v.trim().length < 2) return 'Name must be at least 2 characters';
+              if (v.trim().length < 2)
+                return 'Name must be at least 2 characters';
               return null;
             },
           ),
@@ -192,8 +192,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(
-                  color: AppColors.accentRed, fontSize: 13),
+              style: const TextStyle(color: AppColors.accentRed, fontSize: 13),
             ),
           ),
         ],
@@ -237,9 +236,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
       _errorMessage = null;
     });
 
-    final result = await ref
-        .read(authNotifierProvider.notifier)
-        .signUp(
+    final result = await ref.read(authNotifierProvider.notifier).signUp(
           _emailController.text.trim(),
           _passwordController.text,
           _nameController.text.trim(),
@@ -258,11 +255,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
   String _mapFailureToMessage(AppFailure failure) {
     if (failure is AuthFailure) {
       return switch (failure.code) {
-        'email-already-in-use' =>
-          'An account with this email already exists.',
+        'email-already-in-use' => 'An account with this email already exists.',
         'invalid-email' => 'Please enter a valid email address.',
-        'weak-password' =>
-          'Password is too weak. Use at least 8 characters.',
+        'weak-password' => 'Password is too weak. Use at least 8 characters.',
         'network-request-failed' => 'No internet connection.',
         _ => 'Sign up failed. Please try again.',
       };

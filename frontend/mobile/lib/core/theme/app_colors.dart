@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 abstract class AppColors {
   // Brand — muted earth tones
-  static const Color primary = Color(0xFF4A7C59);       // sage green
+  static const Color primary = Color(0xFF4A7C59); // sage green
   static const Color primaryLight = Color(0xFF6FA882);
   static const Color primaryDark = Color(0xFF2D5A3D);
 
-  static const Color secondary = Color(0xFFB8860B);     // warm gold
+  static const Color secondary = Color(0xFFB8860B); // warm gold
   static const Color secondaryLight = Color(0xFFD4A822);
   static const Color secondaryDark = Color(0xFF8A6408);
 
   // Accent — progress & achievements
-  static const Color accent = Color(0xFFE67E22);        // energetic orange
-  static const Color accentGreen = Color(0xFF27AE60);   // completion green
-  static const Color accentRed = Color(0xFFE74C3C);     // error/warning
+  static const Color accent = Color(0xFFE67E22); // energetic orange
+  static const Color accentGreen = Color(0xFF27AE60); // completion green
+  static const Color accentRed = Color(0xFFE74C3C); // error/warning
 
   // Neutrals — light mode
-  static const Color background = Color(0xFFF8F6F2);    // warm off-white
+  static const Color background = Color(0xFFF8F6F2); // warm off-white
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFF0EDE8);
   static const Color border = Color(0xFFE0DDD8);

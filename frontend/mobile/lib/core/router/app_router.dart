@@ -9,6 +9,8 @@ import '../../features/assessments/presentation/pages/assessment_history_page.da
 import '../../features/assessments/presentation/pages/initial_assessment_flow.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
+import '../../features/programs/presentation/pages/program_builder_page.dart';
+import '../../features/programs/presentation/pages/program_detail_page.dart';
 import 'routes.dart';
 
 // Placeholder pages — replaced in their respective blocks
@@ -114,7 +116,25 @@ final routerProvider = Provider<GoRouter>((ref) {
               transitionsBuilder: _fadeTransition,
             ),
           ),
+          GoRoute(
+            path: Routes.programs,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProgramDetailPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+          ),
         ],
+      ),
+      GoRoute(
+        path: Routes.programBuilder,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: ProgramBuilderPage(
+            fromAssessmentId: state.uri.queryParameters['fromAssessment'],
+          ),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
       GoRoute(
         path: Routes.assessment,

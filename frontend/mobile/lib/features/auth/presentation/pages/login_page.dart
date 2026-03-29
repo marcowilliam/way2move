@@ -167,8 +167,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(
-                  color: AppColors.accentRed, fontSize: 13),
+              style: const TextStyle(color: AppColors.accentRed, fontSize: 13),
             ),
           ),
         ],
@@ -235,8 +234,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Don't have an account? ",
-            style: theme.textTheme.bodyMedium),
+        Text("Don't have an account? ", style: theme.textTheme.bodyMedium),
         TextButton(
           key: AppKeys.createAccountButton,
           onPressed: () => context.push(Routes.signup),
@@ -261,8 +259,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
     setState(() => _isLoading = false);
 
     result.fold(
-      (failure) => setState(
-          () => _errorMessage = _mapFailureToMessage(failure)),
+      (failure) =>
+          setState(() => _errorMessage = _mapFailureToMessage(failure)),
       (_) => context.go(Routes.home),
     );
   }
@@ -308,12 +306,12 @@ class _LoginPageState extends ConsumerState<LoginPage>
   String _mapFailureToMessage(AppFailure failure) {
     if (failure is AuthFailure) {
       return switch (failure.code) {
-        'wrong-password' || 'invalid-credential' =>
+        'wrong-password' ||
+        'invalid-credential' =>
           'Incorrect email or password.',
         'user-not-found' => 'No account found with this email.',
         'invalid-email' => 'Please enter a valid email address.',
-        'too-many-requests' =>
-          'Too many attempts. Please try again later.',
+        'too-many-requests' => 'Too many attempts. Please try again later.',
         'network-request-failed' => 'No internet connection.',
         _ => 'Sign in failed. Please try again.',
       };

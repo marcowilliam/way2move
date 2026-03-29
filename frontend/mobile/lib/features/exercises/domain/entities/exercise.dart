@@ -1,14 +1,48 @@
 enum ExerciseDifficulty { beginner, intermediate, advanced }
 
-enum ExerciseType { mobility, stability, strength, breathing, corrective, activation }
+enum ExerciseType {
+  mobility,
+  stability,
+  strength,
+  breathing,
+  corrective,
+  activation
+}
 
 enum MovementPattern { hinge, squat, push, pull, rotate, carry, gait }
 
-enum BodyRegion { neck, shoulder, thoracic, lumbar, hip, knee, ankle, fullBody, core }
+enum BodyRegion {
+  neck,
+  shoulder,
+  thoracic,
+  lumbar,
+  hip,
+  knee,
+  ankle,
+  fullBody,
+  core
+}
 
-enum SportTag { running, cycling, swimming, lifting, yoga, generalFitness, teamSport }
+enum SportTag {
+  running,
+  cycling,
+  swimming,
+  lifting,
+  yoga,
+  generalFitness,
+  teamSport
+}
 
-enum EquipmentTag { bodyweight, band, foam, ball, barbell, dumbbell, kettlebell, bench }
+enum EquipmentTag {
+  bodyweight,
+  band,
+  foam,
+  ball,
+  barbell,
+  dumbbell,
+  kettlebell,
+  bench
+}
 
 class Exercise {
   final String id;

@@ -19,15 +19,11 @@ class FirebaseAuthDatasource {
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
 
-  Future<UserCredential> signInWithEmail(
-          String email, String password) =>
-      _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+  Future<UserCredential> signInWithEmail(String email, String password) =>
+      _auth.signInWithEmailAndPassword(email: email, password: password);
 
-  Future<UserCredential> signUpWithEmail(
-          String email, String password) =>
-      _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+  Future<UserCredential> signUpWithEmail(String email, String password) =>
+      _auth.createUserWithEmailAndPassword(email: email, password: password);
 
   Future<UserCredential> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();

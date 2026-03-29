@@ -128,7 +128,8 @@ class _ExerciseDetailViewState extends State<_ExerciseDetailView>
                     const SizedBox(height: 16),
                     Text('Description', style: theme.textTheme.titleSmall),
                     const SizedBox(height: 8),
-                    Text(exercise.description, style: theme.textTheme.bodyLarge),
+                    Text(exercise.description,
+                        style: theme.textTheme.bodyLarge),
                     if (exercise.cues.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       Text('Coaching Cues', style: theme.textTheme.titleSmall),
@@ -229,8 +230,10 @@ class _DifficultyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch (difficulty) {
       ExerciseDifficulty.beginner => ('Beginner', AppColors.difficultyBeginner),
-      ExerciseDifficulty.intermediate =>
-        ('Intermediate', AppColors.difficultyIntermediate),
+      ExerciseDifficulty.intermediate => (
+          'Intermediate',
+          AppColors.difficultyIntermediate
+        ),
       ExerciseDifficulty.advanced => ('Advanced', AppColors.difficultyAdvanced),
     };
     return Container(
@@ -338,4 +341,3 @@ class _RelatedSection extends ConsumerWidget {
     );
   }
 }
-

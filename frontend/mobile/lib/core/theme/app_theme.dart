@@ -45,8 +45,7 @@ abstract class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide:
-                const BorderSide(color: AppColors.primary, width: 2),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -54,8 +53,7 @@ abstract class AppTheme {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide:
-                const BorderSide(color: AppColors.accentRed, width: 2),
+            borderSide: const BorderSide(color: AppColors.accentRed, width: 2),
           ),
         ),
 
@@ -113,8 +111,8 @@ abstract class AppTheme {
         // Chip
         chipTheme: ChipThemeData(
           backgroundColor: AppColors.surfaceVariant,
-          labelStyle: const TextStyle(
-              fontSize: 12, color: AppColors.textSecondary),
+          labelStyle:
+              const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -143,7 +141,6 @@ abstract class AppTheme {
         scaffoldBackgroundColor: AppColors.backgroundDark,
         cardColor: AppColors.surfaceDark,
         dividerColor: AppColors.dividerDark,
-
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.surfaceDark,
           foregroundColor: AppColors.textPrimaryDark,
@@ -151,10 +148,8 @@ abstract class AppTheme {
           scrolledUnderElevation: 1,
           centerTitle: false,
         ),
-
         textTheme:
             _textTheme(AppColors.textPrimaryDark, AppColors.textSecondaryDark),
-
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.surfaceVariantDark,
@@ -174,7 +169,6 @@ abstract class AppTheme {
                 const BorderSide(color: AppColors.primaryLight, width: 2),
           ),
         ),
-
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryLight,
@@ -186,7 +180,6 @@ abstract class AppTheme {
             elevation: 0,
           ),
         ),
-
         cardTheme: CardThemeData(
           color: AppColors.surfaceDark,
           elevation: 0,
@@ -195,7 +188,6 @@ abstract class AppTheme {
             side: const BorderSide(color: AppColors.borderDark),
           ),
         ),
-
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.surfaceDark,
           selectedItemColor: AppColors.primaryLight,
