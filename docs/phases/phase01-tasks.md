@@ -35,6 +35,11 @@
 - [x] Tests: widget tests for LoginPage and SignUpPage
 - [x] Cloud Function: onUserCreate trigger (creates user doc in Firestore with default fields)
 
+### UI — What to test
+- **LoginPage** (`/auth/login`): email + password fields, "Sign In" button, Google/Apple sign-in buttons, "Create account" link → navigates to SignUpPage
+- **SignUpPage** (`/auth/signup`): name, email, password, confirm password fields; submit creates account and navigates to home
+- Auth guard: unauthenticated users are redirected to `/auth/login` on any protected route
+
 ---
 
 ## Block 2 — Exercise Library (Domain + Data) ✅
@@ -60,6 +65,12 @@
 - [x] Providers: exerciseListProvider, exerciseSearchProvider, exerciseFilterProvider
 - [x] Tests: widget tests for exercise list, detail, and add dialog
 
+### UI — What to test
+- **ExerciseListPage** (`/exercises`): list of exercise cards, search field at top, filter chips below (sport/type/region/equipment); tap a card → opens detail
+- **ExerciseDetailPage** (`/exercises/:id`): title, description, video URL link, difficulty badge, tags, cue list, progressions/regressions
+- **AddExerciseDialog**: tap "+" button on list page; form with name, description, video URL, tags; save adds to list
+- Filter chips are multi-select; list narrows in real time as filters change
+
 ---
 
 ## Block 4 — Assessment System ✅
@@ -77,6 +88,21 @@
 - [x] Presentation: WeeklyPulseDialog (4 sliders: energy, soreness, motivation, sleep)
 - [x] Compensation detection logic (rule-based from questionnaire answers — see rules below)
 - [x] Tests: widget tests for assessment flow and weekly pulse
+
+### UI — What to test
+- **InitialAssessmentFlow** (`/assessment`, full-screen outside shell):
+  - Step 0 — Intro: title "Movement Assessment", "Start" button
+  - Step 1 — Occupation: animated progress bar (14%), three chips: "Desk Job", "Physically Active", "Mixed"
+  - Step 2 — Sitting Hours: chips "< 2 hours", "2–4 hours", "4–6 hours", "> 6 hours"
+  - Step 3 — Pain Areas: multi-select toggle chips (neck, lower back, knees, ankles, shoulders, hips)
+  - Step 4 — Running: "Yes" / "No" chips
+  - Step 5 — Processing: rotating animation, auto-advances after ~1.8s
+  - Step 6 — Results: score ring (percentage), detected pattern tiles, two CTAs:
+    - "Build My Program" → navigates to `/programs/new?fromAssessment=<id>`
+    - "View My Program Later" → pops back
+  - Back button on all steps except Intro; progress bar animates forward/backward
+- **AssessmentHistoryPage** (`/assessment/history`): pull-to-refresh, empty state, cards with date + "Latest" badge + colored score + pattern chips
+- **WeeklyPulseDialog** (call `showWeeklyPulseDialog(context)`): 4 sliders (1–5), emoji labels, "Save" button shows checkmark on success then auto-dismisses
 
 > **Compensation detection rules** (map questionnaire answers → CompensationPattern enum):
 > - Desk job + neck pain → `forwardHeadPosture`, `roundedShoulders`
@@ -106,6 +132,16 @@
 - [x] Auto-generate starter program from assessment results (GenerateProgramFromAssessment)
 - [x] Tests: unit tests for use cases and program generation logic
 - [x] Tests: widget tests for program builder and detail pages
+
+### UI — What to test
+- **ProgramDetailPage** (`/programs`, inside shell):
+  - No active program: centered icon + "No active program" text + suggestion copy
+  - With active program: gradient header card (name, goal, "X weeks" badge, "X days/week" badge); "Weekly Schedule" with animated day circles (filled = training, muted = rest) + day detail cards (focus name, exercise count); "Deactivate Program" outlined red button → confirmation dialog
+- **ProgramBuilderPage** (`/programs/new`, full-screen outside shell):
+  - Form: "Program Name" field, "Goal" multi-line field, "Duration" choice chips (4w/6w/8w/12w/16w)
+  - WeekTemplateEditor in edit mode: tap day circles to toggle rest ↔ training
+  - "Save Program" filled button at bottom
+  - When opened via `/programs/new?fromAssessment=<id>`: name, goal, and week template auto-filled from the latest assessment's compensation results (Mon/Wed/Fri training days, exercises split across 3 days)
 
 > **Auto-generation mapping** (CompensationPattern → exercise IDs from seed data):
 > - `forwardHeadPosture` → `ex_chin_tuck`, `ex_dns_prone_forearm`
