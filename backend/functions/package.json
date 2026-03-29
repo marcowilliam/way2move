@@ -1,0 +1,33 @@
+{
+  "name": "way2move-functions",
+  "version": "1.0.0",
+  "description": "Way2Move Cloud Functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "test": "jest --config jest.config.js",
+    "lint": "eslint src --ext .ts",
+    "seed": "FIRESTORE_EMULATOR_HOST=localhost:8080 ts-node src/seed/seedDatabase.ts",
+    "seed:prod": "ts-node src/seed/seedDatabase.ts"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.4.0"
+  },
+  "private": true
+}

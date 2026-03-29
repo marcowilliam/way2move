@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.dart_tool/
+.packages
+
+# Build outputs
+build/
+backend/functions/lib/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+emulator-data/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Flutter
+frontend/mobile/.flutter-plugins
+frontend/mobile/.flutter-plugins-dependencies
+frontend/mobile/.dart_tool/
+
+# Coverage
+coverage/
+lcov.info
+
+# Generated
+*.g.dart
+*.freezed.dart
+*.mocks.dart
