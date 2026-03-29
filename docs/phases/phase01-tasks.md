@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 131 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32)
+**Current test count: 208 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39)
 
 ---
 
@@ -216,39 +216,48 @@
 
 ---
 
-## Block 8 — Compensation Profile
+## Block 8 — Compensation Profile ✅
 
-- [ ] Domain: Compensation entity (id, userId, name, type, region, severity, status, source, relatedGoalIds, relatedExerciseIds, history, detectedAt, resolvedAt)
-- [ ] Domain: CompensationRepository interface (create, update, getActive, getByRegion, getHistory, markImproving, markResolved)
-- [ ] Domain: CreateCompensation, UpdateCompensation, GetActiveCompensations, MarkCompensationImproving, MarkCompensationResolved use cases
-- [ ] Data: CompensationModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreCompensationDatasource
-- [ ] Data: CompensationRepositoryImpl
-- [ ] Presentation: CompensationProfilePage — body map showing active compensations with severity indicators
-- [ ] Presentation: CompensationDetailPage — history, related goals, related exercises, severity timeline
-- [ ] Presentation: CompensationBodyMap widget — interactive body outline with tap regions
-- [ ] Logic: parse journal entries for compensation-related mentions (keyword-based Phase 1)
-- [ ] Tests: unit tests for compensation use cases and journal parsing logic
-- [ ] Tests: widget tests for compensation profile and body map
+- [x] Domain: Compensation entity (id, userId, name, type, region, severity, status, source, relatedGoalIds, relatedExerciseIds, history, detectedAt, resolvedAt)
+- [x] Domain: CompensationRepository interface (create, update, getActive, getByRegion, getHistory, markImproving, markResolved)
+- [x] Domain: CreateCompensation, UpdateCompensation, GetActiveCompensations, MarkCompensationImproving, MarkCompensationResolved use cases
+- [x] Data: CompensationModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreCompensationDatasource
+- [x] Data: CompensationRepositoryImpl
+- [x] Presentation: CompensationProfilePage — body map showing active compensations with severity indicators
+- [x] Presentation: CompensationDetailPage — history, related goals, related exercises, severity timeline
+- [x] Presentation: CompensationBodyMap widget — interactive body outline with tap regions
+- [x] Logic: parse journal entries for compensation-related mentions (keyword-based Phase 1)
+- [x] Tests: unit tests for compensation use cases and journal parsing logic
+- [x] Tests: widget tests for compensation profile and body map
 
 ---
 
-## Block 9 — Goal System
+## Block 9 — Goal System ✅
 
-- [ ] Domain: Goal entity (id, userId, name, description, category, targetMetric, targetValue, currentValue, unit, sport, compensationIds, exerciseIds, source, status, achievedAt)
-- [ ] Domain: GoalRepository interface (create, update, getAll, getByStatus, getByCompensation, markAchieved)
-- [ ] Domain: CreateGoal, UpdateGoal, GetGoals, GetGoalsByCompensation, MarkGoalAchieved use cases
-- [ ] Data: GoalModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreGoalDatasource
-- [ ] Data: GoalRepositoryImpl
-- [ ] Logic: generate suggested goals from compensation profile + user sport (rule-based mapping)
-- [ ] Seed data: create suggested_goals.json with goal templates linked to common compensations
-- [ ] Presentation: GoalSetupPage — shown after initial assessment, suggested + custom goals
-- [ ] Presentation: GoalListPage — goal cards with progress bars, linked exercises and compensations
-- [ ] Presentation: GoalDetailPage — target vs current, exercise path, compensation links, achievement history
-- [ ] Presentation: AddGoalDialog — custom goal creation with compensation and exercise linking
-- [ ] Tests: unit tests for goal use cases and suggestion logic
-- [ ] Tests: widget tests for goal pages
+- [x] Domain: Goal entity (id, userId, name, description, category, targetMetric, targetValue, currentValue, unit, sport, compensationIds, exerciseIds, source, status, achievedAt)
+- [x] Domain: GoalRepository interface (create, update, getAll, getByStatus, getByCompensation, markAchieved)
+- [x] Domain: CreateGoal, UpdateGoal, GetGoals, GetGoalsByCompensation, MarkGoalAchieved use cases
+- [x] Domain: GetSuggestedGoals use case (maps CompensationPattern → Goal templates)
+- [x] Data: GoalModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreGoalDatasource
+- [x] Data: GoalRepositoryImpl
+- [x] Logic: generate suggested goals from compensation patterns (rule-based mapping — 10 patterns)
+- [x] Presentation: GoalSetupPage — shown after initial assessment, suggested + custom goals
+- [x] Presentation: GoalListPage — goal cards with progress bars, staggered animation, empty state
+- [x] Presentation: GoalDetailPage — animated progress bar, target vs current, compensation/exercise chips, mark achieved
+- [x] Presentation: AddGoalDialog — custom goal creation with category chips, metric/value/unit fields
+- [x] Providers: goalRepositoryProvider, getGoalsProvider, activeGoalsProvider, goalNotifierProvider
+- [x] Routes: /goals (GoalListPage), /goals/setup (GoalSetupPage), /goals/:goalId (GoalDetailPage)
+- [x] Firestore security rules: goals collection — owner read/write only
+- [x] Tests: unit tests for CreateGoal, UpdateGoal, GetGoals, GetGoalsByCompensation, MarkGoalAchieved, GetSuggestedGoals (20 tests)
+- [x] Tests: widget tests for GoalListPage, GoalDetailPage, AddGoalDialog, GoalSetupPage
+
+### UI — What to test
+- **GoalListPage** (`/goals`, inside shell): goal cards with name, category chip, source badge (Suggested), linear progress bar with current/target values; FAB "+" opens AddGoalDialog; empty state shows "No goals yet. Complete an assessment to get suggestions."; pull to refresh
+- **GoalDetailPage** (`/goals/:goalId`, inside shell): goal name in AppBar, progress card with animated progress bar, current/target value, percentage complete, description section, linked compensation chips (red), linked exercise chips (green), "Mark as Achieved" filled green button; on achievement: snack bar with checkmark; achieved goals show achievement date card instead of button
+- **AddGoalDialog** (modal): name field, optional description, category choice chips (Mobility, Stability, Strength, Endurance, Posture, Sport, Recovery, General), metric/target value/unit fields in a row, Cancel/Save buttons; validation shows inline errors
+- **GoalSetupPage** (`/goals/setup`, full-screen outside shell): title "Set Up Your Goals", suggested goal cards (animated stagger entrance) each showing name + target; tap to select (animated checkmark), tap again to deselect; "Add X goals" filled button appears when goals are selected; "Add Custom Goal" outlined button always visible; "Done" button top-right navigates to home
 
 ---
 
