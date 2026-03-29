@@ -19,10 +19,12 @@
 People who train across multiple sports and movement disciplines while holding a normal job face:
 
 - **No single place to organize training** across different sports, movement patterns, and planes of motion
-- **Compensations and imbalances accumulate** without structured corrective work
-- **Nutrition tracking is tedious** — most people know they should track but the friction is too high
+- **Compensations and imbalances accumulate** without structured corrective work rooted in PRI/DNS methodology
+- **No body awareness system** — people don't connect how they feel (journal) with what they should train
+- **Nutrition tracking is tedious** — most people know they should track but the friction is too high, especially those managing IBS or gut sensitivity
 - **Sleep and recovery are ignored** despite being the #1 performance lever
 - **No progression system** — people repeat the same workouts without knowing if they're improving or regressing
+- **No understanding of gait** — people run and walk without understanding the mechanics, leading to compensations
 - **Time is scarce** — building a balanced weekly program across push/pull/squat/hinge/rotation/lateral/plyo/corrective is overwhelming
 
 Today, a "normal life athlete" uses 3-5 apps (notes, spreadsheets, MyFitnessPal, sleep tracker) and still can't answer: "Am I balanced? What should I train next? Am I recovering enough?"
@@ -31,32 +33,43 @@ Today, a "normal life athlete" uses 3-5 apps (notes, spreadsheets, MyFitnessPal,
 
 Way2Move is a movement-first training platform that rebuilds your body from the ground up. It provides:
 
-- A **camera-based movement assessment** that identifies compensations and imbalances
-- **Auto-generated corrective and training programs** based on DNS and PRI methodology
-- A **smart exercise library** tagged by sport, movement pattern, plane of motion, and type
+- A **voice-first daily logging** system — say what you did, the app creates sessions, meals, and journal entries automatically
+- A **journaling system** (wake-up, pre/post-session, bedtime) that builds body awareness and connects how you feel to what you should train
+- A **body awareness → compensation profile** that evolves with your journals, assessments, and breakthroughs
+- **Goal-driven training** — final goals (2min deep squat, 2min hang, 15sec handstand) linked to which compensations they fix and which exercises build toward them
+- A **smart exercise library** tagged by sport, movement pattern, plane of motion, type, and gait cycle phase — heavily rooted in PRI (Postural Restoration Institute) methodology
+- **Gait cycle education** — understand walking and running from the ground up, see how exercises map to each phase
+- **Recovery sessions** as first-class citizens — foam roller, lacrosse ball, standing meditation, breathwork
 - **Flexible weekly programming** with goals (e.g., "8-week posture reset")
-- **Photo-based nutrition tracking** — snap a photo, get macros
+- **Nutrition MVP** — log meals, track stomach feelings (IBS awareness), voice-based end-of-day summary
 - **Sleep logging** that adjusts training recommendations based on recovery
-- **Calendar integration** — sync with Google/Apple Calendar so training fits your life
+- **Progress photos and weight tracking** for visual progression
+- A **motivating dashboard** — what to do today, how the week has been, monthly overview, and goal reminders when you miss a day
+- A **camera-based movement assessment** (Phase 2) that identifies compensations and imbalances
 
 ### Vision
 
-> The movement operating system for normal life athletes
+> The movement operating system for normal life athletes — from the ground up
 
-- Assess where your body is today
-- Get a structured path to move better
-- Track everything (training, food, sleep) in one place
+- Understand your body through daily journaling and body awareness
+- See your compensations and what goals will fix them
+- Get a structured path to move better, rooted in PRI/DNS science
+- Track everything (training, recovery, food, sleep, how you feel) in one place — voice-first
 - Auto-progress when you're ready, auto-deload when you're not
+- Learn how your body moves through gait cycle education
 
 ---
 
 ## Product principles
 
+- **Voice-first** — if it takes more than 10 seconds to log, it should accept voice
+- **Body awareness over data** — journals and feelings drive training, not just numbers
+- **Corrective first** — fix the foundation before building performance (PRI/DNS methodology)
 - **Simple over comprehensive** — busy people need fast actions, not complex dashboards
-- **Corrective first** — fix the foundation before building performance
+- **Motivating, not guilty** — missed a day? Here's why your goals matter, not a streak-breaking guilt trip
 - **Science-backed** — DNS, PRI, and evidence-based movement methodology
-- **Auto-organize** — the app handles categorization so the user doesn't have to
-- **Recovery-aware** — sleep and recovery gate progression, not just effort
+- **Ground up** — teach people to walk before they run, literally (gait cycle education)
+- **Recovery-aware** — sleep, recovery sessions, and how you feel gate progression, not just effort
 
 ---
 
@@ -66,6 +79,7 @@ Way2Move is a movement-first training platform that rebuilds your body from the 
 - **Longevity athletes** — people focused on moving well for life, not competition
 - **Desk workers recovering** — sedentary people rebuilding movement capacity from the ground up
 - **Multi-sport athletes** — people who train across many disciplines and struggle to organize it all
+- **IBS/gut-sensitive people** — those who need to track how food affects their body, not just macros
 
 Common trait: they have a normal job, limited time, and no dedicated coach.
 
@@ -73,22 +87,53 @@ Common trait: they have a normal job, limited time, and no dedicated coach.
 
 ## Roadmap
 
-### Phase 1 — Training System (MVP) `mobile`
-Goal: Organize training, exercise library, flexible programming, manual assessment
+### Phase 1 — Training System + Body Awareness (MVP) `mobile`
+Goal: Organize training, build body awareness through journaling, track compensations, set movement goals, log nutrition simply, and see motivating progress — all voice-first.
 
-- Profile creation (athlete)
-- Exercise library (pre-loaded corrective/functional + user-added)
-- Exercise taxonomy (sport, pattern, plane, type, region, equipment tags)
-- Manual movement assessment (guided questions + video recording for reference)
+**Core Training:**
+- Profile creation (athlete) with onboarding assessment
+- Exercise library (pre-loaded corrective/functional + user-added) with PRI/DNS focus
+- Exercise taxonomy (sport, pattern, plane, type, region, equipment, gait phase tags)
+- Gait cycle educational content integrated into exercise library
 - Program creation with weekly templates and goals
 - Session builder (assign exercises with sets/reps/duration)
-- Calendar view with scheduled sessions
+- Recovery sessions as first-class (foam roller, lacrosse ball, standing meditation, breathwork)
 - Session completion tracking (planned vs actual)
 - Auto-progression logic (configurable: default 3x completed + good recovery)
-- Google Calendar + Apple Calendar sync (one-way push)
+
+**Body Awareness & Goals:**
+- Journaling system (wake-up, pre-session, post-session, bedtime) — voice-first
+- Body awareness → compensation profile (journals + assessments populate imbalances)
+- Goal system — final movement goals linked to compensations, exercises, and sport
+- Manual movement assessment (guided questions + video recording for reference)
+- Breakthroughs linked to compensations they resolve
+
+**Daily Logging:**
+- Voice daily summary → auto-create sessions and meals from transcription
+- Option for text input and manual entry per session/meal
+
+**Nutrition MVP:**
+- Meal logging (what you ate + stomach feeling for IBS body awareness)
+- Voice message end of day → auto-create meal entries
+- Per-meal manual entry option
+- Daily meal overview
+
+**Tracking:**
 - Sleep logging (manual: bed time, wake time, quality)
-- Basic progress dashboard (consistency streaks, exercises completed)
+- Progress photos (front/side/back timeline)
+- Weight logging
+- Calendar view with scheduled sessions
+- Google Calendar + Apple Calendar sync (one-way push)
+
+**Dashboard:**
+- Motivating home screen: today's tasks, weekly overview, monthly glance
+- Goal progress visualization
+- Missed day? Remind of goals, not guilt
+- Consistency tracking
+
+**Infrastructure:**
 - Firebase Auth (email, Google, Apple)
+- Device speech-to-text (free, offline) for voice features
 
 ### Phase 2 — AI Movement Assessment `mobile`
 Goal: Camera-based analysis that upgrades the manual assessment from Phase 1
@@ -99,21 +144,23 @@ Goal: Camera-based analysis that upgrades the manual assessment from Phase 1
 - Before/after comparison (initial assessment vs re-assessment)
 - AI-generated corrective program recommendations based on detected imbalances
 - Re-assessment scheduling and progress tracking
+- Auto-update compensation profile from AI analysis
 
-### Phase 3 — Nutrition `mobile`
-Goal: Easy nutrition tracking that doesn't feel like work
+### Phase 3 — Advanced Nutrition `mobile`
+Goal: Upgrade nutrition MVP with AI-powered tracking and meal planning
 
 - Photo-based food recognition (external AI API → calories/macros)
 - Text description input as fallback
-- Daily meal tracking (breakfast/lunch/dinner/snacks)
-- Macro targets based on user profile (weight, height, activity level, goal)
-- Daily/weekly nutrition dashboard
+- Full macro tracking (protein/carbs/fat targets based on user profile)
+- Daily/weekly nutrition dashboard with macro ring charts
 - Meal planning (schedule meals for the week)
+- Grocery list generation
+- Cloud speech-to-text API upgrade for better voice accuracy
 
 ### Phase 4 — Smart Recovery `mobile`
 Goal: Close the recovery loop with data
 
-- Recovery score calculation (sleep quality + subjective feel + training load)
+- Recovery score calculation (sleep quality + subjective feel + training load + stomach/gut data)
 - Training adjustment recommendations based on recovery score
 - Wearable integration (Apple Watch, Garmin) — read sleep data automatically
 - Weekly/monthly recovery trends
@@ -145,7 +192,7 @@ Goal: Ship to real users
 
 ### Objective
 
-Build a training system that helps normal life athletes organize their movement practice. An athlete can assess their movement, get a program, track sessions, and see progress — all in one place.
+Build a training and body awareness system that helps normal life athletes organize their movement practice, understand their compensations, set movement goals, and track everything — training, recovery, nutrition, sleep, and how they feel — with voice as the primary input method.
 
 ---
 
@@ -155,7 +202,7 @@ Phase 1: **Single role — Athlete** (self-guided, no coach)
 
 | Role | Can do |
 |---|---|
-| Athlete | Create profile, take assessment, build programs, track sessions, log sleep, view progress |
+| Athlete | Create profile, take assessment, journal (voice), build programs, track sessions, log meals, log sleep, track compensations, set goals, view progress |
 
 Future phases add Coach role.
 
@@ -163,24 +210,107 @@ Future phases add Coach role.
 
 ### Core concepts
 
+#### Voice-first logging
+
+The app's primary input method is voice. Users can:
+
+1. **End-of-day bedtime voice summary**: "Today I did 30 minutes of foam roller work on my IT bands, then 20 minutes of PRI breathing. For lunch I had chicken and rice, stomach felt fine. Dinner was pasta, felt a bit bloated after."
+   - System parses and auto-creates: recovery session, meals with stomach ratings
+2. **Per-moment voice**: record a journal entry or log a session as it happens
+3. **Text fallback**: everything that accepts voice also accepts typed text
+4. **Manual entry**: traditional form-based input for users who prefer it
+
+**Phase 1 implementation**: Device speech-to-text (free, offline). Phase 3 upgrades to cloud API for better accuracy.
+
+#### Journaling system
+
+Four journal types, all voice-first:
+
+| Type | When | Purpose | Auto-actions |
+|---|---|---|---|
+| **Wake-up** | Morning | How you feel, energy level, any pain, intentions | Updates body awareness, flags recovery issues |
+| **Pre-session** | Before training | Current state, what you'll focus on, any limitations | Links to upcoming session |
+| **Post-session** | After training | How it went, what you noticed, breakthroughs | Links to completed session, updates compensation profile |
+| **Bedtime** | End of day | Summarize the day: training, meals, feelings, reflections | Auto-creates sessions, meals, updates body awareness |
+
+The bedtime journal is the catch-all: if you didn't log anything during the day, describe it all here and the system creates the records. If you already logged everything, just say how you're feeling.
+
+#### Body awareness and compensation profile
+
+The user's **compensation profile** is built from multiple sources:
+
+1. **Initial assessment** — guided questions identify starting compensations
+2. **Journal entries** — "my left hip feels tight", "knee caved in during squats" → system updates compensation profile
+3. **Weekly pulse check-ins** — body map pain points feed into profile
+4. **Session notes** — RPE, pain, difficulty observations
+5. **Breakthroughs** — when a user achieves a goal or masters an exercise, related compensations are marked as improving/resolved
+
+Compensations are categorized:
+- **Type**: mobility deficit, stability deficit, motor control issue, strength imbalance, postural pattern
+- **Region**: specific body area (left hip, right shoulder, thoracic spine, etc.)
+- **Severity**: mild / moderate / severe
+- **Status**: active / improving / resolved
+- **Related goals**: which movement goals will address this compensation
+
+#### Goal system
+
+Users have **movement goals** — concrete, measurable targets:
+
+| Example Goal | Target | Related Compensations | Key Exercises |
+|---|---|---|---|
+| Deep squat (active) | 2 minutes | Ankle dorsiflexion deficit, hip mobility, thoracic extension | Goblet squat holds, ankle mobilizations, thoracic CARs |
+| Active hang | 2 minutes | Shoulder protraction, thoracic kyphosis, grip weakness | Dead hangs, scapular pull-ups, thoracic extensions |
+| Handstand hold | 15 seconds | Shoulder stability, core control, wrist mobility | Wall walks, hollow body holds, wrist CARs |
+| Pain-free running | 30 min continuous | Gait cycle deficiencies, hip stability, foot mechanics | Gait drills, single-leg RDL, calf raises |
+
+Goals can be:
+- **Suggested**: auto-generated from the user's compensation profile and sport
+- **Custom**: user-defined with their own targets
+- **Linked**: each goal maps to compensations it addresses, exercises that build toward it, and categories
+
+Progress toward goals is tracked and visualized on the dashboard.
+
 #### Exercise taxonomy
 
-Every exercise is tagged across multiple dimensions. The user sees simple filters; the app uses the full taxonomy to power smart suggestions and balance checking.
+Every exercise is tagged across multiple dimensions. The user sees simple filters; the app uses the full taxonomy to power smart suggestions, balance checking, and gait cycle education.
 
 | Dimension | Examples | User-facing? |
 |---|---|---|
 | **Sport/Purpose** | running, flying, strength, cardio, mobility, longevity, corrective | Yes — primary filter |
-| **Movement pattern** | push, pull, squat, hinge, carry, rotation, anti-rotation | Behind the scenes |
+| **Movement pattern** | push, pull, squat, hinge, carry, rotation, anti-rotation, gait | Behind the scenes |
 | **Plane of motion** | sagittal (flexion/extension), frontal (lateral), transverse (rotation) | Behind the scenes |
-| **Type** | corrective, strength, cardio, plyometric, mobility, DNS, PRI, breathing | Yes — secondary filter |
+| **Type** | corrective, strength, cardio, plyometric, mobility, DNS, PRI, breathing, recovery | Yes — secondary filter |
 | **Body region** | upper, lower, core, full-body | Yes — filter |
-| **Equipment** | bodyweight, band, dumbbell, barbell, kettlebell, foam roller, none | Yes — filter |
+| **Equipment** | bodyweight, band, dumbbell, barbell, kettlebell, foam roller, lacrosse ball, none | Yes — filter |
+| **Gait phase** | stance (loading response, midstance, terminal stance), swing (pre-swing, initial swing, mid-swing, terminal swing) | Educational — shown in gait view |
 
-The user filters by Sport, Type, Body region, and Equipment. The app uses Pattern and Plane internally to ensure balanced programming and smart suggestions.
+The user filters by Sport, Type, Body region, and Equipment. The app uses Pattern, Plane, and Gait Phase internally for balanced programming, gait education, and smart suggestions.
+
+#### Gait cycle education
+
+Way2Move teaches users to move from the ground up. The gait cycle is broken down into phases, and exercises are mapped to which phase they help with:
+
+**Gait Cycle Phases:**
+1. **Stance Phase** (~60% of cycle)
+   - Initial Contact (heel strike)
+   - Loading Response (weight acceptance)
+   - Midstance (single-leg support)
+   - Terminal Stance (heel off)
+   - Pre-Swing (toe off)
+2. **Swing Phase** (~40% of cycle)
+   - Initial Swing (acceleration)
+   - Mid-Swing (limb advancement)
+   - Terminal Swing (deceleration)
+
+**In the app:**
+- Exercises have `gaitPhaseTags` showing which phases they strengthen
+- Educational content explains each phase with visuals
+- Users with running/walking goals see which gait phases need work based on their compensations
+- "Gait view" in exercise library groups exercises by gait phase
 
 #### Exercise library
 
-**Pre-loaded exercises (~60-80 for MVP):**
+**Pre-loaded exercises (~80-100 for MVP):**
 
 Curated corrective and functional movements based on DNS, PRI, and physiotherapy best practices:
 
@@ -188,11 +318,13 @@ Curated corrective and functional movements based on DNS, PRI, and physiotherapy
 |---|---|
 | **Breathing** | Diaphragmatic breathing, 90/90 breathing, balloon breathing, crocodile breathing |
 | **DNS developmental** | Dead bug, bear position, rolling patterns, quadruped rocking, baby get-up, crawling variations |
-| **PRI patterns** | Left AIC pattern reset, right BC pattern reset, 90/90 hip shift, hamstring activation with balloon |
+| **PRI patterns** | Left AIC pattern reset, right BC pattern reset, 90/90 hip shift, hamstring activation with balloon, left sidelying respiratory adductor pullback |
 | **Mobility** | Hip CARs, shoulder CARs, thoracic rotation, ankle dorsiflexion, wrist CARs |
 | **Stability** | Pallof press, bird dog, single-leg stance progressions, Turkish get-up progressions |
 | **Strength fundamentals** | Squat, deadlift/hinge, push-up, row, overhead press, lunge — with regressions |
 | **Plyometric** | Box jump, broad jump, skipping, lateral bounds |
+| **Recovery** | Foam roller thoracic extension, lacrosse ball plantar release, standing meditation, body scan |
+| **Gait-specific** | A-skip, B-skip, marching, bounding, carioca, grapevine, heel walks, toe walks |
 | **Hypermobility management** | End-range isometrics, controlled articular rotations with load, joint packing drills |
 
 Each exercise has a **progression chain** (easier → harder variations):
@@ -221,13 +353,14 @@ Dead bug (basic) → Dead bug + band → Dead bug + weight → Dead bug + ball b
    - "Did your knees cave inward?" (yes/no/not sure)
    - "Could you maintain balance?" (stable/wobbled/fell)
 3. Videos are saved for future AI analysis (Phase 2) and before/after comparison
-4. Results: identified compensations + recommended starter program
+4. Results: identified compensations → populate compensation profile → suggest goals → recommend starter program
 
 **Weekly pulse (quick check-in, ~2 min):**
 - How do you feel overall? (1-5 scale)
 - Any pain or discomfort? (body map tap)
 - Sleep quality this week? (auto-filled from sleep logs)
 - Energy level? (1-5)
+- Stomach/gut feeling? (1-5, for IBS awareness)
 
 **Full re-assessment:** every 4-8 weeks (configurable), repeats the initial screening.
 
@@ -245,6 +378,17 @@ Program ("8-week posture reset")
 - **Sessions** are a specific day's workout — generated from the template but fully editable
 - **Exercise blocks** within a session: exercise + sets + reps (or duration) + rest + load + notes
 - **Standalone sessions** (no program) for quick workouts
+- **Recovery sessions** are a specific session type: foam roller, lacrosse ball, standing meditation, breathwork, stretching
+
+#### Recovery sessions
+
+Recovery sessions are first-class citizens, not afterthoughts. They:
+- Appear in the calendar like training sessions
+- Count toward daily activity and streak
+- Have their own session type: `recovery`
+- Include: foam rolling, lacrosse ball work, standing meditation, breathwork, gentle stretching, body scan
+- Can be logged via voice ("I did 20 minutes of foam roller on my quads and IT bands")
+- Contribute to the recovery picture (doing recovery work = better recovery score in Phase 4)
 
 #### Auto-progression
 
@@ -266,7 +410,23 @@ The app auto-progresses exercises when conditions are met. **Configurable by use
 - Sleep quality below threshold for 3+ days
 - Weekly pulse below threshold
 - User reports pain/discomfort on body map
+- Stomach/gut issues reported consistently (IBS awareness)
 - App suggests lighter corrective work or rest day
+
+#### Nutrition MVP
+
+Phase 1 nutrition is about **awareness, not optimization**. The focus is:
+
+1. **What did I eat?** — simple meal logging
+2. **How does my stomach feel?** — IBS body awareness (1-5 scale + descriptors: bloated, cramping, fine, great)
+3. **Patterns over time** — "every time I eat X, my stomach feels Y"
+
+**Input methods (priority order):**
+1. Voice (bedtime summary or per-meal): "For lunch I had a big salad with chicken, stomach felt fine"
+2. Text: quick typed description
+3. Manual form: structured entry with meal type, foods, stomach rating
+
+**Not in Phase 1:** macro tracking, calorie counting, photo recognition, meal planning. Those are Phase 3.
 
 #### Sleep logging (manual — Phase 1)
 
@@ -280,6 +440,13 @@ The app auto-progresses exercises when conditions are met. **Configurable by use
 Calculated: total hours, sleep efficiency estimate.
 Used by: auto-progression logic, deload triggers, weekly pulse auto-fill.
 
+#### Progress photos and weight
+
+- **Progress photos**: front, side, back — taken at regular intervals (weekly/monthly)
+- **Weight logging**: simple weight entry, trend chart over time
+- **Visual timeline**: swipe through photos chronologically, compare side-by-side
+- Photos stored in Firebase Storage, references in Firestore
+
 ---
 
 ### Data model summary
@@ -289,11 +456,17 @@ Full schema in `DATA_MODEL.md`. Summary:
 | Collection | Contents |
 |---|---|
 | `users` | Profile, goals, sports, equipment, activity level |
-| `exercises` | Exercise catalog — built-in + user-created, with full taxonomy tags |
+| `exercises` | Exercise catalog — built-in + user-created, with full taxonomy tags including gait phase |
 | `programs` | Training programs with weekly templates |
-| `sessions` | Individual workout sessions (planned/completed/skipped) |
+| `sessions` | Individual workout sessions — training + recovery types |
 | `assessments` | Movement assessments (initial, weekly pulse, full re-assessment) |
+| `journals` | Voice/text journal entries (wake-up, pre-session, post-session, bedtime) |
+| `compensations` | User's compensation profile — active imbalances, improvements, resolutions |
+| `goals` | Movement goals linked to compensations, exercises, and sport |
+| `meals` | Meal entries with stomach feeling (nutrition MVP) |
 | `sleepLogs` | Manual sleep entries |
+| `progressPhotos` | Progress photo entries with Firebase Storage URLs |
+| `weightLogs` | Weight tracking entries |
 | `progressionRules` | User's auto-progression configuration |
 
 ---
@@ -301,16 +474,25 @@ Full schema in `DATA_MODEL.md`. Summary:
 ### Phase 1 screens
 
 1. **Onboarding** — profile setup (name, age, goals, sports, equipment, injuries)
-2. **Initial Assessment** — guided movement screening with video recording + questions
-3. **Home/Dashboard** — today's session, current program progress, streak, weekly overview
-4. **Calendar** — month/week view, tap to see/create sessions, synced to Google/Apple Calendar
-5. **Exercise Library** — browse/search/filter, view demos, add custom exercises
-6. **Program Builder** — create program, set goal + duration, build weekly template, assign exercises
-7. **Session View** — today's workout, mark exercises complete, adjust reps/weight, log notes
-8. **Session Summary** — post-workout: planned vs actual, auto-progression suggestions
-9. **Progress** — consistency charts, assessment history, compensation improvements
-10. **Sleep Log** — quick entry for last night's sleep
-11. **Profile/Settings** — edit profile, manage equipment, injuries, progression rules
+2. **Initial Assessment** — guided movement screening with video recording + questions → compensation profile
+3. **Goal Setup** — suggested goals from assessment + custom goals, linked to compensations
+4. **Home/Dashboard** — today's tasks, current program progress, streak, weekly overview, monthly glance, goal reminders
+5. **Calendar** — month/week view, tap to see/create sessions (training + recovery), synced to Google/Apple Calendar
+6. **Exercise Library** — browse/search/filter, view demos, gait phase view, add custom exercises
+7. **Gait Cycle View** — educational breakdown of gait phases, exercises mapped to each phase
+8. **Program Builder** — create program, set goal + duration, build weekly template, assign exercises
+9. **Session View** — today's workout, mark exercises complete, adjust reps/weight, log notes
+10. **Recovery Session** — foam roller, lacrosse ball, meditation, breathwork — track duration and body areas worked
+11. **Session Summary** — post-workout: planned vs actual, auto-progression suggestions, prompt for post-session journal
+12. **Journal** — voice-first entry, four types (wake/pre/post/bed), history view
+13. **Compensation Profile** — body map showing active compensations, improvement history, linked goals
+14. **Goals** — movement goal cards with progress bars, linked exercises and compensations
+15. **Nutrition Log** — daily meals, stomach feeling tracker, voice or manual entry
+16. **Progress Photos** — capture front/side/back, timeline view, compare
+17. **Weight Log** — simple entry, trend chart
+18. **Sleep Log** — quick entry for last night's sleep
+19. **Progress** — consistency charts, assessment history, compensation improvements, goal progress
+20. **Profile/Settings** — edit profile, manage equipment, injuries, progression rules
 
 ---
 
@@ -342,47 +524,19 @@ Full schema in `DATA_MODEL.md`. Summary:
 | description | string | How to perform the exercise |
 | videoUrl | string? | Built-in demo URL or YouTube/Instagram link |
 | sportTags | string[] | running, flying, strength, cardio, etc. |
-| patternTags | string[] | push, pull, squat, hinge, carry, rotation |
+| patternTags | string[] | push, pull, squat, hinge, carry, rotation, gait |
 | planeTags | string[] | sagittal, frontal, transverse |
-| typeTags | string[] | corrective, strength, cardio, plyo, mobility, DNS, PRI, breathing |
+| typeTags | string[] | corrective, strength, cardio, plyo, mobility, DNS, PRI, breathing, recovery |
 | regionTags | string[] | upper, lower, core, full-body |
-| equipmentTags | string[] | bodyweight, band, dumbbell, barbell, etc. |
+| equipmentTags | string[] | bodyweight, band, dumbbell, barbell, foam_roller, lacrosse_ball, etc. |
+| gaitPhaseTags | string[] | loading_response, midstance, terminal_stance, pre_swing, initial_swing, mid_swing, terminal_swing |
 | difficulty | enum | beginner / intermediate / advanced |
 | isBuiltIn | bool | true = pre-loaded seed data, false = user-created |
 | createdBy | string? | userId for user-created exercises |
 | progressionIds | string[] | Harder variations (exercise refs) |
 | regressionIds | string[] | Easier variations (exercise refs) |
 | cues | string[] | Coaching cues ("Press low back into floor", "Exhale fully") |
-
----
-
-### Program entity
-
-| Field | Type | Description |
-|---|---|---|
-| id | string | |
-| userId | string | Owner |
-| name | string | e.g., "8-Week Posture Reset" |
-| goal | string | What this program achieves |
-| durationWeeks | int | How many weeks the template repeats |
-| weekTemplate | WeekTemplate | Days → focus + exercise list |
-| isActive | bool | Only one active program at a time |
-| basedOnAssessment | bool | Auto-generated from assessment results? |
-| createdAt | Timestamp | |
-
-### WeekTemplate
-
-| Field | Type | Description |
-|---|---|---|
-| days | Map<int, DayTemplate> | Day of week (1=Mon..7=Sun) → template |
-
-### DayTemplate
-
-| Field | Type | Description |
-|---|---|---|
-| focus | string | e.g., "Upper corrective + breathing" |
-| exerciseBlocks | ExerciseBlock[] | Ordered exercises for this day |
-| estimatedMinutes | int | Estimated session duration |
+| compensationsTargeted | string[] | Which compensations this exercise helps address |
 
 ---
 
@@ -395,11 +549,13 @@ Full schema in `DATA_MODEL.md`. Summary:
 | programId | string? | null for standalone sessions |
 | date | DateTime | Scheduled date |
 | status | enum | planned / completed / skipped |
-| focus | string | e.g., "Upper body push + corrective" |
+| type | enum | training / recovery / mobility / breathing |
+| focus | string | e.g., "Upper body push + corrective" or "Foam roller — lower body" |
 | exerciseBlocks | ExerciseBlock[] | Ordered exercise list |
 | plannedDuration | int? | Estimated minutes |
 | actualDuration | int? | Logged after completion |
 | notes | string? | |
+| source | enum | manual / program / voice | How this session was created |
 | createdAt | Timestamp | |
 
 ### ExerciseBlock
@@ -419,6 +575,86 @@ Full schema in `DATA_MODEL.md`. Summary:
 
 ---
 
+### Journal entity
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| date | DateTime | |
+| type | enum | wake_up / pre_session / post_session / bedtime |
+| content | string | Transcribed text from voice or typed text |
+| audioUrl | string? | Firebase Storage URL for voice recording (optional, kept for reference) |
+| mood | int? | 1-5 scale (optional) |
+| energyLevel | int? | 1-5 scale (optional) |
+| painPoints | string[] | Body regions mentioned (parsed from content) |
+| linkedSessionId | string? | For pre/post session journals |
+| autoCreatedEntities | Map? | References to sessions/meals auto-created from this journal |
+| createdAt | Timestamp | |
+
+---
+
+### Compensation entity
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| name | string | e.g., "Anterior pelvic tilt", "Left hip mobility deficit" |
+| type | enum | mobility_deficit / stability_deficit / motor_control / strength_imbalance / postural_pattern |
+| region | string | Body region (e.g., "left_hip", "thoracic_spine") |
+| severity | enum | mild / moderate / severe |
+| status | enum | active / improving / resolved |
+| source | enum | assessment / journal / manual |
+| relatedGoalIds | string[] | Goals that address this compensation |
+| relatedExerciseIds | string[] | Exercises that help fix this |
+| history | CompensationUpdate[] | Severity changes over time |
+| detectedAt | DateTime | When first identified |
+| resolvedAt | DateTime? | When marked as resolved |
+| createdAt | Timestamp | |
+
+---
+
+### Goal entity
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| name | string | e.g., "Deep Squat — 2 minutes active" |
+| description | string | What this goal means and why it matters |
+| category | enum | mobility / strength / balance / endurance / sport_specific |
+| targetMetric | string | e.g., "duration", "hold_time", "distance" |
+| targetValue | double | e.g., 120 (seconds), 15 (seconds) |
+| currentValue | double? | Current best |
+| unit | string | seconds, reps, meters, etc. |
+| sport | string? | Related sport (if sport-specific) |
+| compensationIds | string[] | Which compensations this goal addresses |
+| exerciseIds | string[] | Exercises that build toward this goal |
+| source | enum | suggested / custom |
+| status | enum | not_started / in_progress / achieved |
+| achievedAt | DateTime? | |
+| createdAt | Timestamp | |
+
+---
+
+### Meal entity (Nutrition MVP)
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| date | DateTime | |
+| mealType | enum | breakfast / lunch / dinner / snack |
+| description | string | What was eaten (free text) |
+| stomachFeeling | int | 1-5 scale (1=terrible, 5=great) |
+| stomachNotes | string? | Descriptors: bloated, cramping, fine, energized, etc. |
+| source | enum | voice / text / manual |
+| linkedJournalId | string? | If auto-created from a bedtime journal |
+| createdAt | Timestamp | |
+
+---
+
 ### Assessment entity
 
 | Field | Type | Description |
@@ -431,6 +667,7 @@ Full schema in `DATA_MODEL.md`. Summary:
 | videoUrls | string[] | Recorded movement videos (Firebase Storage) |
 | compensationsFound | string[] | Identified issues (e.g., "anterior_pelvic_tilt") |
 | bodyMapPainPoints | string[] | Body regions with reported discomfort |
+| stomachFeeling | int? | 1-5 (for weekly pulse — IBS awareness) |
 | overallScore | int? | 1-100 movement quality score |
 | recommendedProgramId | string? | Auto-generated program reference |
 | createdAt | Timestamp | |
@@ -453,11 +690,39 @@ Full schema in `DATA_MODEL.md`. Summary:
 
 ---
 
+### ProgressPhoto entity
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| date | DateTime | |
+| photoUrl | string | Firebase Storage URL |
+| angle | enum | front / side_left / side_right / back |
+| notes | string? | |
+| createdAt | Timestamp | |
+
+---
+
+### WeightLog entity
+
+| Field | Type | Description |
+|---|---|---|
+| id | string | Auto-generated |
+| userId | string | |
+| date | DateTime | |
+| weight | double | kg |
+| notes | string? | |
+| createdAt | Timestamp | |
+
+---
+
 ### Calendar integration
 
-- Sessions and programs push to Google Calendar / Apple Calendar (one-way sync)
+- Sessions (training + recovery) and programs push to Google Calendar / Apple Calendar (one-way sync)
 - Uses respective calendar APIs
 - Each session becomes a calendar event with title, time, and exercise summary
+- Recovery sessions show as distinct event type
 - Changes in Way2Move update the calendar event
 - Calendar deletions do NOT delete sessions in the app
 
@@ -466,24 +731,33 @@ Full schema in `DATA_MODEL.md`. Summary:
 ### MVP scope
 
 #### Included in Phase 1
-- Exercise library with taxonomy (pre-loaded + user-added)
+- Exercise library with taxonomy including gait phase tags (pre-loaded + user-added)
+- Gait cycle educational content
 - Manual assessment (guided questions + video recording)
+- Body awareness → compensation profile
+- Goal system (suggested + custom, linked to compensations)
 - Program creation with weekly templates and goals
-- Session tracking (planned vs completed)
+- Session tracking — training + recovery types (planned vs completed)
+- Recovery sessions as first-class citizens
+- Journaling system (4 types, voice-first with device speech-to-text)
+- Voice daily summary → auto-create sessions and meals
+- Nutrition MVP (meals + stomach feeling + voice)
 - Auto-progression logic (configurable)
 - Calendar view + Google/Apple Calendar sync
 - Manual sleep logging
+- Progress photos + weight tracking
 - Recovery-aware progression (sleep gates auto-progression)
-- Basic progress dashboard
+- Motivating dashboard with goal reminders
 - Firebase Auth (email, Google, Apple)
 
 #### Excluded from Phase 1
 - AI pose estimation → Phase 2
-- Nutrition tracking → Phase 3
+- Full macro/calorie tracking → Phase 3
+- Photo food recognition → Phase 3
+- Meal planning → Phase 3
+- Cloud speech-to-text API → Phase 3
 - Wearable integration → Phase 4
 - Coach role → Phase 5
-- Photo food recognition → Phase 3
-- Community features → Phase 5
 
 ---
 
@@ -500,4 +774,5 @@ Full details in `CLAUDE.md` and `.claude/rules/`.
 | Architecture | Clean Architecture (Domain ← Data, Presentation → Domain) |
 | Navigation | GoRouter |
 | Error handling | Either (fpdart) |
+| Voice input | Device speech-to-text (speech_to_text package) — Phase 1 |
 | Testing | flutter_test + mocktail + Firebase emulator |
