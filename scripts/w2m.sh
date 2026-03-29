@@ -16,7 +16,8 @@ W2M_EMU_DATA="$HOME/way2move-emulator-data"
 W2M_LOG_DIR="/tmp/w2m"
 
 # Snapshot full PATH at source time so background jobs can inherit it.
-_W2M_PATH="$PATH"
+# Ensure standard Unix tool paths are always present regardless of shell context.
+_W2M_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 
 _w2m_resolve_path() {
   local branch="$1"
