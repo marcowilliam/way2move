@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:way2move/features/profile/data/models/user_profile_model.dart';
 import 'package:way2move/features/profile/domain/entities/user_profile.dart';

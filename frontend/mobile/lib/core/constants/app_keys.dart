@@ -41,9 +41,19 @@ abstract class AppKeys {
   static const assessmentFlow = Key('assessment_flow');
   static const weeklyPulseDialog = Key('weekly_pulse_dialog');
 
-  // Profile
+  // Profile & Onboarding
   static const profilePage = Key('profile_page');
+  static const profileEditPage = Key('profile_edit_page');
   static const signOutButton = Key('sign_out_button');
+  static const onboardingFlow = Key('onboarding_flow');
+  static const onboardingNextButton = Key('onboarding_next_button');
+  static const onboardingBackButton = Key('onboarding_back_button');
+  static const onboardingSkipButton = Key('onboarding_skip_button');
+  static const onboardingDoneButton = Key('onboarding_done_button');
+  static const onboardingNameField = Key('onboarding_name_field');
+  static const onboardingAgeField = Key('onboarding_age_field');
+  static const onboardingHeightField = Key('onboarding_height_field');
+  static const onboardingWeightField = Key('onboarding_weight_field');
 
   // Program
   static const programBuilderPage = Key('program_builder_page');
