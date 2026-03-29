@@ -191,6 +191,7 @@ Whenever a business, technical, or workflow decision is made — or changed — 
 | Dev workflow, branching, CI, hooks | `docs/DEV_WORKFLOW.md` |
 | Phase task status | `docs/phases/phase0X-tasks.md` (mark `[x]` when done) |
 | High-level roadmap changes | `docs/DEVELOPMENT_PLAN_HIGH_LEVEL.md` |
+| UI changes (new screens, interactions, flows) | `docs/phases/phase0X-tasks.md` under the block's `### UI — What to test` subsection — **never create a separate file** |
 
 Never leave a decision only in chat history — if it matters, it must be in a doc.
 
