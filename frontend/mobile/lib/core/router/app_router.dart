@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/assessments/presentation/pages/assessment_history_page.dart';
+import '../../features/assessments/presentation/pages/initial_assessment_flow.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
 import 'routes.dart';
@@ -32,8 +34,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: Routes.home,
     redirect: (context, state) {
       final isLoggedIn = authState.valueOrNull != null;
-      final isOnAuthRoute =
-          state.matchedLocation.startsWith(Routes.auth);
+      final isOnAuthRoute = state.matchedLocation.startsWith(Routes.auth);
       final isLoading = authState.isLoading;
 
       if (isLoading) return null;
@@ -111,6 +112,24 @@ final routerProvider = Provider<GoRouter>((ref) {
               key: state.pageKey,
               child: const _PlaceholderPage(title: 'Profile'),
               transitionsBuilder: _fadeTransition,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.assessment,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const InitialAssessmentFlow(),
+          transitionsBuilder: _slideTransition,
+        ),
+        routes: [
+          GoRoute(
+            path: 'history',
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const AssessmentHistoryPage(),
+              transitionsBuilder: _slideTransition,
             ),
           ),
         ],
