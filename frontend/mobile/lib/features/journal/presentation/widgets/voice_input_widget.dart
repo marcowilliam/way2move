@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../../data/services/audio_recording_service.dart';
+
 /// Animated mic button + live transcription widget.
-/// Calls [onTranscription] whenever the transcribed text changes.
-/// Handles microphone permission gracefully.
+///
+/// Simultaneously runs:
+/// - speech_to_text for on-device transcription (calls [onTranscription])
+/// - AudioRecordingService to record audio to a local file
+///
+/// When listening stops, [onAudioRecorded] is called with the local file path
+/// so the caller can upload to Firebase Storage.
 class VoiceInputWidget extends StatefulWidget {
+  /// Called whenever transcribed text changes.
   final void Function(String text) onTranscription;
 
-  const VoiceInputWidget({super.key, required this.onTranscription});
+  /// Called once when recording stops with the local audio file path.
+  /// May be null if recording was not started or failed.
+  final void Function(String? path)? onAudioRecorded;
+
+  const VoiceInputWidget({
+    super.key,
+    required this.onTranscription,
+    this.onAudioRecorded,
+  });
 
   @override
   State<VoiceInputWidget> createState() => _VoiceInputWidgetState();
@@ -16,6 +32,7 @@ class VoiceInputWidget extends StatefulWidget {
 class _VoiceInputWidgetState extends State<VoiceInputWidget>
     with SingleTickerProviderStateMixin {
   final SpeechToText _speech = SpeechToText();
+  final AudioRecordingService _audioRecorder = AudioRecordingService();
 
   bool _isListening = false;
   bool _isAvailable = false;
@@ -57,17 +74,30 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
     }
 
     if (_isListening) {
-      await _speech.stop();
-      _pulseController.stop();
-      if (mounted) setState(() => _isListening = false);
+      await _stopListening();
       return;
     }
+
+    await _startListening();
+  }
+
+  Future<void> _startListening() async {
+    final hasMicPermission = await _audioRecorder.hasPermission();
 
     setState(() {
       _isListening = true;
       _permissionDenied = false;
     });
     _pulseController.repeat(reverse: true);
+
+    // Start audio recording alongside STT.
+    if (hasMicPermission) {
+      try {
+        await _audioRecorder.startRecording();
+      } catch (_) {
+        // Non-fatal — transcription still works without the audio file.
+      }
+    }
 
     await _speech.listen(
       onResult: (result) {
@@ -83,10 +113,27 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
     );
   }
 
+  Future<void> _stopListening() async {
+    await _speech.stop();
+    _pulseController.stop();
+
+    String? audioPath;
+    try {
+      audioPath = await _audioRecorder.stopRecording();
+    } catch (_) {
+      // Non-fatal — we still have the transcription.
+    }
+
+    if (mounted) setState(() => _isListening = false);
+
+    widget.onAudioRecorded?.call(audioPath);
+  }
+
   @override
   void dispose() {
     _pulseController.dispose();
     _speech.cancel();
+    _audioRecorder.dispose();
     super.dispose();
   }
 
