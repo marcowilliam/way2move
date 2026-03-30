@@ -193,19 +193,64 @@ Block 2 is a domain-layer feature with no new screens. The compensation detectio
 
 ---
 
-## Block 3 — AI-Generated Program Recommendations
+## Block 3 — AI-Generated Program Recommendations ✅
 
 > **Approach: Rule-based engine (no external AI API).** Uses the existing `GetSuggestedGoals` mapping (`CompensationPattern → exerciseId`) and severity prioritization to generate programs deterministically. This keeps Block 3 consistent with the on-device architecture of Blocks 0-2 — no Cloud Function, no API keys, works offline. An LLM-enhanced version can be layered on later as an optional upgrade.
 
-- [ ] Domain: `ProgramRecommendationEngine` service — takes `CompensationReport` + `UserProfile` → `Program`
-- [ ] Prioritize compensations by severity (significant first, then moderate, then mild) using `CompensationReport.sortedByPriority`
-- [ ] Auto-select exercises from library using Phase 1 `CompensationPattern → exerciseId` mapping (already exists in `GetSuggestedGoals`)
-- [ ] Progressive template: weeks 1–2 corrective focus (high frequency, low load), weeks 3–4 integration (add strength), weeks 5+ maintenance
-- [ ] Filter exercises by user's available equipment (from `UserProfile.availableEquipment`)
-- [ ] Respect `UserProfile.trainingDaysPerWeek` when generating the `WeekTemplate`
-- [ ] Presentation: `AIRecommendationReviewPage` — show detected compensations + proposed program, allow per-exercise edits before accepting
-- [ ] On accept: call existing `CreateProgram` use case with generated template, link to assessment via `basedOnAssessment`
-- [ ] Tests: unit tests for priority ranking, exercise selection, equipment filtering, days-per-week distribution
+- [x] Domain: `ProgramRecommendationEngine` service — takes `CompensationReport` + `UserProfile` → `Program`
+- [x] Prioritize compensations by severity (significant first, then moderate, then mild) using `CompensationReport.sortedByPriority`
+- [x] Auto-select exercises from library using Phase 1 `CompensationPattern → exerciseId` mapping (already exists in `GetSuggestedGoals`)
+- [x] Progressive template: weeks 1–2 corrective focus (high frequency, low load), weeks 3–4 integration (add strength), weeks 5+ maintenance
+- [x] Filter exercises by user's available equipment (from `UserProfile.availableEquipment`)
+- [x] Respect `UserProfile.trainingDaysPerWeek` when generating the `WeekTemplate`
+- [x] Presentation: `AIRecommendationReviewPage` — show detected compensations + proposed program, allow per-exercise edits before accepting
+- [x] On accept: call existing `CreateProgram` use case with generated template, link to assessment via `basedOnAssessment`
+- [x] Tests: unit tests for priority ranking, exercise selection, equipment filtering, days-per-week distribution
+
+### What was implemented
+
+- `Program` entity and `ProgramModel` — added `basedOnAssessmentId` (nullable String) to link program to source assessment
+- `ProgramRecommendationEngine` — pure Dart static service at `features/programs/domain/services/program_recommendation_engine.dart`:
+  - Sorts compensations via `report.sortedByPriority` (significant → moderate → mild)
+  - Collects exercise IDs in priority order using same pattern→exercise map as `GenerateProgramFromAssessment`
+  - Equipment filter: bodyweight exercises always pass; equipment-dependent exercises (`ex_ys_ts`, `ex_face_pull`, `ex_thoracic_extension_bench`) require matching `UserProfile.availableEquipment`
+  - Distributes exercises round-robin across training days (2 days: Mon/Thu; 3 days: Mon/Wed/Fri; 4: Mon/Tue/Thu/Fri; 5: Mon–Fri)
+  - Sets `sets=3` for significant/moderate patterns, `sets=2` for mild
+  - `Program.goal` encodes the 3-phase progression: "Weeks 1–2: corrective focus. Weeks 3–4: integration & strength. Weeks 5–8: maintenance."
+  - Falls back to 6 bodyweight exercises when no compensations detected
+- `AIRecommendationReviewPage` — at `features/programs/presentation/pages/ai_recommendation_review_page.dart`:
+  - Compensation cards colour-coded by severity (red/significant, orange/moderate, green/mild)
+  - Weekly schedule with 7-day cards; training days show exercise list
+  - Tap exercise `sets×reps` badge → `AlertDialog` to edit sets and reps inline
+  - Swipe close button removes exercise from day
+  - Accept → `CreateProgramNotifier.submit()` → saves to Firestore with `isActive: true`, then navigates home
+- Route `Routes.aiRecommendation = '/assessment/recommendation'` wired in `app_router.dart`
+- 17 passing unit tests
+
+### UI — What to test (Block 3)
+
+Navigate via:
+
+```dart
+context.push(
+  Routes.aiRecommendation,
+  extra: {'report': compensationReport, 'profile': userProfile},
+);
+```
+
+**What you should see:**
+
+1. **AppBar** — "Your AI Program", slide-in transition
+2. **Movement Analysis section** — compensation cards sorted by severity; each shows pattern name, severity badge, and % of frames
+3. **Weekly Schedule section** — 7 day cards; training days (coloured header) show exercises; rest days show "Rest"
+4. **Exercise row** — tap the `3×12` badge to edit sets/reps via dialog; tap × to remove the exercise
+5. **Accept & Create Program button** — fills full width at bottom; shows spinner while saving; on success navigates home with snackbar
+
+**Edge cases:**
+
+- Empty report → "No compensations detected" card shown; fallback 6-exercise program generated
+- No equipment → equipment-requiring exercises (Ys & Ts, Face Pull, Thoracic Extension Bench) excluded
+- trainingDaysPerWeek=2 → only Mon and Thu are training days
 
 ---
 
@@ -238,7 +283,7 @@ Block 2 is a domain-layer feature with no new screens. The compensation detectio
 
 ### Architecture additions for Phase 2
 
-```
+```text
 features/
 └── assessment/
     ├── domain/
