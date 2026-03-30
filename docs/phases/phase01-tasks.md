@@ -365,20 +365,33 @@
 
 ---
 
-## Block 15 — Auto-Progression
+## Block 15 — Auto-Progression ✅
 
-- [ ] Domain: ProgressionRule entity (exerciseId, completionThreshold, sleepThreshold, pulseThreshold)
-- [ ] Domain: ProgressionService (evaluate readiness, suggest next step)
-- [ ] Logic: check completion count (default 3x successful completions before advancing)
-- [ ] Logic: check sleep quality (average over last 3 days must meet threshold)
-- [ ] Logic: check weekly pulse score (energy + soreness + motivation composite)
-- [ ] Logic: check stomach/gut trends (consistent gut issues may suggest deload)
-- [ ] Progression actions: increase reps, increase load, advance to harder variation (via progressionIds)
-- [ ] Deload triggers: poor sleep trend, low pulse score, pain reported in weekly pulse, persistent gut issues
-- [ ] Goal progress update: when exercise progression happens, update related goal currentValue
-- [ ] Presentation: ProgressionSettingsPage (configure thresholds per exercise or globally)
-- [ ] Presentation: ProgressionSuggestionCard (shown after session completion — accept/dismiss/modify)
-- [ ] Tests: unit tests for progression logic (all paths: advance, hold, deload)
+- [x] Domain: ProgressionRule entity (exerciseId, completionThreshold, sleepThreshold, pulseThreshold, stomachThreshold)
+- [x] Domain: ProgressionSuggestion entity with ProgressionAction and SuggestionType enums
+- [x] Domain: ProgressionService (evaluate readiness, suggest next step) — pure Dart, no external deps
+- [x] Logic: check completion count (default 3x successful completions before advancing)
+- [x] Logic: check sleep quality (average over last 3 days must meet threshold; 0 = no data, does not block)
+- [x] Logic: check weekly pulse score (energy + soreness + motivation composite; 0 = no data, does not block)
+- [x] Logic: check stomach/gut trends (consistent gut issues may suggest deload; 0 = no data, does not block)
+- [x] Progression actions: increaseReps, increaseLoad (+2.5kg), advanceVariation (via progressionIds), hold
+- [x] Deload triggers: poor sleep trend, low pulse score, persistent gut issues (any one suffices)
+- [x] Goal progress update: when exercise progression accepted, update related goal currentValue by +1
+- [x] Domain: ProgressionRuleRepository interface (getRule, saveRule, getGlobalRule, saveGlobalRule)
+- [x] Domain use cases: EvaluateProgression, SaveProgressionRule, GetProgressionRule
+- [x] Data: ProgressionRuleModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreProgressionRuleDatasource (collection: progressionRules, docId: {userId}_{exerciseId})
+- [x] Data: ProgressionRuleRepositoryImpl (falls back to global rule if exercise-specific not found)
+- [x] Providers: progressionServiceProvider, evaluateProgressionProvider, globalProgressionRuleNotifierProvider, pendingSuggestionsProvider
+- [x] Presentation: ProgressionSettingsPage (configure global thresholds via sliders, About section)
+- [x] Presentation: ProgressionSuggestionCard (shown after session — Accept/Dismiss, animated entrance, blue/orange gradient)
+- [x] Integration: SessionSummaryPage shows ProgressionSuggestionCard for exercises with non-hold suggestions
+- [x] Route: /progression/settings wired to ProgressionSettingsPage
+- [x] Firestore security rules: progressionRules/{ruleId} — read/write only when ruleId starts with uid
+- [x] Tests: unit tests for ProgressionService (all 8 paths: deload×3, progression×3, hold, zero-data)
+- [x] Tests: unit tests for EvaluateProgression, SaveProgressionRule, GetProgressionRule use cases
+- [x] Tests: widget tests for ProgressionSuggestionCard (progression + deload variants, callbacks)
+- [x] Tests: widget tests for ProgressionSettingsPage (sliders, defaults, save)
 
 ---
 

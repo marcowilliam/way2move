@@ -33,6 +33,7 @@ import '../../features/journal/domain/services/entity_extraction_service.dart';
 import '../../features/journal/presentation/pages/journal_entry_page.dart';
 import '../../features/journal/presentation/pages/journal_history_page.dart';
 import '../../features/journal/presentation/pages/review_auto_created_page.dart';
+import '../../features/progression/presentation/pages/progression_settings_page.dart';
 import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
 import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
@@ -385,6 +386,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             transitionsBuilder: _slideTransition,
           );
         },
+      ),
+      GoRoute(
+        path: Routes.progressionSettings,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ProgressionSettingsPage(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
     ],
   );

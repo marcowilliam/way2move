@@ -43,4 +43,7 @@ abstract class Routes {
   static const journalEntry = '/journal/entry';
   static const journalHistory = '/journal/history';
   static const reviewAutoCreated = '/journal/review';
+
+  // Progression
+  static const progressionSettings = '/progression/settings';
 }
