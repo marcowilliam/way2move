@@ -8,8 +8,7 @@ class FirestoreProfileDatasource {
   Future<DocumentSnapshot> getProfile(String userId) =>
       _firestore.collection('users').doc(userId).get();
 
-  Future<void> updateProfile(
-      String userId, Map<String, dynamic> data) =>
+  Future<void> updateProfile(String userId, Map<String, dynamic> data) =>
       _firestore.collection('users').doc(userId).update(data);
 
   Stream<DocumentSnapshot> watchProfile(String userId) =>

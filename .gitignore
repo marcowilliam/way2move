@@ -20,8 +20,12 @@ Thumbs.db
 # Firebase
 firebase-debug.log
 firebase-debug.*.log
+firestore-debug.log
 ui-debug.log
 emulator-data/
+
+# Emulator export data (accidentally created with literal ~ path)
+~/
 
 # Environment
 .env

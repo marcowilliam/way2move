@@ -184,8 +184,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
           children: [
             // Progress bar
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Row(
                 children: [
                   if (_currentStep > 0)
@@ -250,12 +249,9 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                     key: _currentStep == _totalSteps - 1
                         ? AppKeys.onboardingDoneButton
                         : AppKeys.onboardingNextButton,
-                    onPressed:
-                        _canAdvance
-                            ? (_currentStep == _totalSteps - 1
-                                ? _complete
-                                : _next)
-                            : null,
+                    onPressed: _canAdvance
+                        ? (_currentStep == _totalSteps - 1 ? _complete : _next)
+                        : null,
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
@@ -425,18 +421,32 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
   }
 
   static const _goalOptions = [
-    (Icons.fitness_center, 'General Fitness', 'Move better, feel better',
-        TrainingGoal.generalFitness),
-    (Icons.bolt, 'Strength', 'Build strength and power',
-        TrainingGoal.strength),
-    (Icons.self_improvement, 'Mobility', 'Improve flexibility and range',
-        TrainingGoal.mobility),
-    (Icons.favorite_border, 'Longevity', 'Move well for life',
-        TrainingGoal.longevity),
-    (Icons.sports, 'Sport-Specific', 'Improve performance in a sport',
-        TrainingGoal.sportSpecific),
-    (Icons.healing, 'Rehab', 'Recover from injury',
-        TrainingGoal.rehab),
+    (
+      Icons.fitness_center,
+      'General Fitness',
+      'Move better, feel better',
+      TrainingGoal.generalFitness
+    ),
+    (Icons.bolt, 'Strength', 'Build strength and power', TrainingGoal.strength),
+    (
+      Icons.self_improvement,
+      'Mobility',
+      'Improve flexibility and range',
+      TrainingGoal.mobility
+    ),
+    (
+      Icons.favorite_border,
+      'Longevity',
+      'Move well for life',
+      TrainingGoal.longevity
+    ),
+    (
+      Icons.sports,
+      'Sport-Specific',
+      'Improve performance in a sport',
+      TrainingGoal.sportSpecific
+    ),
+    (Icons.healing, 'Rehab', 'Recover from injury', TrainingGoal.rehab),
   ];
 
   Widget _buildActivityLevelStep() {
@@ -458,8 +468,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                 label: entry.$2,
                 subtitle: entry.$3,
                 isSelected: _selectedActivityLevel == entry.$4,
-                onTap: () =>
-                    setState(() => _selectedActivityLevel = entry.$4),
+                onTap: () => setState(() => _selectedActivityLevel = entry.$4),
               )),
           const SizedBox(height: 24),
           Text(
@@ -484,8 +493,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                     color: isSelected ? AppColors.primary : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected ? AppColors.primary : AppColors.border,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -508,16 +516,36 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
   }
 
   static const _activityOptions = [
-    (Icons.weekend, 'Sedentary', 'Little to no exercise',
-        ActivityLevel.sedentary),
-    (Icons.directions_walk, 'Lightly Active', 'Light exercise 1-2 days/week',
-        ActivityLevel.lightlyActive),
-    (Icons.directions_run, 'Moderately Active', 'Moderate exercise 3-5 days/week',
-        ActivityLevel.moderatelyActive),
-    (Icons.sports_martial_arts, 'Very Active', 'Hard exercise 6-7 days/week',
-        ActivityLevel.veryActive),
-    (Icons.local_fire_department, 'Extremely Active', 'Intense daily training',
-        ActivityLevel.extremelyActive),
+    (
+      Icons.weekend,
+      'Sedentary',
+      'Little to no exercise',
+      ActivityLevel.sedentary
+    ),
+    (
+      Icons.directions_walk,
+      'Lightly Active',
+      'Light exercise 1-2 days/week',
+      ActivityLevel.lightlyActive
+    ),
+    (
+      Icons.directions_run,
+      'Moderately Active',
+      'Moderate exercise 3-5 days/week',
+      ActivityLevel.moderatelyActive
+    ),
+    (
+      Icons.sports_martial_arts,
+      'Very Active',
+      'Hard exercise 6-7 days/week',
+      ActivityLevel.veryActive
+    ),
+    (
+      Icons.local_fire_department,
+      'Extremely Active',
+      'Intense daily training',
+      ActivityLevel.extremelyActive
+    ),
   ];
 
   Widget _buildSportsStep() {

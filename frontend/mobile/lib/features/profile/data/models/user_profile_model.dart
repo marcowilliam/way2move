@@ -102,8 +102,7 @@ class UserProfileModel {
       trainingGoal: data['trainingGoal'] as String?,
       sportsTags: List<String>.from(data['sportsTags'] ?? []),
       trainingDaysPerWeek: data['trainingDaysPerWeek'] as int?,
-      availableEquipment:
-          List<String>.from(data['availableEquipment'] ?? []),
+      availableEquipment: List<String>.from(data['availableEquipment'] ?? []),
       injuries: (data['injuries'] as List<dynamic>?)
               ?.map((e) => InjuryModel.fromMap(e as Map<String, dynamic>))
               .toList() ??
@@ -153,8 +152,7 @@ class UserProfileModel {
         createdAt: createdAt,
       );
 
-  factory UserProfileModel.fromEntity(UserProfile profile) =>
-      UserProfileModel(
+  factory UserProfileModel.fromEntity(UserProfile profile) => UserProfileModel(
         id: profile.id,
         name: profile.name,
         email: profile.email,
