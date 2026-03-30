@@ -21,8 +21,7 @@ class FirestoreVideoAnalysisDatasource {
     return model;
   }
 
-  Future<List<VideoAnalysisModel>> getByAssessment(
-      String assessmentId) async {
+  Future<List<VideoAnalysisModel>> getByAssessment(String assessmentId) async {
     final snap = await _db
         .collection('videoAnalyses')
         .where('assessmentId', isEqualTo: assessmentId)

@@ -93,13 +93,14 @@ void main() {
       when(() => mockRepo.save(any()))
           .thenAnswer((_) async => Right(_analysis()));
       when(() => mockRepo.uploadVideo(
-            localPath: any(named: 'localPath'),
-            userId: any(named: 'userId'),
-            assessmentId: any(named: 'assessmentId'),
-            movementName: any(named: 'movementName'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async =>
-          const Right('users/user1/assessments/assess1/overheadSquat.mp4'));
+                localPath: any(named: 'localPath'),
+                userId: any(named: 'userId'),
+                assessmentId: any(named: 'assessmentId'),
+                movementName: any(named: 'movementName'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async =>
+              const Right('users/user1/assessments/assess1/overheadSquat.mp4'));
 
       await useCase(
         AnalyzeMovementVideoInput(
@@ -124,11 +125,12 @@ void main() {
         _frame(const Duration(milliseconds: 200)),
       ];
       when(() => mockPoseService.analyzeVideo(
-            any(),
-            mode: any(named: 'mode'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async =>
-          PoseAnalysisResult(frames: frames, totalFramesProcessed: 20));
+                any(),
+                mode: any(named: 'mode'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async =>
+              PoseAnalysisResult(frames: frames, totalFramesProcessed: 20));
       when(() => mockRepo.uploadVideo(
             localPath: any(named: 'localPath'),
             userId: any(named: 'userId'),
@@ -161,11 +163,12 @@ void main() {
 
     test('returns Right with saved VideoAnalysis on success', () async {
       when(() => mockPoseService.analyzeVideo(
-            any(),
-            mode: any(named: 'mode'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async =>
-          PoseAnalysisResult(frames: [], totalFramesProcessed: 5));
+                any(),
+                mode: any(named: 'mode'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async =>
+              PoseAnalysisResult(frames: [], totalFramesProcessed: 5));
       when(() => mockRepo.uploadVideo(
             localPath: any(named: 'localPath'),
             userId: any(named: 'userId'),
@@ -174,8 +177,7 @@ void main() {
             onProgress: any(named: 'onProgress'),
           )).thenAnswer((_) async => const Right('path/video.mp4'));
       final saved = _analysis();
-      when(() => mockRepo.save(any()))
-          .thenAnswer((_) async => Right(saved));
+      when(() => mockRepo.save(any())).thenAnswer((_) async => Right(saved));
 
       final result = await useCase(
         AnalyzeMovementVideoInput(
@@ -192,18 +194,20 @@ void main() {
 
     test('returns Left(ServerFailure) when upload fails', () async {
       when(() => mockPoseService.analyzeVideo(
-            any(),
-            mode: any(named: 'mode'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async =>
-          PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
+                any(),
+                mode: any(named: 'mode'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async =>
+              PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
       when(() => mockRepo.uploadVideo(
-            localPath: any(named: 'localPath'),
-            userId: any(named: 'userId'),
-            assessmentId: any(named: 'assessmentId'),
-            movementName: any(named: 'movementName'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async => const Left(ServerFailure('upload-failed')));
+                localPath: any(named: 'localPath'),
+                userId: any(named: 'userId'),
+                assessmentId: any(named: 'assessmentId'),
+                movementName: any(named: 'movementName'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async => const Left(ServerFailure('upload-failed')));
 
       final result = await useCase(
         AnalyzeMovementVideoInput(
@@ -220,11 +224,12 @@ void main() {
 
     test('returns Left(ServerFailure) when save fails', () async {
       when(() => mockPoseService.analyzeVideo(
-            any(),
-            mode: any(named: 'mode'),
-            onProgress: any(named: 'onProgress'),
-          )).thenAnswer((_) async =>
-          PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
+                any(),
+                mode: any(named: 'mode'),
+                onProgress: any(named: 'onProgress'),
+              ))
+          .thenAnswer((_) async =>
+              PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
       when(() => mockRepo.uploadVideo(
             localPath: any(named: 'localPath'),
             userId: any(named: 'userId'),

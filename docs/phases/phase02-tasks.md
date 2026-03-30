@@ -107,23 +107,44 @@ These are the movements used in the video assessment flow. Each maps to specific
 
 ---
 
-## Block 1 — Video Analysis Pipeline
+## Block 1 — Video Analysis Pipeline ✅
 
-- [ ] Domain: `PoseLandmark` entity (index, x, y, z, visibility)
-- [ ] Domain: `PoseFrame` entity (timestamp, landmarks: List\<PoseLandmark\>)
-- [ ] Domain: `VideoAnalysis` entity (id, assessmentId, movementName, frames: List\<PoseFrame\>, detectedCompensations, analyzedAt)
-- [ ] Domain: `VideoAnalysisRepository` interface (save, getByAssessment)
-- [ ] Domain: `PoseEstimationService` abstract interface (analyzeFrame, analyzeVideo)
-- [ ] Data: `FlutterPoseEstimationService` — wraps `flutter_pose_detection`, maps landmarks to domain entities
-- [ ] Data: `FirestoreVideoAnalysisDatasource` + `VideoAnalysisRepositoryImpl`
-- [ ] Video recording flow: camera screen that guides user through each screening movement, records clips per movement
-- [ ] Video analysis pipeline: feed each recorded clip through `PoseEstimationService`, collect frames
-- [ ] Extract joint angles from landmark positions at key checkpoints (bottom of squat, mid-stride, etc.)
-- [ ] Store analysis results in Firestore linked to assessment record
-- [ ] Handle video compression before upload: target < 10MB per clip (use `video_compress` or similar)
-- [ ] Firebase Storage: upload raw clips to `users/{userId}/assessments/{assessmentId}/{movement}.mp4`
-- [ ] Tests: unit tests for landmark → joint angle calculation (pure math, no ML)
-- [ ] Tests: integration tests with pre-recorded sample video frames (mock the pose estimator)
+- [x] Domain: `PoseLandmark` entity (index, x, y, z, visibility)
+- [x] Domain: `PoseFrame` entity (timestamp, landmarks: List\<PoseLandmark\>)
+- [x] Domain: `VideoAnalysis` entity (id, assessmentId, movementName, frames: List\<PoseFrame\>, detectedCompensations, analyzedAt)
+- [x] Domain: `VideoAnalysisRepository` interface (save, getByAssessment, uploadVideo)
+- [x] Domain: `PoseEstimationService` abstract interface (analyzeFrame, analyzeVideo)
+- [x] Data: `FlutterPoseEstimationService` — wraps `flutter_pose_detection`, maps landmarks to domain entities
+- [x] Data: `FirestoreVideoAnalysisDatasource` + `VideoAnalysisRepositoryImpl`
+- [x] Video recording flow: `MovementRecordingPage` — camera screen guides user through all 5 movements, records per clip
+- [x] Video analysis pipeline: upload → on-device NPU pose analysis → save to Firestore (via `AnalyzeMovementVideo` use case)
+- [x] Extract joint angles from landmark positions via `PoseFrame.angleDegrees()` (available to Block 2)
+- [x] Store analysis results in Firestore linked to assessment record (`videoAnalyses` collection)
+- [x] Handle video compression before upload: `video_compress` MediumQuality before upload
+- [x] Firebase Storage: upload clips to `users/{userId}/assessments/{assessmentId}/{movement}.mp4`
+- [x] Tests: unit tests for landmark → joint angle calculation (pure math, no ML) — in `pose_frame_test.dart`, `pose_landmark_test.dart`
+- [x] Tests: `AnalyzeMovementVideo` use case — 7 unit tests (upload fail, save fail, pose exception, ordering, etc.)
+- [x] Tests: `FlutterPoseEstimationService` — full test coverage (frame/video/dispose lifecycle)
+
+### UI — What to test
+
+Navigate to the movement recording screen via `context.push(Routes.movementRecording, extra: {'assessmentId': '<id>', 'userId': '<uid>'})` or by completing the initial assessment flow (hook not yet wired — use direct push for now).
+
+**What you should see:**
+
+1. **Camera screen launches** — front camera preview fills the screen (black if camera unavailable). Dark gradient overlays at top and bottom.
+2. **Top bar** — progress dots (5 total), current movement name ("Overhead Squat"), duration hint, instruction text in a dark rounded card.
+3. **Bottom controls** — "Tap to start recording" label above a white circle button.
+4. **Tap record button** — 3-second countdown overlay appears (large white number, animated scale switch). After countdown, camera starts recording.
+5. **During recording** — button turns red with pulse animation, red "REC" badge appears at top of controls.
+6. **Tap stop** — review state appears: green "Clip recorded" checkmark, "Retake" / "Next movement" buttons.
+7. **Progress dots animate** — completed dots turn green and shrink, active dot stretches wide.
+8. **After last movement → Analyse** — analysis overlay appears: dark background, `auto_awesome` icon, "Analysing your movement" text, animated progress bar + percentage.
+9. **After analysis completes** — screen pops (returns `true` to caller).
+
+**Edge cases to check:**
+- Tap "Retake" → returns to recording controls for the same movement
+- Camera unavailable → placeholder icon shown, tapping record advances without saving a path
 
 ---
 

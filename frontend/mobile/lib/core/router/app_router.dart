@@ -21,6 +21,7 @@ import '../../features/profile/presentation/pages/onboarding_flow.dart';
 import '../../features/profile/presentation/pages/profile_edit_page.dart';
 import '../../features/assessments/presentation/pages/assessment_history_page.dart';
 import '../../features/assessments/presentation/pages/initial_assessment_flow.dart';
+import '../../features/assessments/presentation/pages/movement_recording_page.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
 import '../../features/programs/presentation/pages/program_builder_page.dart';
@@ -262,6 +263,20 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: const AssessmentHistoryPage(),
               transitionsBuilder: _slideTransition,
             ),
+          ),
+          GoRoute(
+            path: 'record',
+            pageBuilder: (_, state) {
+              final extra = state.extra as Map<String, String>?;
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: MovementRecordingPage(
+                  assessmentId: extra?['assessmentId'] ?? '',
+                  userId: extra?['userId'] ?? '',
+                ),
+                transitionsBuilder: _fadeTransition,
+              );
+            },
           ),
         ],
       ),
