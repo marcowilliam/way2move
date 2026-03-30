@@ -34,4 +34,8 @@ abstract class Routes {
   static const nutrition = '/nutrition';
   static const mealLog = '/nutrition/log';
   static const stomachPattern = '/nutrition/patterns';
+
+  // Progress
+  static const photoCapture = '/progress/capture';
+  static const photoTimeline = '/progress/timeline';
 }

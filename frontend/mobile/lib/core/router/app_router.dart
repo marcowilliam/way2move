@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/progress/presentation/pages/photo_capture_page.dart';
+import '../../features/progress/presentation/pages/photo_timeline_page.dart';
+import '../../features/progress/presentation/pages/progress_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
@@ -192,6 +195,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               transitionsBuilder: _fadeTransition,
             ),
           ),
+          GoRoute(
+            path: Routes.progress,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProgressPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+          ),
         ],
       ),
       GoRoute(
@@ -307,6 +318,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const StomachPatternPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.photoCapture,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const PhotoCapturePage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.photoTimeline,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const PhotoTimelinePage(),
           transitionsBuilder: _slideTransition,
         ),
       ),
