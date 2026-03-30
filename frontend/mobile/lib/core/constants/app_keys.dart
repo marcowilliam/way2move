@@ -131,6 +131,14 @@ abstract class AppKeys {
   static const progressionSettingsPage = Key('progression_settings_page');
   static const progressionSaveButton = Key('progression_save_button');
 
+  // Dashboard extras
+  static const monthlyHeatMap = Key('monthly_heat_map');
+  static const trackTodayGrid = Key('track_today_grid');
+  static const quickActionLogJournal = Key('quick_action_log_journal');
+  static const quickActionLogMeal = Key('quick_action_log_meal');
+  static const quickActionLogSleep = Key('quick_action_log_sleep');
+  static const quickActionProgressPhoto = Key('quick_action_progress_photo');
+
   // Calendar
   static const calendarPage = Key('calendar_page');
   static const calendarMonthGrid = Key('calendar_month_grid');
