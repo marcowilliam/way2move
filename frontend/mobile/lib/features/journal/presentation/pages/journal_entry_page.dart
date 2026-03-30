@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/journal_entry.dart';
 import '../../domain/services/entity_extraction_service.dart';
 import '../providers/journal_providers.dart';
@@ -29,6 +32,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
   int? _energyLevel;
   final List<String> _painPoints = [];
   bool _isSaving = false;
+  String? _recordedAudioPath; // local file path from AudioRecordingService
 
   static const _painPointOptions = [
     'neck',
@@ -75,6 +79,23 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
 
     setState(() => _isSaving = true);
 
+    // Upload audio recording if one was captured.
+    String? audioUrl;
+    if (_recordedAudioPath != null) {
+      final userId = ref.read(currentUserIdProvider);
+      if (userId != null) {
+        try {
+          final audioStorage = ref.read(journalAudioStorageProvider);
+          audioUrl = await audioStorage.uploadAudio(
+            audioFile: File(_recordedAudioPath!),
+            userId: userId,
+          );
+        } catch (_) {
+          // Non-fatal — save without audio URL if upload fails.
+        }
+      }
+    }
+
     // Build a temporary id — Firestore will replace with real doc id
     final entry = JournalEntry(
       id: '',
@@ -82,6 +103,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
       date: DateTime.now(),
       type: widget.type,
       content: content,
+      audioUrl: audioUrl,
       mood: _mood,
       energyLevel: _energyLevel,
       painPoints: List.from(_painPoints),
@@ -212,7 +234,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             const SizedBox(height: 16),
           ],
 
-          // Voice input
+          // Voice input — simultaneously transcribes and records audio.
           Center(
             child: VoiceInputWidget(
               onTranscription: (text) {
@@ -223,8 +245,30 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
                   );
                 });
               },
+              onAudioRecorded: (path) {
+                setState(() => _recordedAudioPath = path);
+              },
             ),
           ),
+
+          // Audio recording indicator
+          if (_recordedAudioPath != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.audio_file, size: 14,
+                    color: Colors.green),
+                const SizedBox(width: 4),
+                Text(
+                  'Audio recorded — will upload with entry',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.green,
+                      ),
+                ),
+              ],
+            ),
+          ],
 
           const SizedBox(height: 20),
 
