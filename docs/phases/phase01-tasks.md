@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 218 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10)
+**Current test count: 233 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15)
 
 ---
 
@@ -392,21 +392,39 @@
 
 ---
 
-## Block 17 — Dashboard & Navigation
+## Block 17 — Dashboard & Navigation ✅ (core implemented)
 
-- [ ] Home dashboard: today's sessions (training + recovery), journal prompts, goal progress cards, weekly overview, monthly glance
-- [ ] Missed-day motivation: if user missed yesterday, show encouraging message with goal reminder (not guilt)
-- [ ] Quick actions: start journal (voice), log meal, log sleep, take progress photo
-- [ ] Streak counter (counts training + recovery + journal days, not just training)
-- [ ] Weekly overview: days active vs planned, training/recovery balance
-- [ ] Monthly glance: heat map or simple grid showing activity density
-- [ ] Goal progress visualization: progress bars toward movement goals
-- [ ] Bottom navigation: Home, Calendar, Exercises, Goals, Profile
-- [ ] GoRouter setup with all routes and auth guard
-- [ ] Profile page: edit name, avatar, training preferences, notification settings
-- [ ] App theme and styling (light-mode-first, high contrast, generous tap targets, earth tones)
-- [ ] Animated screen transitions (no raw MaterialPageRoute — use PageRouteBuilder)
-- [ ] Tests: widget tests for dashboard, navigation, and profile page
+- [x] Home dashboard: today's session card, goal progress cards (top 3 active), weekly overview strip, quick actions grid
+- [x] Missed-day motivation: if user missed yesterday, show encouraging banner (not guilt-based)
+- [x] Quick actions: Start Session, Assessment, My Program, Exercises
+- [x] Streak counter (consecutive days with a completed session)
+- [x] Weekly overview: 7-day strip (M-T-W-T-F-S-S) with filled/empty circles for completed sessions
+- [x] Goal progress visualization: mini cards with animated progress bars, current/target values
+- [x] Bottom navigation: Home, Calendar, Exercises, Goals, Profile (swapped Progress → Goals)
+- [x] GoRouter: onboarding redirect — logged-in users without onboardingComplete → /onboarding
+- [x] Profile page: avatar initial + name header, stats row (streak/sessions/goals), nav tiles to all features, sign out
+- [x] App theme and styling: uses AppTheme.light/dark throughout, earth tones, rounded cards
+- [x] Animated screen transitions: all routes use CustomTransitionPage with fade/slide builders
+- [x] Tests: 8 widget tests for HomePage, 7 widget tests for ProfilePage
+- [ ] Quick actions: log journal (voice), log meal, log sleep, take progress photo — deferred (Blocks 10–14 not built)
+- [ ] Monthly glance heat map — deferred (requires full history aggregation)
+
+### UI — What to test
+- **HomePage** (`/`, Home tab):
+  - Greeting header with first name + date (e.g. "Good morning, Jane."), streak badge if streak > 0 (fire icon + "N days")
+  - **Today's session card**: if no session → "No session today" + "Start Session" button; if session planned → focus name + "Planned" chip + exercise count + "Start Session" button; if completed → green "Great work today!" card; if in progress → primary-color banner "Tap to continue"
+  - **Missed-day banner** (inside no-session card): if user had no completed session yesterday → warm "Back on track — every session counts." message
+  - **This Week strip**: 7 circles labelled M T W T F S S; today's circle has a primary-colour border; days with completed sessions show a green filled circle with a checkmark
+  - **Active Goals section**: if goals exist → "Active Goals" header + "See all" link + up to 3 goal mini-cards (name, progress bar, current/target/unit); if no goals → "No active goals" card with "Start" → Assessment
+  - **Quick Actions grid** (2×2): "New Session", "Assessment", "My Program", "Exercises"
+- **ProfilePage** (`/profile`, Profile tab):
+  - AppBar "Profile" + "Edit" text button → /profile/edit
+  - Header: circle avatar with initial letter, name, email, training goal badge (e.g. "Mobility")
+  - **Onboarding CTA** (gold card): shown only when `onboardingComplete == false`; "Complete your setup" → /onboarding
+  - **Stats row**: streak number / "Day Streak", sessions count / "Sessions", active goals count / "Goals"
+  - Section **Training**: My Program → /programs; Movement Assessment → /assessment; Assessment History → /assessment/history
+  - Section **Movement**: Compensation Profile → /compensations; Goals → /goals
+  - Section **Account**: Edit Profile → /profile/edit; "Sign Out" red outlined button
 
 ---
 
@@ -429,6 +447,6 @@
 ### Gotchas
 - **`AppUser`** is the domain entity name (not `User` — avoids conflict with `firebase_auth.User`)
 - **Tests co-located with source** in `lib/` (not `test/`). Run with `flutter test lib/`
-- **Bottom nav** tabs: Home(0), Calendar(1), Exercises(2), Progress(3), Profile(4) — wired in `_AppScaffold` inside `app_router.dart`
+- **Bottom nav** tabs: Home(0), Calendar(1), Exercises(2), Goals(3), Profile(4) — wired in `_AppScaffold` inside `app_router.dart`
 - **Firebase options** are placeholder values pointing to `way2move-dev`. Emulator works without real credentials in debug mode
 - **Zero lint warnings** before any commit — run `flutter analyze` from `frontend/mobile/` and fix all issues before finishing a task
