@@ -17,8 +17,7 @@ class VideoAnalysisRepositoryImpl implements VideoAnalysisRepository {
   VideoAnalysisRepositoryImpl(this._datasource);
 
   @override
-  Future<Either<AppFailure, VideoAnalysis>> save(
-      VideoAnalysis analysis) async {
+  Future<Either<AppFailure, VideoAnalysis>> save(VideoAnalysis analysis) async {
     try {
       final model = await _datasource.save(analysis);
       return Right(model.toEntity());

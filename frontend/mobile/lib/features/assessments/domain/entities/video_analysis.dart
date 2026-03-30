@@ -100,8 +100,7 @@ class VideoAnalysis {
       );
 
   @override
-  bool operator ==(Object other) =>
-      other is VideoAnalysis && other.id == id;
+  bool operator ==(Object other) => other is VideoAnalysis && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

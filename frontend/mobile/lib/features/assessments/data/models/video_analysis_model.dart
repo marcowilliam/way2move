@@ -97,8 +97,8 @@ class VideoAnalysisModel {
         id: id,
         assessmentId: assessmentId,
         userId: userId,
-        movement: ScreeningMovement.values
-            .firstWhere((m) => m.name == movementName),
+        movement:
+            ScreeningMovement.values.firstWhere((m) => m.name == movementName),
         frames: frames.map(_frameFromMap).toList(),
         detectedCompensations: detectedCompensations
             .map((s) =>
