@@ -32,6 +32,9 @@ dependencies:
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^7.0.0
 
+  # Image & media
+  image_picker: ^1.1.0
+
   # UI
   cached_network_image: ^3.4.1
   video_player: ^2.9.2

@@ -28,4 +28,8 @@ abstract class Routes {
   static const goals = '/goals';
   static const goalsSetup = '/goals/setup';
   static String goalDetail(String id) => '/goals/$id';
+
+  // Progress
+  static const photoCapture = '/progress/capture';
+  static const photoTimeline = '/progress/timeline';
 }

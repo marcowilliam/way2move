@@ -327,24 +327,24 @@
 
 ---
 
-## Block 14 — Progress Photos & Weight
+## Block 14 — Progress Photos & Weight ✅
 
-- [ ] Domain: ProgressPhoto entity (id, userId, date, photoUrl, angle, notes)
-- [ ] Domain: WeightLog entity (id, userId, date, weight, notes)
-- [ ] Domain: ProgressPhotoRepository interface (capture, getByDate, getTimeline, getByAngle)
-- [ ] Domain: WeightLogRepository interface (log, getLogs, getTrend)
-- [ ] Domain: CaptureProgressPhoto, GetPhotoTimeline, LogWeight, GetWeightTrend use cases
-- [ ] Data: ProgressPhotoModel, WeightLogModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreProgressPhotoDatasource, FirestoreWeightLogDatasource
-- [ ] Data: ProgressPhotoRepositoryImpl, WeightLogRepositoryImpl
-- [ ] Presentation: PhotoCapturePage — guided capture (front, side left, side right, back) with overlay guides
-- [ ] Presentation: PhotoTimelinePage — chronological gallery, tap to compare side-by-side
-- [ ] Presentation: PhotoComparisonView — side-by-side before/after with date labels
-- [ ] Presentation: WeightLogEntry — quick weight input
-- [ ] Presentation: WeightTrendChart — line chart over time with trend line
-- [ ] Firebase Storage: upload photos, generate thumbnail URLs
-- [ ] Tests: unit tests for use cases
-- [ ] Tests: widget tests for photo capture, timeline, and weight pages
+- [x] Domain: ProgressPhoto entity (id, userId, date, photoUrl, angle, notes)
+- [x] Domain: WeightLog entity (id, userId, date, weight, notes)
+- [x] Domain: ProgressPhotoRepository interface (capture, getByDate, getTimeline, getByAngle)
+- [x] Domain: WeightLogRepository interface (log, getLogs, getTrend)
+- [x] Domain: CaptureProgressPhoto, GetPhotoTimeline, LogWeight, GetWeightTrend use cases
+- [x] Data: ProgressPhotoModel, WeightLogModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreProgressPhotoDatasource, FirestoreWeightLogDatasource
+- [x] Data: ProgressPhotoRepositoryImpl, WeightLogRepositoryImpl
+- [x] Presentation: PhotoCapturePage — guided capture (front, side left, side right, back) with overlay guides
+- [x] Presentation: PhotoTimelinePage — chronological gallery, tap to compare side-by-side
+- [x] Presentation: PhotoComparisonView — side-by-side before/after with date labels
+- [x] Presentation: WeightLogEntry — quick weight input
+- [x] Presentation: WeightTrendChart — line chart over time with trend line
+- [x] Firebase Storage: upload photos to users/{userId}/progress/{date}_{angle}.jpg, get download URL
+- [x] Tests: unit tests for use cases (15 tests — TDD red→green)
+- [x] Tests: widget tests for photo capture, progress page, and weight trend chart (12 tests)
 
 ---
 
