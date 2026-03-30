@@ -68,3 +68,14 @@ final totalCompletedSessionsProvider = Provider<int>((ref) {
   final sessions = ref.watch(sessionHistoryProvider).valueOrNull ?? [];
   return sessions.where((s) => s.status == SessionStatus.completed).length;
 });
+
+/// Sessions in the current calendar month, derived from history cache.
+final currentMonthSessionsProvider = Provider<List<Session>>((ref) {
+  final all = ref.watch(sessionHistoryProvider).valueOrNull ?? [];
+  final now = DateTime.now();
+  final firstDay = DateTime(now.year, now.month, 1);
+  final lastDay = DateTime(now.year, now.month + 1, 1);
+  return all
+      .where((s) => !s.date.isBefore(firstDay) && s.date.isBefore(lastDay))
+      .toList();
+});

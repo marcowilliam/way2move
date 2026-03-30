@@ -2,12 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/app_failure.dart';
+import '../../../../core/providers/firebase_providers.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../data/datasources/journal_audio_storage_datasource.dart';
 import '../../data/repositories/journal_repository_impl.dart';
 import '../../domain/entities/journal_entry.dart';
 import '../../domain/usecases/create_journal_entry.dart';
 import '../../domain/usecases/get_journals_by_date.dart';
 import '../../domain/usecases/get_journals_for_session.dart';
+
+final journalAudioStorageProvider =
+    Provider<JournalAudioStorageDatasource>((ref) {
+  return JournalAudioStorageDatasource(ref.watch(firebaseStorageProvider));
+});
 
 // Use case providers
 final createJournalEntryUseCaseProvider = Provider<CreateJournalEntry>(

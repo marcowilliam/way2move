@@ -139,5 +139,17 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('audio recorded indicator is not shown before recording',
+        (tester) async {
+      await tester.pumpWidget(buildPage());
+      await tester.pumpAndSettle();
+
+      // No audio has been recorded yet — indicator must not appear.
+      expect(
+        find.text('Audio recorded — will upload with entry'),
+        findsNothing,
+      );
+    });
   });
 }

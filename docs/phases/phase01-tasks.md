@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 518 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15, sleep: 25, nutrition: 26, journal: 9)
+**Current test count: 582 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 9, sleep: 25, nutrition: 26, journal: 73 inc. audio recording + review)
 
 ---
 
@@ -261,7 +261,7 @@
 
 ---
 
-## Block 10 — Journaling System (Voice-First)
+## Block 10 — Journaling System (Voice-First) ✅
 
 - [x] Domain: Journal entity (id, userId, date, type, content, audioUrl, mood, energyLevel, painPoints, linkedSessionId, autoCreatedEntities)
 - [x] Domain: JournalRepository interface (create, getByDate, getByType, getForSession, getHistory)
@@ -270,13 +270,16 @@
 - [x] Data: FirestoreJournalDatasource
 - [x] Data: JournalRepositoryImpl
 - [x] Voice input: integrate speech_to_text package for on-device transcription
-- [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, deferred to Phase 2)
-- [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
+- [x] Voice recording: record package records .m4a to temp file alongside STT; uploads to Firebase Storage on save; audioUrl stored in journal entry
+- [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map, audio recorded indicator
 - [x] Presentation: JournalHistoryPage — chronological list with type filters
-- [x] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
+- [x] Presentation: JournalPrompts — contextual prompts for each journal type
 - [x] Link pre/post-session journals to specific sessions
-- [x] Tests: unit tests for journal use cases
-- [x] Tests: widget tests for journal entry and history pages
+- [x] Tests: unit tests for journal use cases, AudioRecordingService (6), JournalAudioStorageDatasource (3)
+- [x] Tests: widget tests for journal entry and history pages (73 total journal tests)
+
+### UI — What to test (audio recording addition)
+- **JournalEntryPage** audio recording: tap the mic button to start → button turns red with stop icon and pulses; status label shows "Listening..."; speak into mic → transcription appears in live preview and mirrors to the text field; tap again to stop → "Audio recorded — will upload with entry" indicator appears below the mic in green; tap Save — journal entry saves with audioUrl in Firestore pointing to `users/{uid}/journals/journal_audio_{timestamp}.m4a` in Firebase Storage
 
 ---
 
@@ -422,7 +425,7 @@
 
 ---
 
-## Block 17 — Dashboard & Navigation ✅ (core implemented)
+## Block 17 — Dashboard & Navigation ✅
 
 - [x] Home dashboard: today's session card, goal progress cards (top 3 active), weekly overview strip, quick actions grid
 - [x] Missed-day motivation: if user missed yesterday, show encouraging banner (not guilt-based)
@@ -435,9 +438,9 @@
 - [x] Profile page: avatar initial + name header, stats row (streak/sessions/goals), nav tiles to all features, sign out
 - [x] App theme and styling: uses AppTheme.light/dark throughout, earth tones, rounded cards
 - [x] Animated screen transitions: all routes use CustomTransitionPage with fade/slide builders
-- [x] Tests: 8 widget tests for HomePage, 7 widget tests for ProfilePage
-- [x] Quick actions: log journal (voice), log meal, log sleep, take progress photo
-- [ ] Monthly glance heat map — deferred (requires full history aggregation)
+- [x] Quick actions: log journal (voice), log meal, log sleep, take progress photo — "Track Today" section
+- [x] Monthly glance heat map — compact 7-col grid for current month, green=completed, today highlighted
+- [x] Tests: 9 widget tests for HomePage (includes Track Today + heat map tests), 7 widget tests for ProfilePage
 
 ### UI — What to test
 - **HomePage** (`/`, Home tab):
@@ -445,8 +448,10 @@
   - **Today's session card**: if no session → "No session today" + "Start Session" button; if session planned → focus name + "Planned" chip + exercise count + "Start Session" button; if completed → green "Great work today!" card; if in progress → primary-color banner "Tap to continue"
   - **Missed-day banner** (inside no-session card): if user had no completed session yesterday → warm "Back on track — every session counts." message
   - **This Week strip**: 7 circles labelled M T W T F S S; today's circle has a primary-colour border; days with completed sessions show a green filled circle with a checkmark
+  - **Monthly heat map** (new): card showing current month name + year header; row of M T W T F S S column headers; compact grid of day cells — green filled with ✓ = completed session, primary border = today, muted = future, surfaceVariant = past rest day; session count shown top-right (e.g. "3 sessions"); legend row: green dot "Done" + grey dot "Rest"
   - **Active Goals section**: if goals exist → "Active Goals" header + "See all" link + up to 3 goal mini-cards (name, progress bar, current/target/unit); if no goals → "No active goals" card with "Start" → Assessment
   - **Quick Actions grid** (2×2): "New Session", "Assessment", "My Program", "Exercises"
+  - **Track Today grid** (new, 2×2 below Quick Actions): "Journal" (mic icon) → /journal/entry; "Log Meal" (restaurant icon) → /nutrition/log; "Log Sleep" (bedtime icon) → /sleep; "Progress Photo" (camera icon) → /progress/capture
 - **ProfilePage** (`/profile`, Profile tab):
   - AppBar "Profile" + "Edit" text button → /profile/edit
   - Header: circle avatar with initial letter, name, email, training goal badge (e.g. "Mobility")

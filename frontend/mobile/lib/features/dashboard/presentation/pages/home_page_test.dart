@@ -97,6 +97,18 @@ Widget _buildPage({
               path: '/goals/:goalId',
               builder: (_, state) => Scaffold(
                   body: Text('goal-${state.pathParameters['goalId']}'))),
+          GoRoute(
+              path: '/journal/entry',
+              builder: (_, __) => const Scaffold(body: Text('journal'))),
+          GoRoute(
+              path: '/nutrition/log',
+              builder: (_, __) => const Scaffold(body: Text('meal'))),
+          GoRoute(
+              path: '/sleep',
+              builder: (_, __) => const Scaffold(body: Text('sleep'))),
+          GoRoute(
+              path: '/progress/capture',
+              builder: (_, __) => const Scaffold(body: Text('photo'))),
         ],
       ),
     ),
@@ -211,15 +223,34 @@ void main() {
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
+    // Scroll down to reveal sections below the monthly heat map.
+    await tester.drag(
+        find.byType(CustomScrollView), const Offset(0, -800));
+    await tester.pumpAndSettle();
+
     expect(find.text('Quick Actions'), findsOneWidget);
     expect(find.text('New Session'), findsOneWidget);
-    expect(find.text('Log Journal'), findsOneWidget);
-    expect(find.text('Log Meal'), findsOneWidget);
-    expect(find.text('Log Sleep'), findsOneWidget);
-    expect(find.text('Progress Photo'), findsOneWidget);
     expect(find.text('Assessment'), findsOneWidget);
     expect(find.text('My Program'), findsOneWidget);
     expect(find.text('Exercises'), findsOneWidget);
+  });
+
+  testWidgets('shows track today tiles', (tester) async {
+    await tester.pumpWidget(_buildPage(
+        sessionRepo: sessionRepo,
+        goalRepo: goalRepo,
+        profileRepo: profileRepo));
+    await tester.pumpAndSettle();
+
+    await tester.drag(
+        find.byType(CustomScrollView), const Offset(0, -1200));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(AppKeys.trackTodayGrid), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogJournal), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogMeal), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogSleep), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionProgressPhoto), findsOneWidget);
   });
 
   testWidgets('shows goal progress cards when goals exist', (tester) async {
@@ -233,6 +264,10 @@ void main() {
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
+    await tester.drag(
+        find.byType(CustomScrollView), const Offset(0, -900));
+    await tester.pumpAndSettle();
+
     expect(find.text('Active Goals'), findsOneWidget);
     expect(find.text('Goal g1'), findsOneWidget);
   });
@@ -242,6 +277,10 @@ void main() {
         sessionRepo: sessionRepo,
         goalRepo: goalRepo,
         profileRepo: profileRepo));
+    await tester.pumpAndSettle();
+
+    await tester.drag(
+        find.byType(CustomScrollView), const Offset(0, -900));
     await tester.pumpAndSettle();
 
     expect(find.text('No active goals'), findsOneWidget);
