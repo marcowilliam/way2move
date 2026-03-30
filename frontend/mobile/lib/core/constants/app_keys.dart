@@ -64,6 +64,13 @@ abstract class AppKeys {
   // Sleep
   static const sleepEntryWidget = Key('sleep_entry_widget');
   static const sleepHistoryChart = Key('sleep_history_chart');
+  static const sleepLogEntryPage = Key('sleep_log_entry_page');
+  static const sleepHistoryPage = Key('sleep_history_page');
+  static const sleepQualitySelector = Key('sleep_quality_selector');
+  static const sleepSaveButton = Key('sleep_save_button');
+  static const sleepBedTimePicker = Key('sleep_bed_time_picker');
+  static const sleepWakeTimePicker = Key('sleep_wake_time_picker');
+  static const sleepNotesField = Key('sleep_notes_field');
 
   // Compensation
   static const compensationProfilePage = Key('compensation_profile_page');
