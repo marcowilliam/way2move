@@ -88,6 +88,14 @@ abstract class AppKeys {
   static const goalAddButton = Key('goal_add_button');
   static const goalSetupDoneButton = Key('goal_setup_done_button');
 
+  // Progression
+  static const progressionSuggestionCard = Key('progression_suggestion_card');
+  static const progressionDeloadCard = Key('progression_deload_card');
+  static const progressionAcceptButton = Key('progression_accept_button');
+  static const progressionDismissButton = Key('progression_dismiss_button');
+  static const progressionSettingsPage = Key('progression_settings_page');
+  static const progressionSaveButton = Key('progression_save_button');
+
   // Calendar
   static const calendarPage = Key('calendar_page');
   static const calendarMonthGrid = Key('calendar_month_grid');
