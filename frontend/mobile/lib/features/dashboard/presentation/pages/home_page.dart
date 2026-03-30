@@ -12,6 +12,7 @@ import '../../../goals/presentation/providers/goal_providers.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../sessions/domain/entities/session.dart';
 import '../../../sessions/presentation/providers/session_providers.dart';
+import '../../../assessments/presentation/providers/assessment_providers.dart';
 import '../providers/home_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -686,8 +687,21 @@ class _MonthlyHeatMap extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef widgetRef) {
     final sessions = widgetRef.watch(currentMonthSessionsProvider);
     final now = DateTime.now();
-    final monthName =
-        const ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][now.month];
+    final monthName = const [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ][now.month];
 
     // Build a set of day-of-month numbers that have completed sessions.
     final completedDays = sessions
@@ -772,7 +786,8 @@ class _MonthlyHeatMap extends ConsumerWidget {
 
                 if (isDone) {
                   bgColor = AppColors.accentGreen;
-                  child = const Icon(Icons.check, size: 10, color: Colors.white);
+                  child =
+                      const Icon(Icons.check, size: 10, color: Colors.white);
                 } else if (isPlanned && !isFuture) {
                   bgColor = AppColors.sessionPlanned.withAlpha(51);
                   borderColor = AppColors.sessionPlanned;
@@ -780,9 +795,8 @@ class _MonthlyHeatMap extends ConsumerWidget {
                   bgColor = AppColors.primary.withAlpha(26);
                   borderColor = AppColors.primary;
                 } else {
-                  bgColor = isFuture
-                      ? Colors.transparent
-                      : AppColors.surfaceVariant;
+                  bgColor =
+                      isFuture ? Colors.transparent : AppColors.surfaceVariant;
                 }
 
                 return AnimatedContainer(
@@ -862,6 +876,34 @@ class _QuickActionsGrid extends ConsumerWidget {
   const _QuickActionsGrid({required this.ref});
   final WidgetRef ref;
 
+  void _onMovementScan(BuildContext context, WidgetRef widgetRef) {
+    final userId = widgetRef.read(currentUserIdProvider);
+    if (userId == null) return;
+
+    final latestAssessment =
+        widgetRef.read(latestAssessmentProvider).valueOrNull;
+
+    if (latestAssessment == null) {
+      // No assessment yet — guide user to complete questionnaire first
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Complete a movement assessment first to get started.'),
+          action: SnackBarAction(
+            label: 'Start',
+            onPressed: () => context.push(Routes.assessment),
+          ),
+        ),
+      );
+      return;
+    }
+
+    context.push(
+      Routes.movementRecording,
+      extra: {'assessmentId': latestAssessment.id, 'userId': userId},
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef widgetRef) {
     return Column(
@@ -886,6 +928,11 @@ class _QuickActionsGrid extends ConsumerWidget {
               icon: Icons.assignment_outlined,
               label: 'Assessment',
               onTap: () => context.push(Routes.assessment),
+            ),
+            _QuickActionTile(
+              icon: Icons.videocam_outlined,
+              label: 'Movement Scan',
+              onTap: () => _onMovementScan(context, widgetRef),
             ),
             _QuickActionTile(
               icon: Icons.calendar_view_week_outlined,
