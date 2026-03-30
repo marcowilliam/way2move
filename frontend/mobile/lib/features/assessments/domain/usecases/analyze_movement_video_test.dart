@@ -103,7 +103,7 @@ void main() {
               const Right('users/user1/assessments/assess1/overheadSquat.mp4'));
 
       await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -146,7 +146,7 @@ void main() {
       });
 
       await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -168,7 +168,7 @@ void main() {
                 onProgress: any(named: 'onProgress'),
               ))
           .thenAnswer((_) async =>
-              PoseAnalysisResult(frames: [], totalFramesProcessed: 5));
+              const PoseAnalysisResult(frames: [], totalFramesProcessed: 5));
       when(() => mockRepo.uploadVideo(
             localPath: any(named: 'localPath'),
             userId: any(named: 'userId'),
@@ -180,7 +180,7 @@ void main() {
       when(() => mockRepo.save(any())).thenAnswer((_) async => Right(saved));
 
       final result = await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -199,7 +199,7 @@ void main() {
                 onProgress: any(named: 'onProgress'),
               ))
           .thenAnswer((_) async =>
-              PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
+              const PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
       when(() => mockRepo.uploadVideo(
                 localPath: any(named: 'localPath'),
                 userId: any(named: 'userId'),
@@ -210,7 +210,7 @@ void main() {
           .thenAnswer((_) async => const Left(ServerFailure('upload-failed')));
 
       final result = await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -229,7 +229,7 @@ void main() {
                 onProgress: any(named: 'onProgress'),
               ))
           .thenAnswer((_) async =>
-              PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
+              const PoseAnalysisResult(frames: [], totalFramesProcessed: 1));
       when(() => mockRepo.uploadVideo(
             localPath: any(named: 'localPath'),
             userId: any(named: 'userId'),
@@ -241,7 +241,7 @@ void main() {
           .thenAnswer((_) async => const Left(ServerFailure()));
 
       final result = await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -268,7 +268,7 @@ void main() {
           )).thenAnswer((_) async => const Right('path/video.mp4'));
 
       final result = await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',
@@ -299,7 +299,7 @@ void main() {
             onProgress: any(named: 'onProgress'),
           )).thenAnswer((_) async {
         callOrder.add('analyze');
-        return PoseAnalysisResult(frames: [], totalFramesProcessed: 1);
+        return const PoseAnalysisResult(frames: [], totalFramesProcessed: 1);
       });
 
       when(() => mockRepo.save(any())).thenAnswer((_) async {
@@ -308,7 +308,7 @@ void main() {
       });
 
       await useCase(
-        AnalyzeMovementVideoInput(
+        const AnalyzeMovementVideoInput(
           localVideoPath: '/tmp/squat.mp4',
           assessmentId: 'assess1',
           userId: 'user1',

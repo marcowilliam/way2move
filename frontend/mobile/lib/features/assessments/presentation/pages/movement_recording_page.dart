@@ -253,8 +253,9 @@ class _MovementRecordingPageState extends ConsumerState<MovementRecordingPage>
 
   @override
   Widget build(BuildContext context) {
-    if (_isAnalyzing)
+    if (_isAnalyzing) {
       return _AnalysisProgressOverlay(progress: _analysisProgress);
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
