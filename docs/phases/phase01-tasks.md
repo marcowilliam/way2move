@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 233 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15)
+**Current test count: 259 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15, nutrition: 26)
 
 ---
 
@@ -295,20 +295,29 @@
 
 ---
 
-## Block 12 — Nutrition MVP
+## Block 12 — Nutrition MVP ✅
 
-- [ ] Domain: Meal entity (id, userId, date, mealType, description, stomachFeeling, stomachNotes, source, linkedJournalId)
-- [ ] Domain: MealRepository interface (create, update, delete, getByDate, getHistory)
-- [ ] Domain: CreateMeal, UpdateMeal, DeleteMeal, GetMealsByDate use cases
-- [ ] Data: MealModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreMealDatasource
-- [ ] Data: MealRepositoryImpl
-- [ ] Presentation: MealLogPage — add meal (voice/text/manual), select meal type, stomach feeling (1-5), stomach notes
-- [ ] Presentation: DailyMealsView — list all meals for a day with stomach feeling indicators
-- [ ] Presentation: StomachPatternView — simple view showing stomach feeling trends over time (which meals correlate with bad feelings)
-- [ ] Voice meal input: use speech_to_text, parse for meal description and stomach state
-- [ ] Tests: unit tests for meal use cases
-- [ ] Tests: widget tests for meal log and daily view
+- [x] Domain: Meal entity (id, userId, date, mealType, description, stomachFeeling, stomachNotes, source, linkedJournalId)
+- [x] Domain: MealRepository interface (create, update, delete, getByDate, getHistory)
+- [x] Domain: CreateMeal, UpdateMeal, DeleteMeal, GetMealsByDate use cases
+- [x] Data: MealModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreMealDatasource
+- [x] Data: MealRepositoryImpl
+- [x] Presentation: MealLogPage — add meal (text/manual), select meal type, stomach feeling (1-5), stomach notes
+- [x] Presentation: DailyMealsView — list all meals for a day with stomach feeling indicators, grouped by type, swipe-to-delete
+- [x] Presentation: DailyNutritionPage — date navigator, summary card, FAB to log meal
+- [x] Presentation: StomachPatternPage — 14-day trend view showing avg stomach feeling per meal type
+- [x] Riverpod: dailyMealsNotifierProvider, stomachTrendProvider
+- [x] Routes: /nutrition, /nutrition/log, /nutrition/patterns added to GoRouter
+- [x] Firestore security rules: meals collection
+- [x] Tests: unit tests for CreateMeal, UpdateMeal, DeleteMeal, GetMealsByDate (14 tests)
+- [x] Tests: widget tests for MealLogPage (7 tests) and DailyMealsView (5 tests)
+
+### UI — What to test
+- **DailyNutritionPage** (`/nutrition`): date navigator ← today →, summary card (meals count + avg stomach feeling with color coding), FAB + navigates to MealLogPage, patterns icon navigates to StomachPatternPage
+- **MealLogPage** (`/nutrition/log`): meal type chip selector (Breakfast/Lunch/Dinner/Snack/Drink), description multi-line field, stomach feeling 5-emoji selector (😣😕😐🙂😊), optional notes field, save disabled until type + description + feeling filled, save creates meal and pops
+- **DailyMealsView**: sections per meal type (BREAKFAST/LUNCH/DINNER/SNACK/DRINK), "No X logged yet" empty state per section, meal card shows description + emoji + time, notes indicator icon when notes present, swipe left to delete
+- **StomachPatternPage** (`/nutrition/patterns`): "Stomach Pattern" headline, "Based on your last 14 days" subtitle, colored progress bars per meal type with avg score, empty state when no data
 
 ---
 

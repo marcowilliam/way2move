@@ -28,4 +28,9 @@ abstract class Routes {
   static const goals = '/goals';
   static const goalsSetup = '/goals/setup';
   static String goalDetail(String id) => '/goals/$id';
+
+  // Nutrition
+  static const nutrition = '/nutrition';
+  static const mealLog = '/nutrition/log';
+  static const stomachPattern = '/nutrition/patterns';
 }

@@ -88,6 +88,18 @@ abstract class AppKeys {
   static const goalAddButton = Key('goal_add_button');
   static const goalSetupDoneButton = Key('goal_setup_done_button');
 
+  // Nutrition
+  static const nutritionPage = Key('nutrition_page');
+  static const mealLogPage = Key('meal_log_page');
+  static const stomachPatternPage = Key('stomach_pattern_page');
+  static const dailyMealsView = Key('daily_meals_view');
+  static const mealTypeSelector = Key('meal_type_selector');
+  static const mealDescriptionField = Key('meal_description_field');
+  static const stomachFeelingSelector = Key('stomach_feeling_selector');
+  static const stomachNotesField = Key('stomach_notes_field');
+  static const saveMealButton = Key('save_meal_button');
+  static const voiceInputButton = Key('voice_input_button');
+
   // Calendar
   static const calendarPage = Key('calendar_page');
   static const calendarMonthGrid = Key('calendar_month_grid');
