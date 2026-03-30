@@ -5,7 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../exercises/domain/entities/exercise.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
+import '../../../progression/domain/entities/progression_rule.dart';
+import '../../../progression/domain/entities/progression_suggestion.dart';
+import '../../../progression/domain/services/progression_service.dart';
+import '../../../progression/presentation/providers/progression_providers.dart';
+import '../../../progression/presentation/widgets/progression_suggestion_card.dart';
 import '../../domain/entities/session.dart';
 import '../providers/session_providers.dart';
 
@@ -22,6 +28,10 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
   late AnimationController _celebController;
   late Animation<double> _celebScale;
   late Animation<double> _fadeIn;
+
+  // Progression suggestions computed from completed exercises
+  final List<ProgressionSuggestion> _suggestions = [];
+  final Set<String> _dismissedExerciseIds = {};
 
   @override
   void initState() {
@@ -47,9 +57,45 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
     super.dispose();
   }
 
+  void _computeSuggestions(
+      List<ExerciseBlock> completedBlocks, List<Exercise> exercises) {
+    if (_suggestions.isNotEmpty) return; // already computed
+    final service = ref.read(progressionServiceProvider);
+    final rule = ref.read(globalProgressionRuleNotifierProvider).valueOrNull ??
+        const ProgressionRule();
+
+    for (final block in completedBlocks) {
+      final exercise =
+          exercises.where((e) => e.id == block.exerciseId).firstOrNull;
+      if (exercise == null) continue;
+      // Phase 1: use default wellness values (sleep=4.0, pulse=4.0, stomach=4.0)
+      // Real wiring happens in Phase 4 when sleep/pulse data is available.
+      final input = ProgressionInput(
+        exerciseId: block.exerciseId,
+        exerciseName: exercise.name,
+        completedSessionCount: block.completedSetsCount,
+        avgSleepQuality: 4.0,
+        pulseScore: 4.0,
+        avgStomachFeeling: 4.0,
+        nextProgressionId: exercise.progressionIds.isNotEmpty
+            ? exercise.progressionIds.first
+            : null,
+        rule: rule,
+      );
+      final results = service.evaluate(input);
+      // Only show non-hold suggestions
+      for (final s in results) {
+        if (s.action != ProgressionAction.hold) {
+          _suggestions.add(s);
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(sessionHistoryProvider);
+    final exercisesAsync = ref.watch(exerciseListProvider);
 
     return historyAsync.when(
       loading: () => const Scaffold(
@@ -61,23 +107,30 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
       data: (sessions) {
         final session =
             sessions.where((s) => s.id == widget.sessionId).firstOrNull;
+        final exercises = exercisesAsync.valueOrNull ?? [];
 
         if (session == null) {
           // Session not yet in history (latency) — show minimal summary
-          return _buildSummaryScaffold(context, null);
+          return _buildSummaryScaffold(context, null, exercises);
         }
 
-        return _buildSummaryScaffold(context, session);
+        return _buildSummaryScaffold(context, session, exercises);
       },
     );
   }
 
-  Widget _buildSummaryScaffold(BuildContext context, Session? session) {
+  Widget _buildSummaryScaffold(
+      BuildContext context, Session? session, List<Exercise> exercises) {
     final theme = Theme.of(context);
     final completedBlocks =
         session?.exerciseBlocks.where((b) => b.isStarted).toList() ?? [];
     final totalSets =
         completedBlocks.fold<int>(0, (sum, b) => sum + b.completedSetsCount);
+
+    // Compute suggestions lazily once exercises are available
+    if (completedBlocks.isNotEmpty && exercises.isNotEmpty) {
+      _computeSuggestions(completedBlocks, exercises);
+    }
 
     return Scaffold(
       key: AppKeys.sessionSummaryPage,
@@ -181,6 +234,40 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
                       );
                     },
                     childCount: completedBlocks.length,
+                  ),
+                ),
+              ),
+            // Progression suggestions
+            if (_suggestions.isNotEmpty)
+              SliverPadding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final suggestion = _suggestions[index];
+                      if (_dismissedExerciseIds
+                          .contains(suggestion.exerciseId)) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: ProgressionSuggestionCard(
+                          suggestion: suggestion,
+                          onAccept: () {
+                            setState(() {
+                              _dismissedExerciseIds.add(suggestion.exerciseId);
+                            });
+                          },
+                          onDismiss: () {
+                            setState(() {
+                              _dismissedExerciseIds.add(suggestion.exerciseId);
+                            });
+                          },
+                        ),
+                      );
+                    },
+                    childCount: _suggestions.length,
                   ),
                 ),
               ),

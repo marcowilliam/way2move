@@ -62,9 +62,10 @@ service cloud.firestore {
         && request.auth.uid == request.resource.data.userId;
     }
 
-    // Progression rules: own data only
-    match /progressionRules/{userId} {
-      allow read, write: if isOwner(userId);
+    // Progression rules: own data only (doc IDs are {userId}_{exerciseId} or {userId}_global)
+    match /progressionRules/{ruleId} {
+      allow read, write: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
+      allow create: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
     }
 
     // Goals: own data only
