@@ -64,8 +64,7 @@ void main() {
       expect(find.text('Continue'), findsOneWidget);
     });
 
-    testWidgets('tapping Continue advances to basic info step',
-        (tester) async {
+    testWidgets('tapping Continue advances to basic info step', (tester) async {
       await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
       await tester.pumpAndSettle();
 
@@ -137,8 +136,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Continue button disabled
-      final button = tester.widget<FilledButton>(
-          find.byKey(AppKeys.onboardingNextButton));
+      final button =
+          tester.widget<FilledButton>(find.byKey(AppKeys.onboardingNextButton));
       expect(button.onPressed, isNull);
 
       // Select a goal
@@ -146,8 +145,8 @@ void main() {
       await tester.pump();
 
       // Continue now enabled
-      final buttonAfter = tester.widget<FilledButton>(
-          find.byKey(AppKeys.onboardingNextButton));
+      final buttonAfter =
+          tester.widget<FilledButton>(find.byKey(AppKeys.onboardingNextButton));
       expect(buttonAfter.onPressed, isNotNull);
     });
 
@@ -224,7 +223,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Step 5: equipment — should show "Get Started"
-      expect(find.text('What equipment do you have access to?'), findsOneWidget);
+      expect(
+          find.text('What equipment do you have access to?'), findsOneWidget);
       expect(find.byKey(AppKeys.onboardingDoneButton), findsOneWidget);
       expect(find.text('Get Started'), findsOneWidget);
     });

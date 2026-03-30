@@ -57,9 +57,8 @@ void main() {
 
     test('returns ValidationFailure when name is empty', () async {
       final invalidProfile = tProfile.copyWith(name: '');
-      when(() => mockRepo.updateProfile(any()))
-          .thenAnswer((_) async =>
-              const Left(ValidationFailure('Name cannot be empty')));
+      when(() => mockRepo.updateProfile(any())).thenAnswer(
+          (_) async => const Left(ValidationFailure('Name cannot be empty')));
 
       final result = await updateProfile(invalidProfile);
 

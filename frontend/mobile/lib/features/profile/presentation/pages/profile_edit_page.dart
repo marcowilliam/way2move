@@ -28,18 +28,34 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
   bool _saving = false;
 
   static const _sportOptions = [
-    'Running', 'Climbing', 'Swimming', 'Cycling', 'Yoga',
-    'CrossFit', 'Weightlifting', 'Martial Arts', 'Tennis',
-    'Basketball', 'Soccer', 'Hiking', 'Dance', 'Gymnastics',
+    'Running',
+    'Climbing',
+    'Swimming',
+    'Cycling',
+    'Yoga',
+    'CrossFit',
+    'Weightlifting',
+    'Martial Arts',
+    'Tennis',
+    'Basketball',
+    'Soccer',
+    'Hiking',
+    'Dance',
+    'Gymnastics',
     'General Fitness',
   ];
 
   static const _equipmentOptions = [
-    ('bodyweight', 'Bodyweight'), ('dumbbells', 'Dumbbells'),
-    ('barbell', 'Barbell'), ('kettlebell', 'Kettlebell'),
-    ('bands', 'Resistance Bands'), ('cable_machine', 'Cable Machine'),
-    ('pull_up_bar', 'Pull-up Bar'), ('bench', 'Bench'),
-    ('foam_roller', 'Foam Roller'), ('lacrosse_ball', 'Lacrosse Ball'),
+    ('bodyweight', 'Bodyweight'),
+    ('dumbbells', 'Dumbbells'),
+    ('barbell', 'Barbell'),
+    ('kettlebell', 'Kettlebell'),
+    ('bands', 'Resistance Bands'),
+    ('cable_machine', 'Cable Machine'),
+    ('pull_up_bar', 'Pull-up Bar'),
+    ('bench', 'Bench'),
+    ('foam_roller', 'Foam Roller'),
+    ('lacrosse_ball', 'Lacrosse Ball'),
     ('yoga_mat', 'Yoga Mat'),
   ];
 
@@ -246,12 +262,10 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? AppColors.primary : AppColors.surface,
+                    color: isSelected ? AppColors.primary : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected ? AppColors.primary : AppColors.border,
                     ),
                   ),
                   alignment: Alignment.center,
