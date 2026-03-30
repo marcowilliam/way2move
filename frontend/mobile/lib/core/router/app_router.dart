@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/dashboard/presentation/pages/home_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/profile/presentation/providers/profile_provider.dart';
 import '../../features/compensations/presentation/pages/compensation_detail_page.dart';
 import '../../features/compensations/presentation/pages/compensation_profile_page.dart';
 import '../../features/calendar/presentation/pages/calendar_page.dart';
@@ -24,35 +27,31 @@ import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
 import 'routes.dart';
 
-// Placeholder pages — replaced in their respective blocks
-class _PlaceholderPage extends StatelessWidget {
-  final String title;
-  const _PlaceholderPage({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
-      ),
-    );
-  }
-}
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(firebaseAuthStateProvider);
+  final profileAsync = ref.watch(profileStreamProvider);
 
   return GoRouter(
     initialLocation: Routes.home,
     redirect: (context, state) {
       final isLoggedIn = authState.valueOrNull != null;
       final isOnAuthRoute = state.matchedLocation.startsWith(Routes.auth);
-      final isLoading = authState.isLoading;
+      final isOnboarding = state.matchedLocation == Routes.onboarding;
 
-      if (isLoading) return null;
+      if (authState.isLoading) return null;
       if (!isLoggedIn && !isOnAuthRoute) return Routes.login;
       if (isLoggedIn && isOnAuthRoute) return Routes.home;
+
+      // Wait for profile to load before checking onboarding
+      if (isLoggedIn && profileAsync.isLoading) return null;
+
+      if (isLoggedIn && !isOnboarding) {
+        final profile = profileAsync.valueOrNull;
+        final onboardingDone = profile?.onboardingComplete ?? false;
+        if (!onboardingDone) return Routes.onboarding;
+      }
+
       return null;
     },
     routes: [
@@ -79,7 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.home,
             pageBuilder: (_, state) => CustomTransitionPage(
               key: state.pageKey,
-              child: const _PlaceholderPage(title: 'Home'),
+              child: const HomePage(),
               transitionsBuilder: _fadeTransition,
             ),
           ),
@@ -112,30 +111,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           GoRoute(
-            path: Routes.progress,
-            pageBuilder: (_, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const _PlaceholderPage(title: 'Progress'),
-              transitionsBuilder: _fadeTransition,
-            ),
-          ),
-          GoRoute(
-            path: Routes.profile,
-            pageBuilder: (_, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const _PlaceholderPage(title: 'Profile'),
-              transitionsBuilder: _fadeTransition,
-            ),
-          ),
-          GoRoute(
-            path: Routes.programs,
-            pageBuilder: (_, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const ProgramDetailPage(),
-              transitionsBuilder: _fadeTransition,
-            ),
-          ),
-          GoRoute(
             path: Routes.goals,
             pageBuilder: (_, state) => CustomTransitionPage(
               key: state.pageKey,
@@ -154,6 +129,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ),
               ),
             ],
+          ),
+          GoRoute(
+            path: Routes.profile,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProfilePage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+          ),
+          GoRoute(
+            path: Routes.programs,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProgramDetailPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
           ),
         ],
       ),
@@ -319,9 +310,9 @@ class _AppScaffold extends ConsumerWidget {
             label: 'Exercises',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
-            label: 'Progress',
+            icon: Icon(Icons.flag_outlined),
+            activeIcon: Icon(Icons.flag),
+            label: 'Goals',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -336,17 +327,17 @@ class _AppScaffold extends ConsumerWidget {
   int _locationToIndex(String location) {
     if (location.startsWith(Routes.calendar)) return 1;
     if (location.startsWith(Routes.exercises)) return 2;
-    if (location.startsWith(Routes.progress)) return 3;
+    if (location.startsWith(Routes.goals)) return 3;
     if (location.startsWith(Routes.profile)) return 4;
     return 0;
   }
 
   void _onNavTap(BuildContext context, int index) {
-    final routes = [
+    const routes = [
       Routes.home,
       Routes.calendar,
       Routes.exercises,
-      Routes.progress,
+      Routes.goals,
       Routes.profile,
     ];
     context.go(routes[index]);
