@@ -6,14 +6,26 @@
 
 ---
 
-## Block 0 — ML Model Integration ✅ (framework selected, integration pending)
+## Block 0 — ML Model Integration ✅
 
 - [x] Evaluate and select pose estimation framework (MediaPipe vs ML Kit)
-- [ ] Integrate pose estimation SDK into Flutter project
-- [ ] Build PoseEstimationService wrapper (abstract interface + implementation)
-- [ ] Create landmark extraction pipeline (key joint positions per frame)
-- [ ] Handle on-device inference (no server round-trip for pose detection)
-- [ ] Tests: unit tests for pose data parsing and landmark extraction
+- [x] Integrate pose estimation SDK into Flutter project
+- [x] Build PoseEstimationService wrapper (abstract interface + implementation)
+- [x] Create landmark extraction pipeline (key joint positions per frame)
+- [x] Handle on-device inference (no server round-trip for pose detection)
+- [x] Tests: unit tests for pose data parsing and landmark extraction
+
+### What was implemented
+
+- `flutter_pose_detection: ^0.4.1` added to `pubspec.yaml`
+- Android `minSdk` raised to `31` (required by the SDK) in `android/app/build.gradle.kts`
+- `JointLandmark` enum — maps our 17 tracked joints to MediaPipe BlazePose indices
+- `PoseLandmark` entity — normalised x/y/z + visibility, pure Dart
+- `PoseFrame` entity — timestamp + list of landmarks; provides `angleDegrees()`, `horizontalOffset()`, `verticalOffset()` helpers
+- `PoseEstimationService` abstract interface + `PoseAnalysisResult` return type (named to avoid collision with SDK's `VideoAnalysisResult`)
+- `PoseDetectorAdapter` thin wrapper interface — keeps SDK types out of domain; enables mock injection in tests
+- `FlutterPoseEstimationService` concrete implementation — wraps `NpuPoseDetector`, lazy initialises, maps SDK `Pose` → domain `PoseFrame`
+- 32 passing unit tests (18 entity tests + 14 service tests)
 
 ### Framework decision: `flutter_pose_detection` v0.4.1
 
