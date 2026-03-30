@@ -22,6 +22,9 @@ import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
 import '../../features/programs/presentation/pages/program_builder_page.dart';
 import '../../features/programs/presentation/pages/program_detail_page.dart';
+import '../../features/nutrition/presentation/pages/daily_nutrition_page.dart';
+import '../../features/nutrition/presentation/pages/meal_log_page.dart';
+import '../../features/nutrition/presentation/pages/stomach_pattern_page.dart';
 import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
 import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
@@ -174,6 +177,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           GoRoute(
+            path: Routes.nutrition,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const DailyNutritionPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+          ),
+          GoRoute(
             path: Routes.programs,
             pageBuilder: (_, state) => CustomTransitionPage(
               key: state.pageKey,
@@ -280,6 +291,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: GoalSetupPage(
             fromAssessmentId: state.uri.queryParameters['fromAssessment'],
           ),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.mealLog,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const MealLogPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.stomachPattern,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const StomachPatternPage(),
           transitionsBuilder: _slideTransition,
         ),
       ),
