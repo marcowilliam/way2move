@@ -155,6 +155,41 @@ class _InitialAssessmentFlowState extends ConsumerState<InitialAssessmentFlow> {
     if (mounted) context.go(Routes.home);
   }
 
+  Future<void> _saveAndRecordVideo() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      context.go(Routes.home);
+      return;
+    }
+
+    final assessment = Assessment(
+      id: '',
+      userId: userId,
+      date: DateTime.now(),
+      answers: _form.toAnswersMap(),
+      compensationResults: _detectedPatterns,
+      movementScores: const [],
+      overallScore: _overallScore,
+    );
+
+    final saved =
+        await ref.read(createAssessmentProvider.notifier).submit(assessment);
+
+    if (mounted) {
+      if (saved != null) {
+        context.go(
+          Routes.movementRecording,
+          extra: {'assessmentId': saved.id, 'userId': userId},
+        );
+      } else {
+        context.go(Routes.home);
+      }
+    }
+  }
+
   Future<void> _saveAndBuildProgram() async {
     if (_saving) return;
     setState(() => _saving = true);
@@ -236,6 +271,7 @@ class _InitialAssessmentFlowState extends ConsumerState<InitialAssessmentFlow> {
                     overallScore: _overallScore,
                     saving: _saving,
                     onBuildProgram: _saveAndBuildProgram,
+                    onRecordVideo: _saveAndRecordVideo,
                     onSaveOnly: _saveAndFinish,
                   ),
                 ],
@@ -610,6 +646,7 @@ class _StepResults extends StatelessWidget {
   final double overallScore;
   final bool saving;
   final VoidCallback onBuildProgram;
+  final VoidCallback onRecordVideo;
   final VoidCallback onSaveOnly;
 
   const _StepResults({
@@ -617,6 +654,7 @@ class _StepResults extends StatelessWidget {
     required this.overallScore,
     required this.saving,
     required this.onBuildProgram,
+    required this.onRecordVideo,
     required this.onSaveOnly,
   });
 
@@ -725,13 +763,22 @@ class _StepResults extends StatelessWidget {
               child: const Text('Build My Program'),
             ),
             const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: onSaveOnly,
+            OutlinedButton.icon(
+              onPressed: onRecordVideo,
+              icon: const Icon(Icons.videocam_outlined),
+              label: const Text('Record Movement Video'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 52),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: onSaveOnly,
+              style: TextButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
               ),
               child: const Text('Save & Continue'),
             ),
