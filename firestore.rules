@@ -81,5 +81,21 @@ service cloud.firestore {
       allow create: if isSignedIn()
         && request.auth.uid == request.resource.data.userId;
     }
+
+    // Progress photos: own data only
+    match /progressPhotos/{photoId} {
+      allow read, write: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId;
+    }
+
+    // Weight logs: own data only
+    match /weightLogs/{logId} {
+      allow read, write: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId;
+    }
   }
 }
