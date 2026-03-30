@@ -34,9 +34,13 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _WeekStrip(ref: ref),
                 const SizedBox(height: 16),
+                _MonthlyHeatMap(ref: ref),
+                const SizedBox(height: 16),
                 _GoalProgressSection(ref: ref),
                 const SizedBox(height: 16),
                 _QuickActionsGrid(ref: ref),
+                const SizedBox(height: 16),
+                _TrackTodayGrid(),
               ]),
             ),
           ),
@@ -670,6 +674,188 @@ class _GoalMiniCard extends StatelessWidget {
   }
 }
 
+// ── Monthly Heat Map ──────────────────────────────────────────────────────────
+
+class _MonthlyHeatMap extends ConsumerWidget {
+  const _MonthlyHeatMap({required this.ref});
+  final WidgetRef ref;
+
+  static const _dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  @override
+  Widget build(BuildContext context, WidgetRef widgetRef) {
+    final sessions = widgetRef.watch(currentMonthSessionsProvider);
+    final now = DateTime.now();
+    final monthName =
+        const ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][now.month];
+
+    // Build a set of day-of-month numbers that have completed sessions.
+    final completedDays = sessions
+        .where((s) => s.status == SessionStatus.completed)
+        .map((s) => s.date.day)
+        .toSet();
+    final plannedDays = sessions
+        .where((s) => s.status == SessionStatus.planned)
+        .map((s) => s.date.day)
+        .toSet();
+
+    final firstDay = DateTime(now.year, now.month, 1);
+    // weekday: 1=Mon…7=Sun; leading empty cells so day 1 lands on correct column
+    final leadingBlanks = firstDay.weekday - 1;
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+
+    return Card(
+      key: AppKeys.monthlyHeatMap,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$monthName ${now.year}',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  '${completedDays.length} session${completedDays.length == 1 ? '' : 's'}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.accentGreen,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Day of week header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _dayLabels
+                  .map(
+                    (l) => SizedBox(
+                      width: 28,
+                      child: Text(
+                        l,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 4),
+            // Day grid
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childAspectRatio: 1,
+              ),
+              itemCount: leadingBlanks + daysInMonth,
+              itemBuilder: (context, index) {
+                if (index < leadingBlanks) return const SizedBox.shrink();
+                final day = index - leadingBlanks + 1;
+                final isToday = day == now.day;
+                final isDone = completedDays.contains(day);
+                final isPlanned = plannedDays.contains(day);
+                final isFuture = day > now.day;
+
+                Color bgColor;
+                Color? borderColor;
+                Widget? child;
+
+                if (isDone) {
+                  bgColor = AppColors.accentGreen;
+                  child = const Icon(Icons.check, size: 10, color: Colors.white);
+                } else if (isPlanned && !isFuture) {
+                  bgColor = AppColors.sessionPlanned.withAlpha(51);
+                  borderColor = AppColors.sessionPlanned;
+                } else if (isToday) {
+                  bgColor = AppColors.primary.withAlpha(26);
+                  borderColor = AppColors.primary;
+                } else {
+                  bgColor = isFuture
+                      ? Colors.transparent
+                      : AppColors.surfaceVariant;
+                }
+
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(4),
+                    border: borderColor != null
+                        ? Border.all(color: borderColor, width: 1.5)
+                        : null,
+                  ),
+                  child: Center(
+                    child: child ??
+                        Text(
+                          '$day',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(
+                                fontSize: 9,
+                                color: isDone
+                                    ? Colors.white
+                                    : isFuture
+                                        ? AppColors.textSecondary.withAlpha(102)
+                                        : isToday
+                                            ? AppColors.primary
+                                            : AppColors.textSecondary,
+                                fontWeight: isToday
+                                    ? FontWeight.w700
+                                    : FontWeight.normal,
+                              ),
+                        ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            // Legend
+            Row(
+              children: [
+                const _HeatMapLegendDot(color: AppColors.accentGreen),
+                const SizedBox(width: 4),
+                Text('Done', style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(width: 12),
+                const _HeatMapLegendDot(color: AppColors.surfaceVariant),
+                const SizedBox(width: 4),
+                Text('Rest', style: Theme.of(context).textTheme.labelSmall),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeatMapLegendDot extends StatelessWidget {
+  const _HeatMapLegendDot({required this.color});
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(2),
+      ),
+    );
+  }
+}
+
 // ── Quick Actions Grid ────────────────────────────────────────────────────────
 
 class _QuickActionsGrid extends ConsumerWidget {
@@ -697,26 +883,6 @@ class _QuickActionsGrid extends ConsumerWidget {
               onTap: () => context.push(Routes.sessionStandalone),
             ),
             _QuickActionTile(
-              icon: Icons.mic_outlined,
-              label: 'Log Journal',
-              onTap: () => context.push(Routes.journalEntry),
-            ),
-            _QuickActionTile(
-              icon: Icons.restaurant_outlined,
-              label: 'Log Meal',
-              onTap: () => context.push(Routes.mealLog),
-            ),
-            _QuickActionTile(
-              icon: Icons.bedtime_outlined,
-              label: 'Log Sleep',
-              onTap: () => context.push(Routes.sleep),
-            ),
-            _QuickActionTile(
-              icon: Icons.photo_camera_outlined,
-              label: 'Progress Photo',
-              onTap: () => context.push(Routes.photoCapture),
-            ),
-            _QuickActionTile(
               icon: Icons.assignment_outlined,
               label: 'Assessment',
               onTap: () => context.push(Routes.assessment),
@@ -738,8 +904,59 @@ class _QuickActionsGrid extends ConsumerWidget {
   }
 }
 
+// ── Track Today Grid ──────────────────────────────────────────────────────────
+
+class _TrackTodayGrid extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      key: AppKeys.trackTodayGrid,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Track Today', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 2.4,
+          children: [
+            _QuickActionTile(
+              key: AppKeys.quickActionLogJournal,
+              icon: Icons.mic_outlined,
+              label: 'Journal',
+              onTap: () => context.push(Routes.journalEntry),
+            ),
+            _QuickActionTile(
+              key: AppKeys.quickActionLogMeal,
+              icon: Icons.restaurant_outlined,
+              label: 'Log Meal',
+              onTap: () => context.push(Routes.mealLog),
+            ),
+            _QuickActionTile(
+              key: AppKeys.quickActionLogSleep,
+              icon: Icons.bedtime_outlined,
+              label: 'Log Sleep',
+              onTap: () => context.push(Routes.sleep),
+            ),
+            _QuickActionTile(
+              key: AppKeys.quickActionProgressPhoto,
+              icon: Icons.camera_alt_outlined,
+              label: 'Progress Photo',
+              onTap: () => context.push(Routes.photoCapture),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _QuickActionTile extends StatelessWidget {
   const _QuickActionTile({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
