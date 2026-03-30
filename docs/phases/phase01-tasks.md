@@ -261,7 +261,7 @@
 
 ---
 
-## Block 10 — Journaling System (Voice-First)
+## Block 10 — Journaling System (Voice-First) ✅
 
 - [x] Domain: Journal entity (id, userId, date, type, content, audioUrl, mood, energyLevel, painPoints, linkedSessionId, autoCreatedEntities)
 - [x] Domain: JournalRepository interface (create, getByDate, getByType, getForSession, getHistory)
@@ -270,13 +270,16 @@
 - [x] Data: FirestoreJournalDatasource
 - [x] Data: JournalRepositoryImpl
 - [x] Voice input: integrate speech_to_text package for on-device transcription
-- [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, for reference)
-- [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
+- [x] Voice recording: record package records .m4a to temp file alongside STT; uploads to Firebase Storage on save; audioUrl stored in journal entry
+- [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map, audio recorded indicator
 - [x] Presentation: JournalHistoryPage — chronological list with type filters
-- [x] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
+- [x] Presentation: JournalPrompts — contextual prompts for each journal type
 - [x] Link pre/post-session journals to specific sessions
-- [x] Tests: unit tests for journal use cases
-- [x] Tests: widget tests for journal entry and history pages
+- [x] Tests: unit tests for journal use cases, AudioRecordingService (6), JournalAudioStorageDatasource (3)
+- [x] Tests: widget tests for journal entry and history pages (73 total journal tests)
+
+### UI — What to test (audio recording addition)
+- **JournalEntryPage** audio recording: tap the mic button to start → button turns red with stop icon and pulses; status label shows "Listening..."; speak into mic → transcription appears in live preview and mirrors to the text field; tap again to stop → "Audio recorded — will upload with entry" indicator appears below the mic in green; tap Save — journal entry saves with audioUrl in Firestore pointing to `users/{uid}/journals/journal_audio_{timestamp}.m4a` in Firebase Storage
 
 ---
 
