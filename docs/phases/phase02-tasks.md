@@ -148,15 +148,37 @@ Navigate to the movement recording screen via `context.push(Routes.movementRecor
 
 ---
 
-## Block 2 — Compensation Detection
+## Block 2 — Compensation Detection ✅
 
-- [ ] Define compensation threshold rules as structured data (angle thresholds per movement per compensation)
-- [ ] `CompensationDetector` service: takes List\<PoseFrame\> + movement name → List\<DetectedCompensation\>
-- [ ] Map pose landmark angles to each Phase 1 `CompensationPattern` enum value
-- [ ] Score severity: mild (threshold exceeded < 30% of frames), moderate (30–60%), significant (>60%)
-- [ ] Generate `CompensationReport` from video analysis (one report per assessment)
-- [ ] Merge AI detection results with questionnaire-based results from Phase 1 (union, AI result takes precedence on severity)
-- [ ] Tests: unit tests for each threshold rule with boundary values (red → green TDD)
+- [x] Define compensation threshold rules as structured data (angle thresholds per movement per compensation)
+- [x] `CompensationDetector` service: takes List\<PoseFrame\> + movement name → List\<DetectedCompensation\>
+- [x] Map pose landmark angles to each Phase 1 `CompensationPattern` enum value
+- [x] Score severity: mild (threshold exceeded < 30% of frames), moderate (30–60%), significant (>60%)
+- [x] Generate `CompensationReport` from video analysis (one report per assessment)
+- [x] Merge AI detection results with questionnaire-based results from Phase 1 (union, AI result takes precedence on severity)
+- [x] Tests: unit tests for each threshold rule with boundary values (red → green TDD)
+
+### What was implemented
+
+- `CompensationSeverity` enum (`mild` / `moderate` / `significant`) with `fromFrameRatio()` factory
+- `DetectedCompensation` entity — pattern + affectedFrameCount / totalFrameCount; `severity` derived from frame ratio; equality by pattern
+- `CompensationReport` entity — holds `List<DetectedCompensation>`; provides `detectionFor()`, `sortedByPriority`, and the `merge()` factory constructor
+- `VideoCompensationDetector` static service — evaluates each `PoseFrame` against threshold rules for the given `ScreeningMovement`:
+  - **kneeValgus** (overheadSquat): knee X caves inward past ankle X by > 0.04 normalised units (≈ 10°)
+  - **limitedDorsiflexion** (overheadSquat): heel Y rises above ankle Y by > 0.04 normalised units
+  - **weakGluteMed** (singleLegStance): |leftHip.y − rightHip.y| > 0.05 normalised units (Trendelenburg drop)
+  - **roundedShoulders** (shoulderRaise): hip→shoulder→elbow angle < 160° on either side
+  - **forwardHeadPosture** (all movements): nose horizontal deviation from mid-shoulder > 15 % of shoulder width
+- `CompensationReport.merge()` — union of questionnaire patterns and video detections; AI severity takes precedence; questionnaire-only patterns default to mild
+- 43 passing unit tests (11 entity + 11 report + 21 detector)
+
+### UI — What to test
+
+Block 2 is a domain-layer feature with no new screens. The compensation detection results will surface in the assessment results UI (Block 3). There is nothing new to tap or see in the UI for Block 2 in isolation.
+
+**To verify the detection logic is wired correctly:**
+1. Run the unit tests: `flutter test lib/features/assessments/domain/entities/detected_compensation_test.dart lib/features/assessments/domain/entities/compensation_report_test.dart lib/features/assessments/domain/services/video_compensation_detector_test.dart`
+2. All 43 tests should pass (green).
 
 ### Threshold reference (starting values — tune with user testing)
 

@@ -55,8 +55,9 @@ class AnalyzeMovementVideo {
         return Right<AppFailure, String>(path);
       },
     );
-    if (uploadEither.isLeft())
+    if (uploadEither.isLeft()) {
       return Left(uploadEither.getLeft().toNullable()!);
+    }
 
     // Step 2 — Pose estimation (on-device, NPU mode for battery efficiency)
     final PoseAnalysisResult poseResult;
