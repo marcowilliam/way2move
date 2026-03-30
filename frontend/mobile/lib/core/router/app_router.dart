@@ -24,6 +24,7 @@ import '../../features/assessments/presentation/pages/initial_assessment_flow.da
 import '../../features/assessments/presentation/pages/movement_recording_page.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../../features/exercises/presentation/pages/exercise_list_page.dart';
+import '../../features/programs/presentation/pages/ai_recommendation_review_page.dart';
 import '../../features/programs/presentation/pages/program_builder_page.dart';
 import '../../features/programs/presentation/pages/program_detail_page.dart';
 import '../../features/nutrition/presentation/pages/daily_nutrition_page.dart';
@@ -409,6 +410,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const ProgressionSettingsPage(),
           transitionsBuilder: _slideTransition,
         ),
+      ),
+      GoRoute(
+        path: Routes.aiRecommendation,
+        pageBuilder: (_, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: AIRecommendationReviewPage(
+              report: extra['report'] as dynamic,
+              profile: extra['profile'] as dynamic,
+            ),
+            transitionsBuilder: _slideTransition,
+          );
+        },
       ),
     ],
   );

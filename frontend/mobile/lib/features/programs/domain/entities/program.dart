@@ -84,6 +84,7 @@ class Program {
   final WeekTemplate weekTemplate;
   final bool isActive;
   final DateTime createdAt;
+  final String? basedOnAssessmentId;
 
   const Program({
     required this.id,
@@ -94,6 +95,7 @@ class Program {
     required this.weekTemplate,
     required this.isActive,
     required this.createdAt,
+    this.basedOnAssessmentId,
   });
 
   Program copyWith({
@@ -105,6 +107,7 @@ class Program {
     WeekTemplate? weekTemplate,
     bool? isActive,
     DateTime? createdAt,
+    String? basedOnAssessmentId,
   }) =>
       Program(
         id: id ?? this.id,
@@ -115,6 +118,7 @@ class Program {
         weekTemplate: weekTemplate ?? this.weekTemplate,
         isActive: isActive ?? this.isActive,
         createdAt: createdAt ?? this.createdAt,
+        basedOnAssessmentId: basedOnAssessmentId ?? this.basedOnAssessmentId,
       );
 
   @override

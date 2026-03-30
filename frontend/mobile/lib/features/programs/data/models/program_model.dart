@@ -10,6 +10,7 @@ class ProgramModel {
   final Map<String, dynamic> weekTemplate;
   final bool isActive;
   final DateTime createdAt;
+  final String? basedOnAssessmentId;
 
   const ProgramModel({
     required this.id,
@@ -20,6 +21,7 @@ class ProgramModel {
     required this.weekTemplate,
     required this.isActive,
     required this.createdAt,
+    this.basedOnAssessmentId,
   });
 
   factory ProgramModel.fromFirestore(DocumentSnapshot doc) {
@@ -34,6 +36,7 @@ class ProgramModel {
           Map<String, dynamic>.from(data['weekTemplate'] as Map? ?? {}),
       isActive: data['isActive'] as bool? ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      basedOnAssessmentId: data['basedOnAssessmentId'] as String?,
     );
   }
 
@@ -45,6 +48,8 @@ class ProgramModel {
         'weekTemplate': weekTemplate,
         'isActive': isActive,
         'createdAt': Timestamp.fromDate(createdAt),
+        if (basedOnAssessmentId != null)
+          'basedOnAssessmentId': basedOnAssessmentId,
       };
 
   Program toEntity() => Program(
@@ -56,6 +61,7 @@ class ProgramModel {
         weekTemplate: _deserializeWeekTemplate(weekTemplate),
         isActive: isActive,
         createdAt: createdAt,
+        basedOnAssessmentId: basedOnAssessmentId,
       );
 
   factory ProgramModel.fromEntity(Program entity) => ProgramModel(
@@ -67,6 +73,7 @@ class ProgramModel {
         weekTemplate: _serializeWeekTemplate(entity.weekTemplate),
         isActive: entity.isActive,
         createdAt: entity.createdAt,
+        basedOnAssessmentId: entity.basedOnAssessmentId,
       );
 
   // ── Serialization helpers ──────────────────────────────────────────────────
