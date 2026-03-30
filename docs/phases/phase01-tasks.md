@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 233 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15)
+**Current test count: 258 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15, sleep: 25)
 
 ---
 
@@ -312,18 +312,26 @@
 
 ---
 
-## Block 13 — Sleep Logging
+## Block 13 — Sleep Logging ✅
 
-- [ ] Domain: SleepLog entity (id, userId, bedTime, wakeTime, quality, notes, date)
-- [ ] Domain: SleepRepository interface (log, getLogs, getAverageQuality)
-- [ ] Domain: LogSleep, GetSleepLogs, GetAverageSleepQuality use cases
-- [ ] Data: SleepLogModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreSleepDatasource
-- [ ] Data: SleepRepositoryImpl
-- [ ] Presentation: SleepLogEntryWidget (quick entry: bed time, wake time, quality 1-5, optional notes)
-- [ ] Presentation: SleepHistoryChart (7-day and 30-day views with quality trend line)
-- [ ] Tests: unit tests for use cases
-- [ ] Tests: widget tests for sleep entry and chart
+- [x] Domain: SleepLog entity (id, userId, bedTime, wakeTime, quality, notes, date)
+- [x] Domain: SleepRepository interface (log, getLogs, getAverageQuality)
+- [x] Domain: LogSleep, GetSleepLogs, GetAverageSleepQuality use cases
+- [x] Data: SleepLogModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreSleepDatasource
+- [x] Data: SleepRepositoryImpl
+- [x] Presentation: SleepLogEntryPage (full page: bed time, wake time, quality 1-5 selector, optional notes, save button)
+- [x] Presentation: SleepHistoryChart (7-day and 30-day views with quality bar chart, empty state)
+- [x] Presentation: SleepHistoryPage (list view with chart header, pull to refresh)
+- [x] Routes: /sleep (log entry) and /sleep/history added to GoRouter
+- [x] Firestore security rules: sleepLogs collection (already present)
+- [x] Tests: unit tests for LogSleep, GetSleepLogs, GetAverageSleepQuality use cases (11 tests)
+- [x] Tests: widget tests for SleepLogEntryPage (8 tests) and SleepHistoryChart (6 tests)
+
+### UI — What to test
+- **SleepLogEntryPage** (`/sleep`): bed time + wake time pickers (showTimePicker), calculated duration shown, quality 1–5 chip selector (labels: Poor/Fair/Okay/Good/Excellent), optional notes field, Save button disabled until quality selected, success SnackBar on save, error SnackBar on failure
+- **SleepHistoryPage** (`/sleep/history`): chart at top, list of past logs (date, time range, duration, stars), empty state, pull to refresh
+- **SleepHistoryChart**: 7-day/30-day toggle, bar chart with color-coded quality bars (red=1, orange=2, yellow=3, green=4, teal=5), average quality label, empty state
 
 ---
 

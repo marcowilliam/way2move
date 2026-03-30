@@ -176,7 +176,8 @@ void main() {
       expect(find.text('Climbing'), findsOneWidget);
     });
 
-    testWidgets('skip button calls completeOnboarding with onboardingComplete true',
+    testWidgets(
+        'skip button calls completeOnboarding with onboardingComplete true',
         (tester) async {
       when(() => mockRepo.updateProfile(any()))
           .thenAnswer((_) async => Right(UserProfile(
