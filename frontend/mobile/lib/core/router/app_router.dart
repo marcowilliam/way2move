@@ -27,14 +27,27 @@ import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
 import 'routes.dart';
 
+// Notifies GoRouter to re-evaluate redirects when auth or profile state changes.
+// Using ref.listen (not ref.watch) means the Provider itself never rebuilds —
+// the GoRouter instance is created once and stays stable for the app's lifetime.
+class _RouterRefreshNotifier extends ChangeNotifier {
+  _RouterRefreshNotifier(Ref ref) {
+    ref.listen(firebaseAuthStateProvider, (_, __) => notifyListeners());
+    ref.listen(profileStreamProvider, (_, __) => notifyListeners());
+  }
+}
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(firebaseAuthStateProvider);
-  final profileAsync = ref.watch(profileStreamProvider);
+  final notifier = _RouterRefreshNotifier(ref);
+  ref.onDispose(notifier.dispose);
 
   return GoRouter(
     initialLocation: Routes.home,
+    refreshListenable: notifier,
     redirect: (context, state) {
+      final authState = ref.read(firebaseAuthStateProvider);
+      final profileAsync = ref.read(profileStreamProvider);
+
       final isLoggedIn = authState.valueOrNull != null;
       final isOnAuthRoute = state.matchedLocation.startsWith(Routes.auth);
       final isOnboarding = state.matchedLocation == Routes.onboarding;
@@ -43,17 +56,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!isLoggedIn && !isOnAuthRoute) return Routes.login;
       if (isLoggedIn && isOnAuthRoute) return Routes.home;
 
-      // Wait for profile to load before checking onboarding
+      // Wait for profile to load before checking onboarding status.
       if (isLoggedIn && profileAsync.isLoading) return null;
 
       if (isLoggedIn) {
-        final profile = profileAsync.valueOrNull;
-        final onboardingDone = profile?.onboardingComplete ?? false;
-
-        // Forward: completed onboarding → leave the onboarding screen
+        final onboardingDone =
+            profileAsync.valueOrNull?.onboardingComplete ?? false;
         if (isOnboarding && onboardingDone) return Routes.home;
-
-        // Backward: not done yet and not already on onboarding → send there
         if (!isOnboarding && !onboardingDone) return Routes.onboarding;
       }
 

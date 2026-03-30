@@ -23,7 +23,8 @@ service cloud.firestore {
     // User documents: own profile only
     match /users/{userId} {
       allow read: if isOwner(userId);
-      allow create: if false;   // created by onUserCreate Cloud Function
+      // Allow create so onboarding save works even if onUserCreate hasn't fired yet
+      allow create: if isOwner(userId);
       allow update: if isOwner(userId)
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['id', 'email', 'meta']);
       allow delete: if false;
