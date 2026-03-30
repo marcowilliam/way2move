@@ -422,7 +422,7 @@
 
 ---
 
-## Block 17 — Dashboard & Navigation ✅ (core implemented)
+## Block 17 — Dashboard & Navigation ✅
 
 - [x] Home dashboard: today's session card, goal progress cards (top 3 active), weekly overview strip, quick actions grid
 - [x] Missed-day motivation: if user missed yesterday, show encouraging banner (not guilt-based)
@@ -435,9 +435,9 @@
 - [x] Profile page: avatar initial + name header, stats row (streak/sessions/goals), nav tiles to all features, sign out
 - [x] App theme and styling: uses AppTheme.light/dark throughout, earth tones, rounded cards
 - [x] Animated screen transitions: all routes use CustomTransitionPage with fade/slide builders
-- [x] Tests: 8 widget tests for HomePage, 7 widget tests for ProfilePage
-- [ ] Quick actions: log journal (voice), log meal, log sleep, take progress photo — deferred (Blocks 10–14 not built)
-- [ ] Monthly glance heat map — deferred (requires full history aggregation)
+- [x] Quick actions: log journal (voice), log meal, log sleep, take progress photo — "Track Today" section
+- [x] Monthly glance heat map — compact 7-col grid for current month, green=completed, today highlighted
+- [x] Tests: 9 widget tests for HomePage (includes Track Today + heat map tests), 7 widget tests for ProfilePage
 
 ### UI — What to test
 - **HomePage** (`/`, Home tab):
@@ -445,8 +445,10 @@
   - **Today's session card**: if no session → "No session today" + "Start Session" button; if session planned → focus name + "Planned" chip + exercise count + "Start Session" button; if completed → green "Great work today!" card; if in progress → primary-color banner "Tap to continue"
   - **Missed-day banner** (inside no-session card): if user had no completed session yesterday → warm "Back on track — every session counts." message
   - **This Week strip**: 7 circles labelled M T W T F S S; today's circle has a primary-colour border; days with completed sessions show a green filled circle with a checkmark
+  - **Monthly heat map** (new): card showing current month name + year header; row of M T W T F S S column headers; compact grid of day cells — green filled with ✓ = completed session, primary border = today, muted = future, surfaceVariant = past rest day; session count shown top-right (e.g. "3 sessions"); legend row: green dot "Done" + grey dot "Rest"
   - **Active Goals section**: if goals exist → "Active Goals" header + "See all" link + up to 3 goal mini-cards (name, progress bar, current/target/unit); if no goals → "No active goals" card with "Start" → Assessment
   - **Quick Actions grid** (2×2): "New Session", "Assessment", "My Program", "Exercises"
+  - **Track Today grid** (new, 2×2 below Quick Actions): "Journal" (mic icon) → /journal/entry; "Log Meal" (restaurant icon) → /nutrition/log; "Log Sleep" (bedtime icon) → /sleep; "Progress Photo" (camera icon) → /progress/capture
 - **ProfilePage** (`/profile`, Profile tab):
   - AppBar "Profile" + "Edit" text button → /profile/edit
   - Header: circle avatar with initial letter, name, email, training goal badge (e.g. "Mobility")
