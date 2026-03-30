@@ -17,7 +17,7 @@
 
 ---
 
-## Block 1 — External AI API Setup & Photo Food Recognition
+## Block 1 — External AI API Setup & Photo Food Recognition not for now
 
 - [ ] Evaluate food recognition APIs (Google Cloud Vision, Clarifai, LogMeal, or similar)
 - [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
