@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_keys.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../nutrition/domain/entities/meal.dart' as nutrition;
+import '../../../nutrition/data/repositories/meal_repository_impl.dart';
+import '../../../sessions/data/repositories/session_repository_impl.dart';
+import '../../../sessions/domain/entities/session.dart';
+import '../../../sessions/domain/usecases/create_session.dart';
+import '../../../nutrition/domain/usecases/create_meal.dart';
+import '../../data/repositories/journal_repository_impl.dart';
 import '../../domain/services/entity_extraction_service.dart';
 
-class ReviewAutoCreatedPage extends StatefulWidget {
+class ReviewAutoCreatedPage extends ConsumerStatefulWidget {
   final String journalId;
   final List<ExtractedSession> sessions;
   final List<ExtractedMeal> meals;
@@ -18,13 +27,15 @@ class ReviewAutoCreatedPage extends StatefulWidget {
   });
 
   @override
-  State<ReviewAutoCreatedPage> createState() => _ReviewAutoCreatedPageState();
+  ConsumerState<ReviewAutoCreatedPage> createState() =>
+      _ReviewAutoCreatedPageState();
 }
 
-class _ReviewAutoCreatedPageState extends State<ReviewAutoCreatedPage> {
+class _ReviewAutoCreatedPageState extends ConsumerState<ReviewAutoCreatedPage> {
   late List<_ReviewSession> _sessions;
   late List<_ReviewMeal> _meals;
   late List<ExtractedBodyMention> _bodyMentions;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -43,16 +54,77 @@ class _ReviewAutoCreatedPageState extends State<ReviewAutoCreatedPage> {
     return includedSessions + includedMeals + _bodyMentions.length;
   }
 
-  void _save() {
-    // In a full implementation this would create Firestore docs for the
-    // included entities. For now we pop back with a success message.
+  nutrition.MealType _toNutritionMealType(MealType type) => switch (type) {
+        MealType.breakfast => nutrition.MealType.breakfast,
+        MealType.lunch => nutrition.MealType.lunch,
+        MealType.dinner => nutrition.MealType.dinner,
+        MealType.snack => nutrition.MealType.snack,
+        MealType.drink => nutrition.MealType.drink,
+        MealType.general => nutrition.MealType.snack,
+      };
+
+  Future<void> _save() async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+      return;
+    }
+
+    setState(() => _saving = true);
+
+    final sessionRepo = ref.read(sessionRepositoryProvider);
+    final mealRepo = ref.read(mealRepositoryProvider);
+    final journalRepo = ref.read(journalRepositoryProvider);
+    final createdIds = <String>[];
+    final now = DateTime.now();
+
+    // Create session documents
+    for (final item in _sessions.where((s) => s.included)) {
+      final session = Session(
+        id: '',
+        userId: userId,
+        date: now,
+        status: SessionStatus.completed,
+        exerciseBlocks: const [],
+        focus: item.session.activityType,
+        durationMinutes: item.session.durationMinutes,
+        notes: item.session.rawText,
+      );
+      final result = await CreateSession(sessionRepo)(session);
+      result.fold((_) {}, (s) => createdIds.add(s.id));
+    }
+
+    // Create meal documents
+    for (final item in _meals.where((m) => m.included)) {
+      final meal = nutrition.Meal(
+        id: '',
+        userId: userId,
+        date: now,
+        mealType: _toNutritionMealType(item.mealType),
+        description: item.meal.description,
+        stomachFeeling: item.meal.stomachFeeling,
+        source: 'voice',
+        linkedJournalId: widget.journalId,
+      );
+      final result = await CreateMeal(mealRepo)(meal);
+      result.fold((_) {}, (m) => createdIds.add(m.id));
+    }
+
+    // Store created entity IDs back in the journal
+    if (createdIds.isNotEmpty) {
+      await journalRepo.updateAutoCreatedEntities(
+          widget.journalId, createdIds);
+    }
+
+    if (!mounted) return;
+    setState(() => _saving = false);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-            'Created $_totalItems item${_totalItems == 1 ? '' : 's'} from your journal.'),
+            'Created ${createdIds.length} item${createdIds.length == 1 ? '' : 's'} from your journal.'),
       ),
     );
-    // Pop back to the route that launched journal entry
     Navigator.popUntil(context, (route) => route.isFirst);
   }
 
@@ -173,7 +245,7 @@ class _ReviewAutoCreatedPageState extends State<ReviewAutoCreatedPage> {
               // Skip
               TextButton(
                 key: AppKeys.journalSkipButton,
-                onPressed: () => Navigator.maybePop(context),
+                onPressed: _saving ? null : () => Navigator.maybePop(context),
                 child: const Text('Skip'),
               ),
               const SizedBox(width: 12),
@@ -181,9 +253,18 @@ class _ReviewAutoCreatedPageState extends State<ReviewAutoCreatedPage> {
               Expanded(
                 child: FilledButton(
                   key: AppKeys.journalSaveCreateButton,
-                  onPressed: _totalItems > 0 ? _save : null,
-                  child: Text(
-                      'Save & Create $_totalItems item${_totalItems == 1 ? '' : 's'}'),
+                  onPressed: (_totalItems > 0 && !_saving) ? _save : null,
+                  child: _saving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          'Save & Create $_totalItems item${_totalItems == 1 ? '' : 's'}'),
                 ),
               ),
             ],

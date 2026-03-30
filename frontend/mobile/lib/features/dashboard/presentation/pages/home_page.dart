@@ -697,6 +697,26 @@ class _QuickActionsGrid extends ConsumerWidget {
               onTap: () => context.push(Routes.sessionStandalone),
             ),
             _QuickActionTile(
+              icon: Icons.mic_outlined,
+              label: 'Log Journal',
+              onTap: () => context.push(Routes.journalEntry),
+            ),
+            _QuickActionTile(
+              icon: Icons.restaurant_outlined,
+              label: 'Log Meal',
+              onTap: () => context.push(Routes.mealLog),
+            ),
+            _QuickActionTile(
+              icon: Icons.bedtime_outlined,
+              label: 'Log Sleep',
+              onTap: () => context.push(Routes.sleep),
+            ),
+            _QuickActionTile(
+              icon: Icons.photo_camera_outlined,
+              label: 'Progress Photo',
+              onTap: () => context.push(Routes.photoCapture),
+            ),
+            _QuickActionTile(
               icon: Icons.assignment_outlined,
               label: 'Assessment',
               onTap: () => context.push(Routes.assessment),
