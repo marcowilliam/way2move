@@ -25,6 +25,8 @@ import '../../features/programs/presentation/pages/program_detail_page.dart';
 import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
 import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
+import '../../features/sleep/presentation/pages/sleep_history_page.dart';
+import '../../features/sleep/presentation/pages/sleep_log_entry_page.dart';
 import 'routes.dart';
 
 // Notifies GoRouter to re-evaluate redirects when auth or profile state changes.
@@ -36,6 +38,7 @@ class _RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(profileStreamProvider, (_, __) => notifyListeners());
   }
 }
+
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterRefreshNotifier(ref);
@@ -151,6 +154,24 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: const ProfilePage(),
               transitionsBuilder: _fadeTransition,
             ),
+          ),
+          GoRoute(
+            path: Routes.sleep,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SleepLogEntryPage(),
+              transitionsBuilder: _slideTransition,
+            ),
+            routes: [
+              GoRoute(
+                path: 'history',
+                pageBuilder: (_, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const SleepHistoryPage(),
+                  transitionsBuilder: _slideTransition,
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: Routes.programs,
