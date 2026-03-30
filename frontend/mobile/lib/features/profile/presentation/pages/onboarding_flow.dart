@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_keys.dart';
+import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/user_profile.dart';
@@ -155,9 +157,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
             const SnackBar(content: Text('Failed to save profile')),
           );
         },
-        // Navigation is handled reactively by the router once the profile
-        // stream emits onboardingComplete: true — do not navigate manually.
-        (_) => null,
+        (_) => context.go(Routes.home),
       );
     }
   }

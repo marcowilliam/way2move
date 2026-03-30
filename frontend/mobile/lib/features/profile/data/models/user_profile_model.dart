@@ -129,9 +129,6 @@ class UserProfileModel {
         'availableEquipment': availableEquipment,
         'injuries': injuries.map((i) => i.toMap()).toList(),
         'onboardingComplete': onboardingComplete,
-        'meta': {
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
       };
 
   UserProfile toEntity() => UserProfile(
