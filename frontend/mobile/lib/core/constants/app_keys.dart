@@ -113,6 +113,16 @@ abstract class AppKeys {
   static const photoSaveButton = Key('photo_save_button');
   static const photoTimelinePage = Key('photo_timeline_page');
 
+  // Journal
+  static const journalEntryPage = Key('journal_entry_page');
+  static const journalHistoryPage = Key('journal_history_page');
+  static const reviewAutoCreatedPage = Key('review_auto_created_page');
+  static const journalContentField = Key('journal_content_field');
+  static const journalSaveButton = Key('journal_save_button');
+  static const journalMicButton = Key('journal_mic_button');
+  static const journalSkipButton = Key('journal_skip_button');
+  static const journalSaveCreateButton = Key('journal_save_create_button');
+
   // Calendar
   static const calendarPage = Key('calendar_page');
   static const calendarMonthGrid = Key('calendar_month_grid');

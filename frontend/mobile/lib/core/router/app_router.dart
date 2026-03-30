@@ -28,6 +28,11 @@ import '../../features/programs/presentation/pages/program_detail_page.dart';
 import '../../features/nutrition/presentation/pages/daily_nutrition_page.dart';
 import '../../features/nutrition/presentation/pages/meal_log_page.dart';
 import '../../features/nutrition/presentation/pages/stomach_pattern_page.dart';
+import '../../features/journal/domain/entities/journal_entry.dart';
+import '../../features/journal/domain/services/entity_extraction_service.dart';
+import '../../features/journal/presentation/pages/journal_entry_page.dart';
+import '../../features/journal/presentation/pages/journal_history_page.dart';
+import '../../features/journal/presentation/pages/review_auto_created_page.dart';
 import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
 import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
@@ -336,6 +341,50 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const PhotoTimelinePage(),
           transitionsBuilder: _slideTransition,
         ),
+      ),
+      GoRoute(
+        path: Routes.journalEntry,
+        pageBuilder: (_, state) {
+          final typeStr = state.uri.queryParameters['type'] ?? 'general';
+          final sessionId = state.uri.queryParameters['sessionId'];
+          final type = JournalType.values.firstWhere(
+            (t) => t.name == typeStr,
+            orElse: () => JournalType.general,
+          );
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: JournalEntryPage(
+              type: type,
+              linkedSessionId: sessionId,
+            ),
+            transitionsBuilder: _slideTransition,
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.journalHistory,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const JournalHistoryPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.reviewAutoCreated,
+        pageBuilder: (_, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ReviewAutoCreatedPage(
+              journalId: extra['journalId'] as String? ?? '',
+              sessions: (extra['sessions'] as List<ExtractedSession>?) ?? [],
+              meals: (extra['meals'] as List<ExtractedMeal>?) ?? [],
+              bodyMentions:
+                  (extra['bodyMentions'] as List<ExtractedBodyMention>?) ?? [],
+            ),
+            transitionsBuilder: _slideTransition,
+          );
+        },
       ),
     ],
   );

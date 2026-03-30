@@ -38,4 +38,9 @@ abstract class Routes {
   // Progress
   static const photoCapture = '/progress/capture';
   static const photoTimeline = '/progress/timeline';
+
+  // Journal
+  static const journalEntry = '/journal/entry';
+  static const journalHistory = '/journal/history';
+  static const reviewAutoCreated = '/journal/review';
 }
