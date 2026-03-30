@@ -50,4 +50,24 @@ class FirestoreJournalDatasource {
           .orderBy('date', descending: true)
           .limit(limit)
           .get();
+
+  Future<void> updateAutoCreatedEntities(
+    String journalId,
+    List<String> entityIds,
+  ) =>
+      _firestore
+          .collection(_collection)
+          .doc(journalId)
+          .update({'autoCreatedEntities': entityIds});
+
+  Future<QuerySnapshot> getByMonth(String userId, DateTime month) {
+    final start = DateTime(month.year, month.month, 1);
+    final end = DateTime(month.year, month.month + 1, 1);
+    return _firestore
+        .collection(_collection)
+        .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('date', isLessThan: Timestamp.fromDate(end))
+        .get();
+  }
 }

@@ -26,4 +26,14 @@ abstract class JournalRepository {
     String userId, {
     int limit = 50,
   });
+
+  Future<Either<AppFailure, void>> updateAutoCreatedEntities(
+    String journalId,
+    List<String> entityIds,
+  );
+
+  Future<Either<AppFailure, List<JournalEntry>>> getByMonth(
+    String userId,
+    DateTime month,
+  );
 }

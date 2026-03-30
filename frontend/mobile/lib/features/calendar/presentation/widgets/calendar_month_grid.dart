@@ -6,6 +6,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../sessions/domain/entities/session.dart';
 import '../providers/calendar_providers.dart';
 
+// Amber used for journal indicator dots
+const _journalDotColor = Color(0xFFB8860B); // dark goldenrod
+
 class CalendarMonthGrid extends ConsumerWidget {
   final DateTime month;
   final DateTime selectedDay;
@@ -20,36 +23,29 @@ class CalendarMonthGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sessionsAsync = ref.watch(sessionsForMonthProvider(
-      DateTime(month.year, month.month, 1),
-    ));
+    final monthStart = DateTime(month.year, month.month, 1);
+    final sessionsAsync = ref.watch(sessionsForMonthProvider(monthStart));
+    final journalDaysAsync =
+        ref.watch(journalDaysForMonthProvider(monthStart));
 
-    return sessionsAsync.when(
-      loading: () => _CalendarGrid(
-        month: month,
-        selectedDay: selectedDay,
-        sessionsByDay: const {},
-        onDayTap: onDayTap,
-      ),
-      error: (_, __) => _CalendarGrid(
-        month: month,
-        selectedDay: selectedDay,
-        sessionsByDay: const {},
-        onDayTap: onDayTap,
-      ),
-      data: (sessions) {
-        final byDay = <int, List<Session>>{};
-        for (final s in sessions) {
-          byDay.putIfAbsent(s.date.day, () => []).add(s);
-        }
-        return _CalendarGrid(
-          key: AppKeys.calendarMonthGrid,
-          month: month,
-          selectedDay: selectedDay,
-          sessionsByDay: byDay,
-          onDayTap: onDayTap,
-        );
-      },
+    final sessionsByDay = sessionsAsync.whenData((sessions) {
+      final byDay = <int, List<Session>>{};
+      for (final s in sessions) {
+        byDay.putIfAbsent(s.date.day, () => []).add(s);
+      }
+      return byDay;
+    }).valueOrNull ??
+        const {};
+
+    final journalDays = journalDaysAsync.valueOrNull ?? const {};
+
+    return _CalendarGrid(
+      key: AppKeys.calendarMonthGrid,
+      month: month,
+      selectedDay: selectedDay,
+      sessionsByDay: sessionsByDay,
+      journalDays: journalDays,
+      onDayTap: onDayTap,
     );
   }
 }
@@ -58,6 +54,7 @@ class _CalendarGrid extends StatelessWidget {
   final DateTime month;
   final DateTime selectedDay;
   final Map<int, List<Session>> sessionsByDay;
+  final Set<int> journalDays;
   final void Function(DateTime) onDayTap;
 
   const _CalendarGrid({
@@ -65,6 +62,7 @@ class _CalendarGrid extends StatelessWidget {
     required this.month,
     required this.selectedDay,
     required this.sessionsByDay,
+    required this.journalDays,
     required this.onDayTap,
   });
 
@@ -94,6 +92,7 @@ class _CalendarGrid extends StatelessWidget {
             final day = index - startOffset + 1;
             final date = DateTime(month.year, month.month, day);
             final sessions = sessionsByDay[day] ?? [];
+            final hasJournal = journalDays.contains(day);
             final isSelected = date.year == selectedDay.year &&
                 date.month == selectedDay.month &&
                 date.day == selectedDay.day;
@@ -105,6 +104,7 @@ class _CalendarGrid extends StatelessWidget {
               day: day,
               date: date,
               sessions: sessions,
+              hasJournal: hasJournal,
               isSelected: isSelected,
               isToday: isToday,
               onTap: () => onDayTap(date),
@@ -146,6 +146,7 @@ class _DayCell extends StatelessWidget {
   final int day;
   final DateTime date;
   final List<Session> sessions;
+  final bool hasJournal;
   final bool isSelected;
   final bool isToday;
   final VoidCallback onTap;
@@ -154,6 +155,7 @@ class _DayCell extends StatelessWidget {
     required this.day,
     required this.date,
     required this.sessions,
+    required this.hasJournal,
     required this.isSelected,
     required this.isToday,
     required this.onTap,
@@ -191,9 +193,13 @@ class _DayCell extends StatelessWidget {
                             : AppColors.textPrimary,
                   ),
             ),
-            if (sessions.isNotEmpty) ...[
+            if (sessions.isNotEmpty || hasJournal) ...[
               const SizedBox(height: 2),
-              _SessionDots(sessions: sessions, isSelected: isSelected),
+              _DayIndicators(
+                sessions: sessions,
+                hasJournal: hasJournal,
+                isSelected: isSelected,
+              ),
             ],
           ],
         ),
@@ -202,28 +208,48 @@ class _DayCell extends StatelessWidget {
   }
 }
 
-class _SessionDots extends StatelessWidget {
+class _DayIndicators extends StatelessWidget {
   final List<Session> sessions;
+  final bool hasJournal;
   final bool isSelected;
 
-  const _SessionDots({required this.sessions, required this.isSelected});
+  const _DayIndicators({
+    required this.sessions,
+    required this.hasJournal,
+    required this.isSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Show at most 3 dots
-    final visible = sessions.take(3).toList();
+    // Show at most 2 session dots + 1 journal dot
+    final visibleSessions = sessions.take(2).toList();
+
+    final dots = <(Color, int)>[
+      ...visibleSessions.asMap().entries.map(
+            (e) => (
+              isSelected
+                  ? Colors.white.withValues(alpha: 0.9)
+                  : _sessionDotColor(e.value),
+              200 + e.key * 80,
+            ),
+          ),
+      if (hasJournal)
+        (
+          isSelected
+              ? Colors.white.withValues(alpha: 0.7)
+              : _journalDotColor,
+          200 + visibleSessions.length * 80,
+        ),
+    ];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: visible.asMap().entries.map((entry) {
-        final session = entry.value;
-        final color = isSelected
-            ? Colors.white.withValues(alpha: 0.9)
-            : _dotColor(session);
+      children: dots.map((dot) {
+        final (color, delay) = dot;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 200 + entry.key * 80),
+            duration: Duration(milliseconds: delay),
             width: 5,
             height: 5,
             decoration: BoxDecoration(
@@ -236,7 +262,7 @@ class _SessionDots extends StatelessWidget {
     );
   }
 
-  Color _dotColor(Session s) {
+  Color _sessionDotColor(Session s) {
     final focus = s.focus?.toLowerCase() ?? '';
     if (focus.contains('recovery') || focus.contains('rest')) {
       return const Color(0xFF8E44AD); // purple

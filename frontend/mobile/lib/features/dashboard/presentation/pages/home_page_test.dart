@@ -213,6 +213,10 @@ void main() {
 
     expect(find.text('Quick Actions'), findsOneWidget);
     expect(find.text('New Session'), findsOneWidget);
+    expect(find.text('Log Journal'), findsOneWidget);
+    expect(find.text('Log Meal'), findsOneWidget);
+    expect(find.text('Log Sleep'), findsOneWidget);
+    expect(find.text('Progress Photo'), findsOneWidget);
     expect(find.text('Assessment'), findsOneWidget);
     expect(find.text('My Program'), findsOneWidget);
     expect(find.text('Exercises'), findsOneWidget);

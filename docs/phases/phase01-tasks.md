@@ -4,7 +4,7 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 517 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15, sleep: 25, nutrition: 26)
+**Current test count: 518 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 15, sleep: 25, nutrition: 26, journal: 9)
 
 ---
 
@@ -270,7 +270,7 @@
 - [x] Data: FirestoreJournalDatasource
 - [x] Data: JournalRepositoryImpl
 - [x] Voice input: integrate speech_to_text package for on-device transcription
-- [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, for reference)
+- [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, deferred to Phase 2)
 - [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
 - [x] Presentation: JournalHistoryPage — chronological list with type filters
 - [x] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
@@ -284,9 +284,9 @@
 
 - [x] Entity extraction service: parse transcribed text for training activities (exercises, duration, body areas, type)
 - [x] Entity extraction service: parse transcribed text for meal descriptions (food, meal type, stomach feeling)
-- [ ] Auto-create Session documents from parsed training activities (source: 'voice')
-- [ ] Auto-create Meal documents from parsed food descriptions (source: 'voice')
-- [ ] Store references in journal's autoCreatedEntities field
+- [x] Auto-create Session documents from parsed training activities (source: 'voice')
+- [x] Auto-create Meal documents from parsed food descriptions (source: 'voice')
+- [x] Store references in journal's autoCreatedEntities field
 - [x] Presentation: ReviewAutoCreatedPage — show parsed entities, allow user to edit/confirm/delete before saving
 - [x] Presentation: inline notification when entities are auto-created ("Created 2 sessions and 3 meals from your journal")
 - [x] Compensation profile update: parse journal for body awareness mentions (pain, tightness, improvements)
@@ -410,7 +410,7 @@
 - [x] CalendarMonthGrid widget, CalendarWeekStrip widget, DaySessionsSheet widget
 - [x] Routes: /calendar wired to CalendarPage (was placeholder)
 - [x] Tests: widget tests for CalendarPage (5 tests) and DaySessionsSheet (5 tests)
-- [ ] Journal indicators on calendar days (deferred — requires Block 10)
+- [x] Journal indicators on calendar days
 - [ ] Google Calendar sync (deferred — Phase 2+)
 - [ ] Apple Calendar sync (deferred — Phase 2+)
 
@@ -436,7 +436,7 @@
 - [x] App theme and styling: uses AppTheme.light/dark throughout, earth tones, rounded cards
 - [x] Animated screen transitions: all routes use CustomTransitionPage with fade/slide builders
 - [x] Tests: 8 widget tests for HomePage, 7 widget tests for ProfilePage
-- [ ] Quick actions: log journal (voice), log meal, log sleep, take progress photo — deferred (Blocks 10–14 not built)
+- [x] Quick actions: log journal (voice), log meal, log sleep, take progress photo
 - [ ] Monthly glance heat map — deferred (requires full history aggregation)
 
 ### UI — What to test

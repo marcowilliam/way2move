@@ -100,6 +100,39 @@ class JournalRepositoryImpl implements JournalRepository {
       return const Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<AppFailure, void>> updateAutoCreatedEntities(
+    String journalId,
+    List<String> entityIds,
+  ) async {
+    try {
+      await _datasource.updateAutoCreatedEntities(journalId, entityIds);
+      return const Right(null);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.code));
+    } catch (_) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, List<JournalEntry>>> getByMonth(
+    String userId,
+    DateTime month,
+  ) async {
+    try {
+      final snap = await _datasource.getByMonth(userId, month);
+      final list = snap.docs
+          .map((doc) => JournalEntryModel.fromFirestore(doc).toEntity())
+          .toList();
+      return Right(list);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.code));
+    } catch (_) {
+      return const Left(ServerFailure());
+    }
+  }
 }
 
 // ── Providers ─────────────────────────────────────────────────────────────────

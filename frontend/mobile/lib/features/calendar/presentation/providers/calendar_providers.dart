@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../journal/data/repositories/journal_repository_impl.dart';
 import '../../../sessions/data/repositories/session_repository_impl.dart';
 import '../../../sessions/domain/entities/session.dart';
 
@@ -41,6 +42,21 @@ final sessionsForMonthProvider =
                 .toList(),
           ),
         ),
+  );
+});
+
+/// Days in the given month that have at least one journal entry.
+/// Returns a Set of day numbers (1-based) for the given month.
+final journalDaysForMonthProvider =
+    FutureProvider.family<Set<int>, DateTime>((ref, month) async {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return const {};
+
+  final repo = ref.watch(journalRepositoryProvider);
+  final result = await repo.getByMonth(userId, month);
+  return result.fold(
+    (_) => const {},
+    (entries) => entries.map((e) => e.date.day).toSet(),
   );
 });
 
