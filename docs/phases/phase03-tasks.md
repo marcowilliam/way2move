@@ -8,6 +8,8 @@
 
 ## Block 0 — Cloud Speech-to-Text Upgrade
 
+> **Note: This block is app-wide, not nutrition-specific.** Cloud STT improves all voice features (journaling, session logging, meal logging, bedtime summary). It is placed here because Phase 3 benefits most from improved accuracy (food name recognition), but it could be started independently after Phase 1 without waiting for other Phase 3 blocks. Consider starting this block in parallel with Phase 2 if voice accuracy is a pain point.
+
 - [ ] Evaluate cloud STT APIs (Google Cloud Speech-to-Text, Whisper API, Deepgram)
 - [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
 - [ ] Replace device speech_to_text with cloud API for all voice features app-wide

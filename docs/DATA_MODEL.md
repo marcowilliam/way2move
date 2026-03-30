@@ -383,9 +383,13 @@ No macro tracking in Phase 1 — focus is on food-body connection awareness.
 ### assessments/{assessmentId}
 
 Movement assessments. Three types:
-- **initial**: Guided questionnaire + optional video upload. Done once at onboarding.
-- **weekly_pulse**: Quick 5-question check-in (energy, soreness, sleep, motivation, stomach).
+- **initial**: Guided questionnaire + optional video recording. Done once at onboarding.
+- **weekly_pulse**: Quick check-in (energy, soreness, sleep quality, motivation).
 - **full_reassessment**: Complete re-evaluation, done every 4-8 weeks.
+
+Phase 2 adds video-based analysis stored in the separate `videoAnalyses` collection
+(linked by `assessmentId`). The questionnaire-based `compensationsFound` and video-based
+`DetectedCompensation` results are merged via `CompensationReport.merge()` at read time.
 
 ```json
 {
@@ -400,19 +404,17 @@ Movement assessments. Three types:
     "soreness_level": "number (1-5, weekly pulse)",
     "sleep_quality": "number (1-5, weekly pulse)",
     "motivation": "number (1-5, weekly pulse)",
-    "stomach_feeling": "number (1-5, weekly pulse -- IBS awareness)",
     "pain_areas": ["string (body region, weekly pulse)"]
   },
-  "videoUrls": ["string (Storage URLs, nullable -- initial + full only)"],
-  "compensationsFound": ["string (e.g. 'knee_valgus_squat', 'hip_shift_hinge')"],
-  "bodyMapPainPoints": [
+  "compensationsFound": ["string (CompensationPattern enum names from questionnaire, e.g. 'kneeValgus', 'forwardHeadPosture')"],
+  "movementScores": [
     {
-      "region": "string (e.g. 'left_knee', 'lower_back')",
-      "severity": "number (1-5)",
-      "type": "string (enum: sharp | dull | ache | tingling)"
+      "name": "string (movement name)",
+      "score": "number (0-10)",
+      "notes": "string (nullable)"
     }
   ],
-  "overallScore": "number (0-100, nullable -- calculated by AI in Phase 2)",
+  "overallScore": "number (0-10, derived from questionnaire -- 10=no compensations, lower with more patterns)",
   "recommendedProgramId": "string (nullable -- set after program generation)",
   "meta": {
     "createdAt": "Timestamp (server)"
@@ -427,6 +429,76 @@ may be written by Cloud Functions (Admin SDK bypasses rules).
 **Indexes:**
 - `userId ASC, date DESC` -- list user's assessments
 - `userId ASC, type ASC, date DESC` -- filter by assessment type
+
+---
+
+### videoAnalyses/{videoAnalysisId}
+
+Phase 2 video-based movement analysis results. One document per screening movement
+per assessment. Linked to `assessments` via `assessmentId`. Video clips are stored in
+Firebase Storage; pose estimation runs on-device (no server round-trip).
+
+```json
+{
+  "id": "string (auto-generated)",
+  "assessmentId": "string (reference to assessments/{assessmentId})",
+  "userId": "string",
+  "movement": "string (enum: overheadSquat | singleLegStance | forwardBend | shoulderRaise | walkingGait)",
+  "frames": [
+    {
+      "timestampMs": "number (milliseconds from video start)",
+      "landmarks": [
+        {
+          "joint": "string (JointLandmark enum: nose, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, leftHip, rightHip, leftKnee, rightKnee, leftAnkle, rightAnkle, leftHeel, rightHeel, leftFootIndex, rightFootIndex)",
+          "x": "number (0-1, normalised horizontal position)",
+          "y": "number (0-1, normalised vertical position)",
+          "z": "number (normalised depth)",
+          "visibility": "number (0-1, landmark confidence)"
+        }
+      ]
+    }
+  ],
+  "detectedCompensations": [
+    {
+      "pattern": "string (CompensationPattern enum name, e.g. 'kneeValgus')",
+      "affectedFrameCount": "number",
+      "totalFrameCount": "number"
+    }
+  ],
+  "storageVideoPath": "string (Firebase Storage path: users/{userId}/assessments/{assessmentId}/{movement}.mp4)",
+  "analyzedAt": "Timestamp",
+  "meta": {
+    "createdAt": "Timestamp (server)"
+  },
+  "_schemaVersion": 1
+}
+```
+
+**Severity is derived at read time** from `affectedFrameCount / totalFrameCount`:
+- **mild**: ratio < 0.3 (pattern in < 30% of frames)
+- **moderate**: ratio 0.3–0.6
+- **significant**: ratio > 0.6
+
+**Compensation detection thresholds** (starting values, tuned with user testing):
+| Pattern | Movement | Threshold |
+|---|---|---|
+| `kneeValgus` | overheadSquat | Knee X caves inward > 0.04 normalised units past ankle X |
+| `limitedDorsiflexion` | overheadSquat | Heel Y rises > 0.04 normalised units above ankle Y |
+| `weakGluteMed` | singleLegStance | |leftHip.y − rightHip.y| > 0.05 normalised units |
+| `roundedShoulders` | shoulderRaise | Hip→shoulder→elbow angle < 160° |
+| `forwardHeadPosture` | all movements | Nose X deviation from mid-shoulder > 15% of shoulder width |
+
+**Merging with questionnaire results:**
+`CompensationReport.merge()` takes the union of questionnaire patterns and video detections.
+When both sources detect the same pattern, the video-derived severity takes precedence.
+Questionnaire-only patterns default to mild severity.
+
+**Security rules:** Owner read only. Written by client after on-device analysis
+(`userId == request.auth.uid`).
+
+**Indexes:**
+- `assessmentId ASC` -- find all video analyses for an assessment
+- `userId ASC, analyzedAt DESC` -- list user's video analyses chronologically
 
 ---
 
@@ -573,6 +645,8 @@ users/{userId}
   ├── meals/{mealId}                    1:N  user has many meals
   │
   ├── assessments/{assessmentId}        1:N  user has many assessments
+  │       │
+  │       └── videoAnalyses (by assessmentId)  1:N  assessment has many video analyses (one per movement)
   │
   ├── sleepLogs/{sleepLogId}            1:N  user has many sleep logs
   │
@@ -611,6 +685,7 @@ programs.linkedGoalIds ────────────────► goals
 | goals | Yes (progress updates) | Cached | Goal tracking works offline |
 | meals | Yes | Cached | Meal logging available offline |
 | assessments | Yes (weekly pulse) | Cached | Initial + full assessments need connectivity (video upload) |
+| videoAnalyses | Yes (written after on-device analysis) | Cached | Requires connectivity for video upload to Storage |
 | sleepLogs | Yes | Cached | Users log sleep at home (usually online) but queue if not |
 | progressPhotos | Yes (photo taken locally) | Cached | Photos upload when online |
 | weightLogs | Yes | Cached | Simple data, always works offline |
@@ -652,6 +727,7 @@ query = query.startAfterDocument(lastDocument);
 - programs (user creates few, typically 1-5 active history)
 - compensations (bounded by body regions, typically 5-20)
 - goals (bounded, typically 5-15)
+- videoAnalyses (bounded: max 5 per assessment, ~20-50 total per user)
 - progressionRules (one document per user)
 
 ---

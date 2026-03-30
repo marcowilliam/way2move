@@ -195,14 +195,17 @@ Block 2 is a domain-layer feature with no new screens. The compensation detectio
 
 ## Block 3 — AI-Generated Program Recommendations
 
-- [ ] `ProgramRecommendationEngine` service: takes `CompensationReport` + `UserProfile` → `ProgramTemplate`
-- [ ] Prioritize compensations by severity (significant first, then moderate, then mild)
+> **Approach: Rule-based engine (no external AI API).** Uses the existing `GetSuggestedGoals` mapping (`CompensationPattern → exerciseId`) and severity prioritization to generate programs deterministically. This keeps Block 3 consistent with the on-device architecture of Blocks 0-2 — no Cloud Function, no API keys, works offline. An LLM-enhanced version can be layered on later as an optional upgrade.
+
+- [ ] Domain: `ProgramRecommendationEngine` service — takes `CompensationReport` + `UserProfile` → `Program`
+- [ ] Prioritize compensations by severity (significant first, then moderate, then mild) using `CompensationReport.sortedByPriority`
 - [ ] Auto-select exercises from library using Phase 1 `CompensationPattern → exerciseId` mapping (already exists in `GetSuggestedGoals`)
-- [ ] Progressive template: weeks 1–2 corrective focus (high frequency low load), weeks 3–4 integration, weeks 5+ maintenance
+- [ ] Progressive template: weeks 1–2 corrective focus (high frequency, low load), weeks 3–4 integration (add strength), weeks 5+ maintenance
 - [ ] Filter exercises by user's available equipment (from `UserProfile.availableEquipment`)
+- [ ] Respect `UserProfile.trainingDaysPerWeek` when generating the `WeekTemplate`
 - [ ] Presentation: `AIRecommendationReviewPage` — show detected compensations + proposed program, allow per-exercise edits before accepting
-- [ ] On accept: call existing `CreateProgram` use case with generated template
-- [ ] Tests: unit tests for priority ranking, exercise selection, equipment filtering
+- [ ] On accept: call existing `CreateProgram` use case with generated template, link to assessment via `basedOnAssessment`
+- [ ] Tests: unit tests for priority ranking, exercise selection, equipment filtering, days-per-week distribution
 
 ---
 

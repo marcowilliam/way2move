@@ -12,6 +12,7 @@ directly with Firebase services, no custom REST API until Phase 5+.
  │            Flutter App               │   │          Flutter App + Web           │
  │  firebase_auth │ cloud_firestore     │   │  + REST API calls for social/coach   │
  │  firebase_storage │ remote_config    │   │                                      │
+ │  flutter_pose_detection (Phase 2)    │   │                                      │
  └────────┬───────────┬────────────┬────┘   └────────┬──────────────┬──────────────┘
           │           │            │                  │              │
  ┌────────▼───────────▼────────────▼────┐   ┌────────▼──────────────▼──────────────┐
@@ -21,15 +22,22 @@ directly with Firebase services, no custom REST API until Phase 5+.
           ↑ triggered by                             ↑ triggered by
  ┌──────────────────────────────────────┐   ┌──────────────────────────────────────┐
  │   Cloud Functions (TypeScript)       │   │   Cloud Functions + Express API      │
- │  Auth triggers │ Firestore triggers  │   │  + AI API orchestration              │
- │  Callable: program gen, assessment   │   │  + Video processing (assessment)     │
+ │  Auth triggers │ Firestore triggers  │   │  + AI API orchestration (Phase 3+)   │
  └──────────────────────────────────────┘   └──────────────────────────────────────┘
 
- Phase 2+ adds external AI API calls from Cloud Functions:
+ Phase 2: On-device ML (no external API)
+ ┌──────────────────────────────────────┐
+ │    On-Device ML (flutter_pose_detection)  │
+ │    MediaPipe BlazePose — 33 landmarks     │
+ │    GPU mode ~3ms, NPU mode ~13ms/frame    │
+ │    Pose estimation + compensation detect  │
+ └──────────────────────────────────────┘
+
+ Phase 3+: External AI API calls from Cloud Functions
  ┌──────────────────────────────────────┐
  │         External AI Services         │
- │  Phase 2: Movement assessment AI     │
- │  Phase 3: Nutrition plan generation  │
+ │  Phase 3: Food recognition AI        │
+ │  Phase 3: Cloud speech-to-text       │
  └──────────────────────────────────────┘
 ```
 
@@ -61,12 +69,21 @@ directly with Firebase services, no custom REST API until Phase 5+.
     │       │   │   ├── theme/
     │       │   │   └── utils/
     │       │   ├── features/
+    │       │   │   ├── assessments/    # Phase 1 questionnaire + Phase 2 video analysis
     │       │   │   ├── auth/
-    │       │   │   ├── training/
-    │       │   │   ├── assessment/
-    │       │   │   ├── sleep/
+    │       │   │   ├── calendar/
+    │       │   │   ├── compensations/
+    │       │   │   ├── dashboard/
+    │       │   │   ├── exercises/
+    │       │   │   ├── goals/
+    │       │   │   ├── journal/
+    │       │   │   ├── nutrition/
     │       │   │   ├── profile/
-    │       │   │   └── nutrition/      # Phase 3
+    │       │   │   ├── programs/
+    │       │   │   ├── progress/
+    │       │   │   ├── progression/
+    │       │   │   ├── sessions/
+    │       │   │   └── sleep/
     │       │   └── shared/
     │       │       ├── widgets/
     │       │       └── l10n/
@@ -109,8 +126,9 @@ directly with Firebase services, no custom REST API until Phase 5+.
 | Web (Phase 5+) | React + Vite + TypeScript (not started) |
 | Backend (Phase 1-4) | Firebase: Auth, Firestore, Functions, Storage |
 | Backend (Phase 5+) | Node.js API + PostgreSQL (Supabase) for social features |
-| AI (Phase 2) | External AI API for movement assessment (called from Cloud Functions) |
-| AI (Phase 3) | External AI API for nutrition plan generation (called from Cloud Functions) |
+| AI (Phase 2) | On-device pose estimation via `flutter_pose_detection` (MediaPipe BlazePose, no external API) |
+| AI (Phase 3) | External AI API for food recognition (called from Cloud Functions) |
+| Android min SDK | API 31 (required by `flutter_pose_detection`) |
 | State management | Riverpod 2.x (flutter_riverpod + riverpod_annotation) |
 | Routing | GoRouter |
 | Error handling | fpdart Either<Failure, T> |
@@ -280,18 +298,39 @@ Always handle all `AsyncValue` states: loading, error, data.
 |---|---|---|
 | Domain | Bodyflight (skydiving + tunnel) | Movement training (recreational + longevity athletes) |
 | Web app | Phase 3 (debrief screen) | Phase 5+ (social/coaching dashboard) |
-| AI integration | None in current phases | Phase 2 (assessment AI), Phase 3 (nutrition AI) |
+| AI integration | None in current phases | Phase 2 (on-device pose estimation), Phase 3 (cloud nutrition AI) |
 | Coach role | Phase 1 (per-session tagging) | Phase 5 (not in MVP) |
 | XP/Gamification | Core to Phase 1 | Not in Phase 1 (focus on training progression) |
 | Progression model | Skill tree (disciplines -> skills -> levels) | Exercise progression (regressions/progressions per exercise) |
 | Real-time data | Session streams, skill updates | Session streams, sleep logs, assessment results |
-| External APIs | None | AI APIs for assessment and nutrition (Cloud Functions proxy) |
+| External APIs | None | Phase 3: food recognition + cloud STT (Cloud Functions proxy) |
 
-### AI API Architecture (Phase 2+)
+### AI Architecture
 
-AI API calls are always proxied through Cloud Functions -- the Flutter app never calls
-external AI services directly. This keeps API keys server-side and allows request
-validation, rate limiting, and response caching.
+Way2Move uses two different AI approaches depending on the phase:
+
+**Phase 2 — On-device ML (no external API)**
+
+Pose estimation runs entirely on-device using `flutter_pose_detection` (MediaPipe BlazePose).
+No network calls, no API keys, works offline. Compensation detection is rule-based
+(threshold analysis on joint angles extracted from pose landmarks).
+
+```
+Flutter App
+    │
+    ├── Record movement video
+    ├── flutter_pose_detection (GPU/NPU inference)
+    │   └── 33 BlazePose landmarks per frame
+    ├── VideoCompensationDetector (pure Dart, threshold rules)
+    │   └── DetectedCompensation per movement
+    ├── Save VideoAnalysis to Firestore
+    └── Upload video clips to Firebase Storage
+```
+
+**Phase 3+ — Cloud Function proxy (external AI APIs)**
+
+Food recognition and cloud speech-to-text are proxied through Cloud Functions.
+This keeps API keys server-side and allows request validation, rate limiting, and response caching.
 
 ```
 Flutter App
