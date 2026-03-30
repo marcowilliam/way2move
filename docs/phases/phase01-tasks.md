@@ -263,35 +263,35 @@
 
 ## Block 10 — Journaling System (Voice-First)
 
-- [ ] Domain: Journal entity (id, userId, date, type, content, audioUrl, mood, energyLevel, painPoints, linkedSessionId, autoCreatedEntities)
-- [ ] Domain: JournalRepository interface (create, getByDate, getByType, getForSession, getHistory)
-- [ ] Domain: CreateJournal, GetJournalsByDate, GetJournalsForSession use cases
-- [ ] Data: JournalModel (fromFirestore/toFirestore/toEntity)
-- [ ] Data: FirestoreJournalDatasource
-- [ ] Data: JournalRepositoryImpl
-- [ ] Voice input: integrate speech_to_text package for on-device transcription
+- [x] Domain: Journal entity (id, userId, date, type, content, audioUrl, mood, energyLevel, painPoints, linkedSessionId, autoCreatedEntities)
+- [x] Domain: JournalRepository interface (create, getByDate, getByType, getForSession, getHistory)
+- [x] Domain: CreateJournal, GetJournalsByDate, GetJournalsForSession use cases
+- [x] Data: JournalModel (fromFirestore/toFirestore/toEntity)
+- [x] Data: FirestoreJournalDatasource
+- [x] Data: JournalRepositoryImpl
+- [x] Voice input: integrate speech_to_text package for on-device transcription
 - [ ] Voice recording: record audio to local file, upload to Firebase Storage (optional, for reference)
-- [ ] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
-- [ ] Presentation: JournalHistoryPage — chronological list with type filters
-- [ ] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
-- [ ] Link pre/post-session journals to specific sessions
-- [ ] Tests: unit tests for journal use cases
-- [ ] Tests: widget tests for journal entry and history pages
+- [x] Presentation: JournalEntryPage — voice-first with text fallback, mood/energy selectors, pain point body map
+- [x] Presentation: JournalHistoryPage — chronological list with type filters
+- [x] Presentation: JournalPrompts — contextual prompts for each journal type (wake-up: "How do you feel?", pre-session: "What will you focus on?", post-session: "How did it go?", bedtime: "Summarize your day")
+- [x] Link pre/post-session journals to specific sessions
+- [x] Tests: unit tests for journal use cases
+- [x] Tests: widget tests for journal entry and history pages
 
 ---
 
 ## Block 11 — Voice Daily Summary & Auto-Creation
 
-- [ ] Entity extraction service: parse transcribed text for training activities (exercises, duration, body areas, type)
-- [ ] Entity extraction service: parse transcribed text for meal descriptions (food, meal type, stomach feeling)
+- [x] Entity extraction service: parse transcribed text for training activities (exercises, duration, body areas, type)
+- [x] Entity extraction service: parse transcribed text for meal descriptions (food, meal type, stomach feeling)
 - [ ] Auto-create Session documents from parsed training activities (source: 'voice')
 - [ ] Auto-create Meal documents from parsed food descriptions (source: 'voice')
 - [ ] Store references in journal's autoCreatedEntities field
-- [ ] Presentation: ReviewAutoCreatedPage — show parsed entities, allow user to edit/confirm/delete before saving
-- [ ] Presentation: inline notification when entities are auto-created ("Created 2 sessions and 3 meals from your journal")
-- [ ] Compensation profile update: parse journal for body awareness mentions (pain, tightness, improvements)
-- [ ] Tests: unit tests for entity extraction parsing logic (various input patterns)
-- [ ] Tests: widget tests for review page
+- [x] Presentation: ReviewAutoCreatedPage — show parsed entities, allow user to edit/confirm/delete before saving
+- [x] Presentation: inline notification when entities are auto-created ("Created 2 sessions and 3 meals from your journal")
+- [x] Compensation profile update: parse journal for body awareness mentions (pain, tightness, improvements)
+- [x] Tests: unit tests for entity extraction parsing logic (various input patterns)
+- [x] Tests: widget tests for review page
 
 ---
 
