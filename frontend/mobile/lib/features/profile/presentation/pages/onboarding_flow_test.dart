@@ -176,7 +176,7 @@ void main() {
       expect(find.text('Climbing'), findsOneWidget);
     });
 
-    testWidgets('skip button calls completeOnboarding and navigates home',
+    testWidgets('skip button calls completeOnboarding with onboardingComplete true',
         (tester) async {
       when(() => mockRepo.updateProfile(any()))
           .thenAnswer((_) async => Right(UserProfile(
@@ -191,9 +191,10 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(AppKeys.onboardingSkipButton));
-      await tester.pumpAndSettle();
+      await tester.pump(); // let save initiate
 
-      expect(find.text('Home'), findsOneWidget);
+      // Navigation is handled reactively by the router when the profile stream
+      // emits the updated value — not tested here (covered by router tests)
       verify(() => mockRepo.updateProfile(any())).called(1);
     });
 

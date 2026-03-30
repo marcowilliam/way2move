@@ -46,10 +46,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Wait for profile to load before checking onboarding
       if (isLoggedIn && profileAsync.isLoading) return null;
 
-      if (isLoggedIn && !isOnboarding) {
+      if (isLoggedIn) {
         final profile = profileAsync.valueOrNull;
         final onboardingDone = profile?.onboardingComplete ?? false;
-        if (!onboardingDone) return Routes.onboarding;
+
+        // Forward: completed onboarding → leave the onboarding screen
+        if (isOnboarding && onboardingDone) return Routes.home;
+
+        // Backward: not done yet and not already on onboarding → send there
+        if (!isOnboarding && !onboardingDone) return Routes.onboarding;
       }
 
       return null;

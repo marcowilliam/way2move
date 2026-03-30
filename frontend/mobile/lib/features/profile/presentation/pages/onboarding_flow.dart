@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_keys.dart';
-import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/user_profile.dart';
@@ -33,6 +31,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
   int _trainingDaysPerWeek = 3;
   final Set<String> _selectedEquipment = {};
   final List<Injury> _injuries = [];
+  bool _saving = false;
 
   static const _totalSteps = 6;
 
@@ -122,12 +121,14 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
 
+    setState(() => _saving = true);
+
     final profile = UserProfile(
       id: userId,
       name: _nameController.text.trim().isEmpty
           ? 'Athlete'
           : _nameController.text.trim(),
-      email: '', // preserved from existing doc
+      email: '', // preserved from existing Firestore doc via merge
       age: int.tryParse(_ageController.text),
       height: double.tryParse(_heightController.text),
       weight: double.tryParse(_weightController.text),
@@ -148,10 +149,15 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
 
     if (mounted) {
       result.fold(
-        (failure) => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save profile')),
-        ),
-        (_) => context.go(Routes.home),
+        (failure) {
+          setState(() => _saving = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to save profile')),
+          );
+        },
+        // Navigation is handled reactively by the router once the profile
+        // stream emits onboardingComplete: true — do not navigate manually.
+        (_) => null,
       );
     }
   }
@@ -212,7 +218,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                   ),
                   TextButton(
                     key: AppKeys.onboardingSkipButton,
-                    onPressed: _complete,
+                    onPressed: _saving ? null : _complete,
                     child: const Text(
                       'Skip',
                       style: TextStyle(color: AppColors.textSecondary),
@@ -249,7 +255,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                     key: _currentStep == _totalSteps - 1
                         ? AppKeys.onboardingDoneButton
                         : AppKeys.onboardingNextButton,
-                    onPressed: _canAdvance
+                    onPressed: (_canAdvance && !_saving)
                         ? (_currentStep == _totalSteps - 1 ? _complete : _next)
                         : null,
                     style: FilledButton.styleFrom(
@@ -258,15 +264,24 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: Text(
-                      _currentStep == _totalSteps - 1
-                          ? 'Get Started'
-                          : 'Continue',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: _saving
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.textOnPrimary,
+                            ),
+                          )
+                        : Text(
+                            _currentStep == _totalSteps - 1
+                                ? 'Get Started'
+                                : 'Continue',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ),
