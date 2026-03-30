@@ -6,14 +6,26 @@
 
 ---
 
-## Block 0 — ML Model Integration ✅ (framework selected, integration pending)
+## Block 0 — ML Model Integration ✅
 
 - [x] Evaluate and select pose estimation framework (MediaPipe vs ML Kit)
-- [ ] Integrate pose estimation SDK into Flutter project
-- [ ] Build PoseEstimationService wrapper (abstract interface + implementation)
-- [ ] Create landmark extraction pipeline (key joint positions per frame)
-- [ ] Handle on-device inference (no server round-trip for pose detection)
-- [ ] Tests: unit tests for pose data parsing and landmark extraction
+- [x] Integrate pose estimation SDK into Flutter project
+- [x] Build PoseEstimationService wrapper (abstract interface + implementation)
+- [x] Create landmark extraction pipeline (key joint positions per frame)
+- [x] Handle on-device inference (no server round-trip for pose detection)
+- [x] Tests: unit tests for pose data parsing and landmark extraction
+
+### What was implemented
+
+- `flutter_pose_detection: ^0.4.1` added to `pubspec.yaml`
+- Android `minSdk` raised to `31` (required by the SDK) in `android/app/build.gradle.kts`
+- `JointLandmark` enum — maps our 17 tracked joints to MediaPipe BlazePose indices
+- `PoseLandmark` entity — normalised x/y/z + visibility, pure Dart
+- `PoseFrame` entity — timestamp + list of landmarks; provides `angleDegrees()`, `horizontalOffset()`, `verticalOffset()` helpers
+- `PoseEstimationService` abstract interface + `PoseAnalysisResult` return type (named to avoid collision with SDK's `VideoAnalysisResult`)
+- `PoseDetectorAdapter` thin wrapper interface — keeps SDK types out of domain; enables mock injection in tests
+- `FlutterPoseEstimationService` concrete implementation — wraps `NpuPoseDetector`, lazy initialises, maps SDK `Pose` → domain `PoseFrame`
+- 32 passing unit tests (18 entity tests + 14 service tests)
 
 ### Framework decision: `flutter_pose_detection` v0.4.1
 
@@ -95,35 +107,78 @@ These are the movements used in the video assessment flow. Each maps to specific
 
 ---
 
-## Block 1 — Video Analysis Pipeline
+## Block 1 — Video Analysis Pipeline ✅
 
-- [ ] Domain: `PoseLandmark` entity (index, x, y, z, visibility)
-- [ ] Domain: `PoseFrame` entity (timestamp, landmarks: List\<PoseLandmark\>)
-- [ ] Domain: `VideoAnalysis` entity (id, assessmentId, movementName, frames: List\<PoseFrame\>, detectedCompensations, analyzedAt)
-- [ ] Domain: `VideoAnalysisRepository` interface (save, getByAssessment)
-- [ ] Domain: `PoseEstimationService` abstract interface (analyzeFrame, analyzeVideo)
-- [ ] Data: `FlutterPoseEstimationService` — wraps `flutter_pose_detection`, maps landmarks to domain entities
-- [ ] Data: `FirestoreVideoAnalysisDatasource` + `VideoAnalysisRepositoryImpl`
-- [ ] Video recording flow: camera screen that guides user through each screening movement, records clips per movement
-- [ ] Video analysis pipeline: feed each recorded clip through `PoseEstimationService`, collect frames
-- [ ] Extract joint angles from landmark positions at key checkpoints (bottom of squat, mid-stride, etc.)
-- [ ] Store analysis results in Firestore linked to assessment record
-- [ ] Handle video compression before upload: target < 10MB per clip (use `video_compress` or similar)
-- [ ] Firebase Storage: upload raw clips to `users/{userId}/assessments/{assessmentId}/{movement}.mp4`
-- [ ] Tests: unit tests for landmark → joint angle calculation (pure math, no ML)
-- [ ] Tests: integration tests with pre-recorded sample video frames (mock the pose estimator)
+- [x] Domain: `PoseLandmark` entity (index, x, y, z, visibility)
+- [x] Domain: `PoseFrame` entity (timestamp, landmarks: List\<PoseLandmark\>)
+- [x] Domain: `VideoAnalysis` entity (id, assessmentId, movementName, frames: List\<PoseFrame\>, detectedCompensations, analyzedAt)
+- [x] Domain: `VideoAnalysisRepository` interface (save, getByAssessment, uploadVideo)
+- [x] Domain: `PoseEstimationService` abstract interface (analyzeFrame, analyzeVideo)
+- [x] Data: `FlutterPoseEstimationService` — wraps `flutter_pose_detection`, maps landmarks to domain entities
+- [x] Data: `FirestoreVideoAnalysisDatasource` + `VideoAnalysisRepositoryImpl`
+- [x] Video recording flow: `MovementRecordingPage` — camera screen guides user through all 5 movements, records per clip
+- [x] Video analysis pipeline: upload → on-device NPU pose analysis → save to Firestore (via `AnalyzeMovementVideo` use case)
+- [x] Extract joint angles from landmark positions via `PoseFrame.angleDegrees()` (available to Block 2)
+- [x] Store analysis results in Firestore linked to assessment record (`videoAnalyses` collection)
+- [x] Handle video compression before upload: `video_compress` MediumQuality before upload
+- [x] Firebase Storage: upload clips to `users/{userId}/assessments/{assessmentId}/{movement}.mp4`
+- [x] Tests: unit tests for landmark → joint angle calculation (pure math, no ML) — in `pose_frame_test.dart`, `pose_landmark_test.dart`
+- [x] Tests: `AnalyzeMovementVideo` use case — 7 unit tests (upload fail, save fail, pose exception, ordering, etc.)
+- [x] Tests: `FlutterPoseEstimationService` — full test coverage (frame/video/dispose lifecycle)
+
+### UI — What to test
+
+Navigate to the movement recording screen via `context.push(Routes.movementRecording, extra: {'assessmentId': '<id>', 'userId': '<uid>'})` or by completing the initial assessment flow (hook not yet wired — use direct push for now).
+
+**What you should see:**
+
+1. **Camera screen launches** — front camera preview fills the screen (black if camera unavailable). Dark gradient overlays at top and bottom.
+2. **Top bar** — progress dots (5 total), current movement name ("Overhead Squat"), duration hint, instruction text in a dark rounded card.
+3. **Bottom controls** — "Tap to start recording" label above a white circle button.
+4. **Tap record button** — 3-second countdown overlay appears (large white number, animated scale switch). After countdown, camera starts recording.
+5. **During recording** — button turns red with pulse animation, red "REC" badge appears at top of controls.
+6. **Tap stop** — review state appears: green "Clip recorded" checkmark, "Retake" / "Next movement" buttons.
+7. **Progress dots animate** — completed dots turn green and shrink, active dot stretches wide.
+8. **After last movement → Analyse** — analysis overlay appears: dark background, `auto_awesome` icon, "Analysing your movement" text, animated progress bar + percentage.
+9. **After analysis completes** — screen pops (returns `true` to caller).
+
+**Edge cases to check:**
+- Tap "Retake" → returns to recording controls for the same movement
+- Camera unavailable → placeholder icon shown, tapping record advances without saving a path
 
 ---
 
-## Block 2 — Compensation Detection
+## Block 2 — Compensation Detection ✅
 
-- [ ] Define compensation threshold rules as structured data (angle thresholds per movement per compensation)
-- [ ] `CompensationDetector` service: takes List\<PoseFrame\> + movement name → List\<DetectedCompensation\>
-- [ ] Map pose landmark angles to each Phase 1 `CompensationPattern` enum value
-- [ ] Score severity: mild (threshold exceeded < 30% of frames), moderate (30–60%), significant (>60%)
-- [ ] Generate `CompensationReport` from video analysis (one report per assessment)
-- [ ] Merge AI detection results with questionnaire-based results from Phase 1 (union, AI result takes precedence on severity)
-- [ ] Tests: unit tests for each threshold rule with boundary values (red → green TDD)
+- [x] Define compensation threshold rules as structured data (angle thresholds per movement per compensation)
+- [x] `CompensationDetector` service: takes List\<PoseFrame\> + movement name → List\<DetectedCompensation\>
+- [x] Map pose landmark angles to each Phase 1 `CompensationPattern` enum value
+- [x] Score severity: mild (threshold exceeded < 30% of frames), moderate (30–60%), significant (>60%)
+- [x] Generate `CompensationReport` from video analysis (one report per assessment)
+- [x] Merge AI detection results with questionnaire-based results from Phase 1 (union, AI result takes precedence on severity)
+- [x] Tests: unit tests for each threshold rule with boundary values (red → green TDD)
+
+### What was implemented
+
+- `CompensationSeverity` enum (`mild` / `moderate` / `significant`) with `fromFrameRatio()` factory
+- `DetectedCompensation` entity — pattern + affectedFrameCount / totalFrameCount; `severity` derived from frame ratio; equality by pattern
+- `CompensationReport` entity — holds `List<DetectedCompensation>`; provides `detectionFor()`, `sortedByPriority`, and the `merge()` factory constructor
+- `VideoCompensationDetector` static service — evaluates each `PoseFrame` against threshold rules for the given `ScreeningMovement`:
+  - **kneeValgus** (overheadSquat): knee X caves inward past ankle X by > 0.04 normalised units (≈ 10°)
+  - **limitedDorsiflexion** (overheadSquat): heel Y rises above ankle Y by > 0.04 normalised units
+  - **weakGluteMed** (singleLegStance): |leftHip.y − rightHip.y| > 0.05 normalised units (Trendelenburg drop)
+  - **roundedShoulders** (shoulderRaise): hip→shoulder→elbow angle < 160° on either side
+  - **forwardHeadPosture** (all movements): nose horizontal deviation from mid-shoulder > 15 % of shoulder width
+- `CompensationReport.merge()` — union of questionnaire patterns and video detections; AI severity takes precedence; questionnaire-only patterns default to mild
+- 43 passing unit tests (11 entity + 11 report + 21 detector)
+
+### UI — What to test
+
+Block 2 is a domain-layer feature with no new screens. The compensation detection results will surface in the assessment results UI (Block 3). There is nothing new to tap or see in the UI for Block 2 in isolation.
+
+**To verify the detection logic is wired correctly:**
+1. Run the unit tests: `flutter test lib/features/assessments/domain/entities/detected_compensation_test.dart lib/features/assessments/domain/entities/compensation_report_test.dart lib/features/assessments/domain/services/video_compensation_detector_test.dart`
+2. All 43 tests should pass (green).
 
 ### Threshold reference (starting values — tune with user testing)
 
@@ -140,14 +195,17 @@ These are the movements used in the video assessment flow. Each maps to specific
 
 ## Block 3 — AI-Generated Program Recommendations
 
-- [ ] `ProgramRecommendationEngine` service: takes `CompensationReport` + `UserProfile` → `ProgramTemplate`
-- [ ] Prioritize compensations by severity (significant first, then moderate, then mild)
+> **Approach: Rule-based engine (no external AI API).** Uses the existing `GetSuggestedGoals` mapping (`CompensationPattern → exerciseId`) and severity prioritization to generate programs deterministically. This keeps Block 3 consistent with the on-device architecture of Blocks 0-2 — no Cloud Function, no API keys, works offline. An LLM-enhanced version can be layered on later as an optional upgrade.
+
+- [ ] Domain: `ProgramRecommendationEngine` service — takes `CompensationReport` + `UserProfile` → `Program`
+- [ ] Prioritize compensations by severity (significant first, then moderate, then mild) using `CompensationReport.sortedByPriority`
 - [ ] Auto-select exercises from library using Phase 1 `CompensationPattern → exerciseId` mapping (already exists in `GetSuggestedGoals`)
-- [ ] Progressive template: weeks 1–2 corrective focus (high frequency low load), weeks 3–4 integration, weeks 5+ maintenance
+- [ ] Progressive template: weeks 1–2 corrective focus (high frequency, low load), weeks 3–4 integration (add strength), weeks 5+ maintenance
 - [ ] Filter exercises by user's available equipment (from `UserProfile.availableEquipment`)
+- [ ] Respect `UserProfile.trainingDaysPerWeek` when generating the `WeekTemplate`
 - [ ] Presentation: `AIRecommendationReviewPage` — show detected compensations + proposed program, allow per-exercise edits before accepting
-- [ ] On accept: call existing `CreateProgram` use case with generated template
-- [ ] Tests: unit tests for priority ranking, exercise selection, equipment filtering
+- [ ] On accept: call existing `CreateProgram` use case with generated template, link to assessment via `basedOnAssessment`
+- [ ] Tests: unit tests for priority ranking, exercise selection, equipment filtering, days-per-week distribution
 
 ---
 

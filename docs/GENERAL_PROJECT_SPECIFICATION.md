@@ -2,7 +2,7 @@
 
 > This document is the authoritative product specification.
 > All data structures reflect the finalized v1 data model (see `DATA_MODEL.md`).
-> Last updated: Day 1 — March 29, 2026
+> Last updated: March 30, 2026 (Phase 2 Blocks 0-2 complete)
 
 ---
 
@@ -136,15 +136,17 @@ Goal: Organize training, build body awareness through journaling, track compensa
 - Device speech-to-text (free, offline) for voice features
 
 ### Phase 2 — AI Movement Assessment `mobile`
-Goal: Camera-based analysis that upgrades the manual assessment from Phase 1
+Goal: On-device video-based analysis that upgrades the manual assessment from Phase 1
 
-- Pose estimation using MediaPipe / ML Kit on recorded movement videos
-- Automated movement scoring from video analysis
-- Compensation detection (knee valgus, excessive lordosis, shoulder protraction, lateral shift, etc.)
-- Before/after comparison (initial assessment vs re-assessment)
-- AI-generated corrective program recommendations based on detected imbalances
+- **On-device pose estimation** via `flutter_pose_detection` (MediaPipe BlazePose, 33 landmarks) — no external API, works offline
+- Video recording flow: 5 screening movements (overhead squat, single-leg stance, forward bend, shoulder raise, walking gait)
+- Threshold-based compensation detection from pose landmarks (knee valgus, limited dorsiflexion, weak glute med, rounded shoulders, forward head posture)
+- Severity scoring by frame ratio (mild < 30%, moderate 30-60%, significant > 60%)
+- Merge video-based + questionnaire-based compensation results (video severity takes precedence)
+- Rule-based program recommendations from detected compensations
+- Before/after comparison (pose overlay, side-by-side video, improvement charts)
 - Re-assessment scheduling and progress tracking
-- Auto-update compensation profile from AI analysis
+- Auto-update compensation profile from analysis
 
 ### Phase 3 — Advanced Nutrition `mobile`
 Goal: Upgrade nutrition MVP with AI-powered tracking and meal planning
@@ -160,8 +162,9 @@ Goal: Upgrade nutrition MVP with AI-powered tracking and meal planning
 ### Phase 4 — Smart Recovery `mobile`
 Goal: Close the recovery loop with data
 
-- Recovery score calculation (sleep quality + subjective feel + training load + stomach/gut data)
-- Training adjustment recommendations based on recovery score
+- **Phase 4a (after Phase 1):** Recovery score v1 using sleep quality, training load, weekly pulse, and stomach feeling — enough for useful recommendations without Phase 3
+- **Phase 4b (after Phase 3):** Enhanced score adds caloric deficit/surplus, macro adherence, and hydration data
+- Training adjustment recommendations based on recovery score (green/yellow/red zones)
 - Wearable integration (Apple Watch, Garmin) — read sleep data automatically
 - Weekly/monthly recovery trends
 - Auto-deload suggestions when recovery is poor
@@ -460,6 +463,7 @@ Full schema in `DATA_MODEL.md`. Summary:
 | `programs` | Training programs with weekly templates |
 | `sessions` | Individual workout sessions — training + recovery types |
 | `assessments` | Movement assessments (initial, weekly pulse, full re-assessment) |
+| `videoAnalyses` | Phase 2: per-movement video analysis results (pose frames, detected compensations, severity) |
 | `journals` | Voice/text journal entries (wake-up, pre-session, post-session, bedtime) |
 | `compensations` | User's compensation profile — active imbalances, improvements, resolutions |
 | `goals` | Movement goals linked to compensations, exercises, and sport |
@@ -664,13 +668,13 @@ Full schema in `DATA_MODEL.md`. Summary:
 | date | DateTime | |
 | type | enum | initial / weekly_pulse / full_reassessment |
 | responses | Map<string, dynamic> | Question key → answer |
-| videoUrls | string[] | Recorded movement videos (Firebase Storage) |
-| compensationsFound | string[] | Identified issues (e.g., "anterior_pelvic_tilt") |
-| bodyMapPainPoints | string[] | Body regions with reported discomfort |
-| stomachFeeling | int? | 1-5 (for weekly pulse — IBS awareness) |
-| overallScore | int? | 1-100 movement quality score |
+| compensationsFound | string[] | CompensationPattern enum names from questionnaire |
+| movementScores | MovementScore[] | Per-movement name + score (0-10) + notes |
+| overallScore | int? | 0-10 movement quality score |
 | recommendedProgramId | string? | Auto-generated program reference |
 | createdAt | Timestamp | |
+
+> **Phase 2 addition:** Video analysis results are stored in a separate `videoAnalyses` collection (one doc per screening movement per assessment), linked by `assessmentId`. See `DATA_MODEL.md` for the full `videoAnalyses` schema. Questionnaire and video results are merged at read time via `CompensationReport.merge()`.
 
 ---
 
@@ -751,7 +755,7 @@ Full schema in `DATA_MODEL.md`. Summary:
 - Firebase Auth (email, Google, Apple)
 
 #### Excluded from Phase 1
-- AI pose estimation → Phase 2
+- On-device pose estimation + video-based compensation detection → Phase 2
 - Full macro/calorie tracking → Phase 3
 - Photo food recognition → Phase 3
 - Meal planning → Phase 3

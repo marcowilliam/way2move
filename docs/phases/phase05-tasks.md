@@ -6,7 +6,7 @@
 
 ---
 
-## Block 0 — Coach Role and Permissions
+## Block 0 — Coach Role and Permissions not for now
 
 - [ ] Domain: CoachRelationship entity (coachId, athleteId, status, createdAt)
 - [ ] Firestore security rules for coach access to athlete data (read-only, athlete-initiated)
@@ -17,7 +17,7 @@
 
 ---
 
-## Block 1 — Coach Creates Programs for Athletes
+## Block 1 — Coach Creates Programs for Athletes not for now
 
 - [ ] Coach can view athlete's assessment results and current program
 - [ ] Coach creates/edits program on behalf of athlete (uses same ProgramBuilder)
@@ -28,7 +28,7 @@
 
 ---
 
-## Block 2 — Sharing Workouts and Programs
+## Block 2 — Sharing Workouts and Programs not for now
 
 - [ ] Share a completed session as a card (image or link)
 - [ ] Share a program template (anyone with link can clone it)
@@ -38,7 +38,7 @@
 
 ---
 
-## Block 3 — Community Exercise Library
+## Block 3 — Community Exercise Library not for now
 
 - [ ] Users can submit custom exercises for community review
 - [ ] Moderation queue (admin-only initially, coach-reviewed later)

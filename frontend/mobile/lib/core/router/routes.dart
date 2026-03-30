@@ -46,4 +46,7 @@ abstract class Routes {
 
   // Progression
   static const progressionSettings = '/progression/settings';
+
+  // Phase 2 — AI movement assessment
+  static const movementRecording = '/assessment/record';
 }
