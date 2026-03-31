@@ -4,11 +4,21 @@
 > **Can run parallel with:** Phase 2, Phase 5
 > **Blocks:** Phase 4 (partially — recovery score uses full nutrition data)
 
+**Status: Not started (2026-03-31). Block 1 is explicitly deferred. Start with Block 0, then Block 2.**
+
+### Recommended start order
+1. **Block 0** (Cloud STT) — app-wide improvement, no deps, start immediately in parallel with Phase 4 Blocks 2–3
+2. **Block 2** (Meal tracking macro upgrade) — core nutrition work, depends only on Phase 1
+3. **Block 3** (Macro targets) — depends on Block 2
+4. **Block 4** (Dashboard) — depends on Block 3
+5. **Block 5** (Meal planning) — depends on Block 4
+6. Skip **Block 1** (Photo food recognition) — marked "not for now"
+
 ---
 
-## Block 0 — Cloud Speech-to-Text Upgrade
+## Block 0 — Cloud Speech-to-Text Upgrade ← START HERE (parallel with Phase 4 Blocks 2–3)
 
-> **Note: This block is app-wide, not nutrition-specific.** Cloud STT improves all voice features (journaling, session logging, meal logging, bedtime summary). It is placed here because Phase 3 benefits most from improved accuracy (food name recognition), but it could be started independently after Phase 1 without waiting for other Phase 3 blocks. Consider starting this block in parallel with Phase 2 if voice accuracy is a pain point.
+> **Note: This block is app-wide, not nutrition-specific.** Cloud STT improves all voice features (journaling, session logging, meal logging, bedtime summary). It is placed here because Phase 3 benefits most from improved accuracy (food name recognition), but it could be started independently after Phase 1 without waiting for other Phase 3 blocks.
 
 - [ ] Evaluate cloud STT APIs (Google Cloud Speech-to-Text, Whisper API, Deepgram)
 - [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
@@ -17,9 +27,17 @@
 - [ ] A/B comparison: measure accuracy improvement over device STT
 - [ ] Tests: unit tests for cloud STT integration
 
+### Implementation notes for next AI
+- Current STT: `speech_to_text` Flutter package used in journal, session logging, and meal logging — find all usages with `grep -r "speech_to_text\|SpeechToText" lib/`
+- Recommended API: **OpenAI Whisper** (best accuracy, simple API, cheap) or **Google Cloud Speech-to-Text v2** (good for food names specifically)
+- Pattern: create `CloudSttService` abstract interface + `WhisperSttService` implementation + `DeviceSttService` fallback (existing); choose via feature flag (Firebase Remote Config)
+- Cloud Function proxy at `backend/functions/src/stt/transcribeAudio.ts` — callable function; client sends base64 audio, function calls Whisper API with API key stored in Firebase Functions config, returns transcript
+- Audio format: the `speech_to_text` package records in WAV/PCM; Whisper accepts mp3/wav/m4a/webm — WAV is fine
+- Keep device STT as fallback: if cloud call fails or device is offline, fall back to `speech_to_text` package
+
 ---
 
-## Block 1 — External AI API Setup & Photo Food Recognition not for now
+## Block 1 — External AI API Setup & Photo Food Recognition ⛔ DEFERRED — skip entirely
 
 - [ ] Evaluate food recognition APIs (Google Cloud Vision, Clarifai, LogMeal, or similar)
 - [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
@@ -35,7 +53,7 @@
 
 ---
 
-## Block 2 — Full Meal Tracking (Macro Upgrade)
+## Block 2 — Full Meal Tracking (Macro Upgrade) ← START AFTER Block 0
 
 - [ ] Upgrade Meal entity: add calories, protein, carbs, fat, foodItems array
 - [ ] Domain: FoodItem entity (name, portion, calories, protein, carbs, fat)
@@ -47,9 +65,17 @@
 - [ ] Carry forward stomach feeling tracking from Phase 1 nutrition MVP
 - [ ] Tests: unit tests for upgraded use cases, widget tests for meal entry
 
+### Implementation notes for next AI
+- Existing meal code: `lib/features/nutrition/` — read this first before touching anything
+- Existing `Meal` entity at `lib/features/nutrition/domain/entities/meal.dart` — upgrade it; add `foodItems: List<FoodItem>`, `calories`, `protein`, `carbs`, `fat` (nullable initially for backwards compat)
+- Food database: use **Open Food Facts** (free, open-source, no API key needed) — REST API at `https://world.openfoodfacts.org/cgi/search.pl?search_terms={query}&json=1`
+- Create `FoodDatabaseService` that queries Open Food Facts and maps results to `FoodItem` entities
+- `MealEntryPage` upgrade: keep existing stomach feeling slider; add food search field at top; each added food item shows name + macros + portion size (editable)
+- Backwards compatibility: existing meals without `foodItems` should still display (show "No items tracked" gracefully)
+
 ---
 
-## Block 3 — Macro Targets
+## Block 3 — Macro Targets ← AFTER Block 2
 
 - [ ] Calculate daily calorie target from user profile (age, weight, height, activity level, goal)
 - [ ] Calculate macro split (protein/carbs/fat) based on training goal
@@ -57,6 +83,14 @@
 - [ ] Presentation: NutritionTargetSettingsPage (view/edit targets, select goal preset)
 - [ ] Adjust targets on training vs rest days
 - [ ] Tests: unit tests for calculation formulas
+
+### Implementation notes for next AI
+- TDEE formula: BMR (Mifflin-St Jeor) × activity multiplier — inputs from `UserProfile` (age, weight, height, activityLevel)
+- Check `UserProfile` entity at `lib/features/profile/domain/entities/user_profile.dart` — may already have some of these fields
+- Macro split presets: Fat loss (40% protein, 30% carbs, 30% fat), Maintenance (30/40/30), Muscle gain (30/50/20)
+- Training day adjustment: +10–15% calories on training days, −10% on rest days
+- Firestore collection: `nutritionTargets/{userId}` — single document per user
+- **After this block is done**: trigger Phase 4b upgrade — update `RecoveryService` to include `nutritionAdherenceComponent` (actual macros vs targets) and rebalance weights per the Phase 4b formula
 
 ---
 
