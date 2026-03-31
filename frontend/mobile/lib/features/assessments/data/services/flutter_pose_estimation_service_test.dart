@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter_pose_detection/flutter_pose_detection.dart'
-    as sdk
+import 'package:flutter_pose_detection/flutter_pose_detection.dart' as sdk
     show
         PoseResult,
         Pose,
@@ -176,7 +175,9 @@ void main() {
       );
       when(() => mockAdapter.detectPose(any())).thenAnswer(
         (_) async => _sdkPoseResult(
-          poses: [_sdkPose(overrides: {sdk.LandmarkType.leftKnee: hidden})],
+          poses: [
+            _sdkPose(overrides: {sdk.LandmarkType.leftKnee: hidden})
+          ],
         ),
       );
 
@@ -220,9 +221,10 @@ void main() {
     });
 
     test('returns empty frames when video has no detected poses', () async {
-      when(() => mockAdapter.analyzeVideo(any(), frameInterval: any(named: 'frameInterval')))
-          .thenAnswer(
-              (_) async => _sdkVideoResult([_sdkPoseResult(), _sdkPoseResult()]));
+      when(() =>
+          mockAdapter.analyzeVideo(any(),
+              frameInterval: any(named: 'frameInterval'))).thenAnswer(
+          (_) async => _sdkVideoResult([_sdkPoseResult(), _sdkPoseResult()]));
 
       final result = await service.analyzeVideo('/test.mp4');
 
@@ -232,8 +234,8 @@ void main() {
     });
 
     test('returns one domain frame per detected SDK frame', () async {
-      when(() => mockAdapter.analyzeVideo(any(), frameInterval: any(named: 'frameInterval')))
-          .thenAnswer(
+      when(() => mockAdapter.analyzeVideo(any(),
+          frameInterval: any(named: 'frameInterval'))).thenAnswer(
         (_) async => _sdkVideoResult([
           _sdkPoseResult(poses: [_sdkPose()]),
           _sdkPoseResult(), // no pose
@@ -249,8 +251,8 @@ void main() {
     });
 
     test('frame timestamps are derived from SDK timestampSeconds', () async {
-      when(() => mockAdapter.analyzeVideo(any(), frameInterval: any(named: 'frameInterval')))
-          .thenAnswer(
+      when(() => mockAdapter.analyzeVideo(any(),
+          frameInterval: any(named: 'frameInterval'))).thenAnswer(
         (_) async => _sdkVideoResult([
           _sdkPoseResult(poses: [_sdkPose()]),
         ]),
@@ -263,8 +265,8 @@ void main() {
     });
 
     test('reports progress from first to last frame', () async {
-      when(() => mockAdapter.analyzeVideo(any(), frameInterval: any(named: 'frameInterval')))
-          .thenAnswer(
+      when(() => mockAdapter.analyzeVideo(any(),
+          frameInterval: any(named: 'frameInterval'))).thenAnswer(
         (_) async => _sdkVideoResult(
           List.generate(4, (_) => _sdkPoseResult()),
         ),
@@ -277,7 +279,8 @@ void main() {
     });
 
     test('wraps SDK exceptions in PoseEstimationException', () async {
-      when(() => mockAdapter.analyzeVideo(any(), frameInterval: any(named: 'frameInterval')))
+      when(() => mockAdapter.analyzeVideo(any(),
+              frameInterval: any(named: 'frameInterval')))
           .thenThrow(Exception('hardware error'));
 
       expect(

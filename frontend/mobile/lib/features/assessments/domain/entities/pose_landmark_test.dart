@@ -7,7 +7,8 @@ void main() {
       expect(JointLandmark.fromMediaPipeIndex(11), JointLandmark.leftShoulder);
       expect(JointLandmark.fromMediaPipeIndex(25), JointLandmark.leftKnee);
       expect(JointLandmark.fromMediaPipeIndex(0), JointLandmark.nose);
-      expect(JointLandmark.fromMediaPipeIndex(32), JointLandmark.rightFootIndex);
+      expect(
+          JointLandmark.fromMediaPipeIndex(32), JointLandmark.rightFootIndex);
     });
 
     test('fromMediaPipeIndex returns null for unmapped index', () {
@@ -16,7 +17,8 @@ void main() {
     });
 
     test('each joint has a unique mediaPipeIndex', () {
-      final indices = JointLandmark.values.map((j) => j.mediaPipeIndex).toList();
+      final indices =
+          JointLandmark.values.map((j) => j.mediaPipeIndex).toList();
       expect(indices.toSet().length, equals(indices.length));
     });
 

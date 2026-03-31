@@ -25,16 +25,15 @@ class CalendarMonthGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final monthStart = DateTime(month.year, month.month, 1);
     final sessionsAsync = ref.watch(sessionsForMonthProvider(monthStart));
-    final journalDaysAsync =
-        ref.watch(journalDaysForMonthProvider(monthStart));
+    final journalDaysAsync = ref.watch(journalDaysForMonthProvider(monthStart));
 
     final sessionsByDay = sessionsAsync.whenData((sessions) {
-      final byDay = <int, List<Session>>{};
-      for (final s in sessions) {
-        byDay.putIfAbsent(s.date.day, () => []).add(s);
-      }
-      return byDay;
-    }).valueOrNull ??
+          final byDay = <int, List<Session>>{};
+          for (final s in sessions) {
+            byDay.putIfAbsent(s.date.day, () => []).add(s);
+          }
+          return byDay;
+        }).valueOrNull ??
         const {};
 
     final journalDays = journalDaysAsync.valueOrNull ?? const {};
@@ -235,9 +234,7 @@ class _DayIndicators extends StatelessWidget {
           ),
       if (hasJournal)
         (
-          isSelected
-              ? Colors.white.withValues(alpha: 0.7)
-              : _journalDotColor,
+          isSelected ? Colors.white.withValues(alpha: 0.7) : _journalDotColor,
           200 + visibleSessions.length * 80,
         ),
     ];

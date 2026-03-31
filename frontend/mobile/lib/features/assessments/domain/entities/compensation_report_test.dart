@@ -139,8 +139,7 @@ void main() {
       expect(report.detections.first.affectedFrameCount, 10);
     });
 
-    test(
-        'questionnaire-only patterns are added as mild with zero frame counts',
+    test('questionnaire-only patterns are added as mild with zero frame counts',
         () {
       final report = CompensationReport.merge(
         assessmentId: 'a',
@@ -197,10 +196,12 @@ void main() {
       );
 
       final patterns = report.detections.map((d) => d.pattern).toSet();
-      expect(patterns, containsAll([
-        CompensationPattern.kneeValgus,
-        CompensationPattern.roundedShoulders,
-      ]));
+      expect(
+          patterns,
+          containsAll([
+            CompensationPattern.kneeValgus,
+            CompensationPattern.roundedShoulders,
+          ]));
       expect(report.detections.length, 2);
     });
 

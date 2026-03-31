@@ -48,8 +48,8 @@ void main() {
               affected: 70, total: 100), // significant
         ]);
 
-        final program =
-            ProgramRecommendationEngine.generate(report: report, profile: _profile());
+        final program = ProgramRecommendationEngine.generate(
+            report: report, profile: _profile());
 
         final allExerciseIds = program.weekTemplate.days.values
             .expand((d) => d.exerciseEntries.map((e) => e.exerciseId))
@@ -57,9 +57,11 @@ void main() {
 
         // anteriorPelvicTilt exercises appear (significant comes first)
         expect(
-          allExerciseIds.any((id) =>
-              ['ex_90_90_breathing', 'ex_deadbug', 'ex_couch_stretch']
-                  .contains(id)),
+          allExerciseIds.any((id) => [
+                'ex_90_90_breathing',
+                'ex_deadbug',
+                'ex_couch_stretch'
+              ].contains(id)),
           isTrue,
         );
       });
@@ -69,8 +71,8 @@ void main() {
           _detection(CompensationPattern.kneeValgus),
         ]);
 
-        final program =
-            ProgramRecommendationEngine.generate(report: report, profile: _profile());
+        final program = ProgramRecommendationEngine.generate(
+            report: report, profile: _profile());
 
         expect(program.basedOnAssessmentId, 'assess_1');
       });
@@ -196,9 +198,8 @@ void main() {
           profile: _profile(trainingDaysPerWeek: null),
         );
 
-        final activeDays = program.weekTemplate.days.values
-            .where((d) => !d.isRestDay)
-            .length;
+        final activeDays =
+            program.weekTemplate.days.values.where((d) => !d.isRestDay).length;
 
         expect(activeDays, 3);
       });
@@ -213,9 +214,8 @@ void main() {
           profile: _profile(trainingDaysPerWeek: 2),
         );
 
-        final activeDays = program.weekTemplate.days.values
-            .where((d) => !d.isRestDay)
-            .length;
+        final activeDays =
+            program.weekTemplate.days.values.where((d) => !d.isRestDay).length;
 
         expect(activeDays, 2);
       });
@@ -234,9 +234,8 @@ void main() {
           profile: _profile(trainingDaysPerWeek: 5),
         );
 
-        final activeDays = program.weekTemplate.days.values
-            .where((d) => !d.isRestDay)
-            .length;
+        final activeDays =
+            program.weekTemplate.days.values.where((d) => !d.isRestDay).length;
 
         expect(activeDays, 5);
       });

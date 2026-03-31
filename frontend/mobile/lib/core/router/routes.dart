@@ -50,4 +50,9 @@ abstract class Routes {
   // Phase 2 — AI movement assessment
   static const movementRecording = '/assessment/record';
   static const aiRecommendation = '/assessment/recommendation';
+  static const assessmentTimeline = '/assessment/timeline';
+  static const assessmentComparison = '/assessment/comparison';
+
+  // Phase 4 — Recovery
+  static const recovery = '/recovery';
 }

@@ -36,7 +36,8 @@ void main() {
     datasource = JournalAudioStorageDatasource(mockStorage);
 
     when(() => mockStorage.ref(any())).thenReturn(mockRef);
-    when(() => mockRef.putFile(any(), any())).thenAnswer((_) => _FakeUploadTask());
+    when(() => mockRef.putFile(any(), any()))
+        .thenAnswer((_) => _FakeUploadTask());
     when(() => mockRef.getDownloadURL())
         .thenAnswer((_) async => 'https://storage.example.com/audio.m4a');
   });
@@ -52,9 +53,8 @@ void main() {
 
       await datasource.uploadAudio(audioFile: file, userId: 'user-abc');
 
-      verify(() =>
-              mockStorage.ref('users/user-abc/journals/journal_audio_12345.m4a'))
-          .called(1);
+      verify(() => mockStorage
+          .ref('users/user-abc/journals/journal_audio_12345.m4a')).called(1);
     });
 
     test('uploadAudio returns download URL from Firebase', () async {

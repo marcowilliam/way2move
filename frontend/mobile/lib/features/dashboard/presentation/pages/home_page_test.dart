@@ -224,8 +224,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Scroll down to reveal sections below the monthly heat map.
-    await tester.drag(
-        find.byType(CustomScrollView), const Offset(0, -800));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -800));
     await tester.pumpAndSettle();
 
     expect(find.text('Quick Actions'), findsOneWidget);
@@ -242,8 +241,7 @@ void main() {
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
-    await tester.drag(
-        find.byType(CustomScrollView), const Offset(0, -1200));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
     await tester.pumpAndSettle();
 
     expect(find.byKey(AppKeys.trackTodayGrid), findsOneWidget);
@@ -264,8 +262,7 @@ void main() {
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
-    await tester.drag(
-        find.byType(CustomScrollView), const Offset(0, -900));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
     await tester.pumpAndSettle();
 
     expect(find.text('Active Goals'), findsOneWidget);
@@ -279,8 +276,7 @@ void main() {
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
-    await tester.drag(
-        find.byType(CustomScrollView), const Offset(0, -900));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
     await tester.pumpAndSettle();
 
     expect(find.text('No active goals'), findsOneWidget);

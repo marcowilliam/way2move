@@ -257,8 +257,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.audio_file, size: 14,
-                    color: Colors.green),
+                const Icon(Icons.audio_file, size: 14, color: Colors.green),
                 const SizedBox(width: 4),
                 Text(
                   'Audio recorded — will upload with entry',

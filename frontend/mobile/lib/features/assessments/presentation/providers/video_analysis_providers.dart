@@ -2,11 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/app_failure.dart';
+import '../../data/repositories/assessment_repository_impl.dart';
 import '../../data/repositories/video_analysis_repository_impl.dart';
 import '../../data/services/flutter_pose_estimation_service.dart';
+import '../../domain/entities/assessment_comparison_result.dart';
 import '../../domain/entities/video_analysis.dart';
 import '../../domain/services/pose_estimation_service.dart';
 import '../../domain/usecases/analyze_movement_video.dart';
+import '../../domain/usecases/get_assessment_comparison.dart';
 
 // ── PoseEstimationService provider ───────────────────────────────────────────
 
@@ -52,6 +55,27 @@ final analyzeMovementVideoProvider =
     AsyncNotifierProvider<AnalyzeMovementVideoNotifier, List<VideoAnalysis>>(
   AnalyzeMovementVideoNotifier.new,
 );
+
+// ── Assessment comparison provider ───────────────────────────────────────────
+
+typedef _ComparisonIds = ({String firstId, String secondId});
+
+final assessmentComparisonProvider =
+    FutureProvider.family<AssessmentComparisonResult, _ComparisonIds>(
+        (ref, ids) async {
+  final useCase = GetAssessmentComparison(
+    ref.watch(assessmentRepositoryProvider),
+    ref.watch(videoAnalysisRepositoryProvider),
+  );
+  final result = await useCase(GetAssessmentComparisonInput(
+    firstAssessmentId: ids.firstId,
+    secondAssessmentId: ids.secondId,
+  ));
+  return result.fold(
+    (failure) => throw failure,
+    (comparison) => comparison,
+  );
+});
 
 // ── VideoAnalysis history provider ────────────────────────────────────────────
 

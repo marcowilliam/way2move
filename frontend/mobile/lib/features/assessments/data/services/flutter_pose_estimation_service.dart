@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter_pose_detection/flutter_pose_detection.dart'
-    as sdk
+import 'package:flutter_pose_detection/flutter_pose_detection.dart' as sdk
     show
         NpuPoseDetector,
         PoseResult,

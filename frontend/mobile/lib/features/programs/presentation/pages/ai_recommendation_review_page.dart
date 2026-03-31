@@ -70,8 +70,7 @@ class _AIRecommendationReviewPageState
   void _editExercise(int dayIndex, int entryIndex) {
     final entry =
         _program.weekTemplate.days[dayIndex]!.exerciseEntries[entryIndex];
-    final setsController =
-        TextEditingController(text: entry.sets.toString());
+    final setsController = TextEditingController(text: entry.sets.toString());
     final repsController = TextEditingController(text: entry.reps);
 
     showDialog<void>(
@@ -110,11 +109,13 @@ class _AIRecommendationReviewPageState
           ),
           FilledButton(
             onPressed: () {
-              final sets = int.tryParse(setsController.text.trim()) ?? entry.sets;
+              final sets =
+                  int.tryParse(setsController.text.trim()) ?? entry.sets;
               final reps = repsController.text.trim().isEmpty
                   ? entry.reps
                   : repsController.text.trim();
-              _updateEntry(dayIndex, entryIndex, entry.copyWith(sets: sets, reps: reps));
+              _updateEntry(
+                  dayIndex, entryIndex, entry.copyWith(sets: sets, reps: reps));
               Navigator.of(ctx).pop();
             },
             child: const Text('Save'),
@@ -210,13 +211,15 @@ class _AIRecommendationReviewPageState
             if (widget.report.detections.isEmpty)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: _EmptyAnalysisCard(theme: theme),
                 ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (ctx, i) {
@@ -300,7 +303,9 @@ class _SectionHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+              Text(label,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
               Text(
                 subtitle,
@@ -506,13 +511,13 @@ class _DayCard extends StatelessWidget {
           if (!isRest) ...[
             const Divider(height: 1, indent: 14, endIndent: 14),
             ...day.exerciseEntries.asMap().entries.map(
-              (entry) => _ExerciseRow(
-                index: entry.key,
-                exerciseEntry: entry.value,
-                onEdit: () => onEditEntry(entry.key),
-                onRemove: () => onRemoveEntry(entry.key),
-              ),
-            ),
+                  (entry) => _ExerciseRow(
+                    index: entry.key,
+                    exerciseEntry: entry.value,
+                    onEdit: () => onEditEntry(entry.key),
+                    onRemove: () => onRemoveEntry(entry.key),
+                  ),
+                ),
             const SizedBox(height: 4),
           ],
         ],
@@ -695,5 +700,6 @@ String _exerciseLabel(String id) {
     'ex_glute_bridge': 'Glute Bridge',
     'ex_hip_hinge': 'Hip Hinge',
   };
-  return labels[id] ?? id.replaceAll('ex_', '').replaceAll('_', ' ').toUpperCase();
+  return labels[id] ??
+      id.replaceAll('ex_', '').replaceAll('_', ' ').toUpperCase();
 }
