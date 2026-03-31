@@ -4,6 +4,8 @@
 > **Can run parallel with:** Phase 2, Phase 3, Phase 4
 > **Blocks:** nothing
 
+**Status: Not started (2026-03-31). Blocks 0–3 are deferred. Only Block 4 (Progress Sharing) is active.**
+
 ---
 
 ## Block 0 — Coach Role and Permissions not for now
@@ -48,10 +50,20 @@
 
 ---
 
-## Block 4 — Progress Sharing
+## Block 4 — Progress Sharing ← ONLY ACTIVE BLOCK
 
 - [ ] Generate progress report (assessment improvements, consistency stats, program completion)
 - [ ] Share progress report as image card or PDF
-- [ ] Coach can view athlete progress timeline
+- [ ] Coach can view athlete progress timeline *(skip — coach role is deferred)*
 - [ ] Leaderboards (opt-in): consistency streaks, sessions completed
 - [ ] Tests: widget tests for progress report generation
+
+### Implementation notes for next AI
+- Progress report data sources (all from Phase 1 + 2):
+  - Assessment improvements: compare first vs latest `Assessment` (use `GetAssessmentHistory` use case)
+  - Consistency: count `TrainingSession` docs in last 30/90 days vs plan target
+  - Program completion: `Program` entity has `completedAt` — check completion rate of exercises per week
+- Share as image: use `RepaintBoundary` + `RenderRepaintBoundary.toImage()` → `share_plus` package
+- Share as PDF: use `pdf` package (pub.dev `pdf`) — generate a simple one-pager
+- Leaderboards: Firestore collection `leaderboards/streaks` — aggregate weekly on Cloud Function; users opt-in via profile setting
+- Route: `ProgressReportPage` at `/progress/report`
