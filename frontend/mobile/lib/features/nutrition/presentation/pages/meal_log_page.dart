@@ -85,6 +85,16 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
     });
   }
 
+  Future<void> _showCreateCustomFoodDialog() async {
+    final result = await showDialog<FoodItem>(
+      context: context,
+      builder: (_) => const _CreateCustomFoodDialog(),
+    );
+    if (result != null) {
+      _addFoodItem(result);
+    }
+  }
+
   void _removeFoodItem(int index) {
     setState(() => _foodItems.removeAt(index));
   }
@@ -170,6 +180,21 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
                 onAdd: _addFoodItem,
               ),
             ],
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _showCreateCustomFoodDialog,
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Create custom food'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+            ),
             if (_foodItems.isNotEmpty) ...[
               const SizedBox(height: 16),
               const _SectionLabel('Added foods'),
@@ -630,6 +655,166 @@ class _MealTypeSelector extends StatelessWidget {
         MealType.snack => 'Snack',
         MealType.drink => 'Drink',
       };
+}
+
+// ── Create custom food dialog ────────────────────────────────────────────────
+
+class _CreateCustomFoodDialog extends StatefulWidget {
+  const _CreateCustomFoodDialog();
+
+  @override
+  State<_CreateCustomFoodDialog> createState() =>
+      _CreateCustomFoodDialogState();
+}
+
+class _CreateCustomFoodDialogState extends State<_CreateCustomFoodDialog> {
+  final _nameController = TextEditingController();
+  final _caloriesController = TextEditingController();
+  final _proteinController = TextEditingController();
+  final _carbsController = TextEditingController();
+  final _fatController = TextEditingController();
+  final _portionController = TextEditingController(text: '100');
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _caloriesController.dispose();
+    _proteinController.dispose();
+    _carbsController.dispose();
+    _fatController.dispose();
+    _portionController.dispose();
+    super.dispose();
+  }
+
+  bool get _canCreate => _nameController.text.trim().isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create Custom Food'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Food name *',
+                hintText: 'e.g. Homemade granola',
+                border: OutlineInputBorder(),
+              ),
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Macros per 100g (optional)',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _MacroField(
+                    controller: _caloriesController,
+                    label: 'Calories',
+                    suffix: 'kcal',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _MacroField(
+                    controller: _proteinController,
+                    label: 'Protein',
+                    suffix: 'g',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _MacroField(
+                    controller: _carbsController,
+                    label: 'Carbs',
+                    suffix: 'g',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _MacroField(
+                    controller: _fatController,
+                    label: 'Fat',
+                    suffix: 'g',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _MacroField(
+              controller: _portionController,
+              label: 'Portion size',
+              suffix: 'g',
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _canCreate ? _create : null,
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
+
+  void _create() {
+    final item = FoodItem(
+      name: _nameController.text.trim(),
+      calories: double.tryParse(_caloriesController.text) ?? 0,
+      protein: double.tryParse(_proteinController.text) ?? 0,
+      carbs: double.tryParse(_carbsController.text) ?? 0,
+      fat: double.tryParse(_fatController.text) ?? 0,
+      portionGrams: double.tryParse(_portionController.text) ?? 100,
+    );
+    Navigator.of(context).pop(item);
+  }
+}
+
+class _MacroField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String suffix;
+
+  const _MacroField({
+    required this.controller,
+    required this.label,
+    required this.suffix,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+      ],
+      decoration: InputDecoration(
+        labelText: label,
+        suffixText: suffix,
+        isDense: true,
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
 }
 
 class _StomachFeelingSelector extends StatelessWidget {
