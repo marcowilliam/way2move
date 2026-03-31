@@ -6,14 +6,19 @@ import 'package:mocktail/mocktail.dart';
 import 'package:way2move/core/constants/app_keys.dart';
 import 'package:way2move/features/auth/presentation/providers/auth_provider.dart';
 import 'package:way2move/features/nutrition/data/repositories/meal_repository_impl.dart';
+import 'package:way2move/features/nutrition/data/services/food_database_service.dart';
+import 'package:way2move/features/nutrition/domain/entities/food_item.dart';
 import 'package:way2move/features/nutrition/domain/entities/meal.dart';
 import 'package:way2move/features/nutrition/domain/repositories/meal_repository.dart';
 import 'package:way2move/features/nutrition/presentation/pages/meal_log_page.dart';
 
 class MockMealRepository extends Mock implements MealRepository {}
 
+class MockFoodDatabaseService extends Mock implements FoodDatabaseService {}
+
 void main() {
   late MockMealRepository mockRepo;
+  late MockFoodDatabaseService mockFoodService;
 
   final tMeal = Meal(
     id: 'm1',
@@ -25,8 +30,18 @@ void main() {
     source: 'manual',
   );
 
+  const tFoodItem = FoodItem(
+    name: 'Oats',
+    portionGrams: 100,
+    calories: 389,
+    protein: 17,
+    carbs: 66,
+    fat: 7,
+  );
+
   setUp(() {
     mockRepo = MockMealRepository();
+    mockFoodService = MockFoodDatabaseService();
   });
 
   setUpAll(() {
@@ -38,6 +53,7 @@ void main() {
       overrides: [
         mealRepositoryProvider.overrideWithValue(mockRepo),
         currentUserIdProvider.overrideWithValue('test-uid'),
+        foodDatabaseServiceProvider.overrideWithValue(mockFoodService),
       ],
       child: const MaterialApp(home: MealLogPage()),
     );
@@ -53,6 +69,13 @@ void main() {
     expect(find.byKey(AppKeys.stomachFeelingSelector), findsOneWidget);
     expect(find.byKey(AppKeys.stomachNotesField), findsOneWidget);
     expect(find.byKey(AppKeys.saveMealButton), findsOneWidget);
+  });
+
+  testWidgets('food search field is present', (tester) async {
+    await tester.pumpWidget(buildPage());
+    await tester.pump();
+
+    expect(find.byKey(AppKeys.foodSearchField), findsOneWidget);
   });
 
   testWidgets('save button is disabled when required fields are empty',
@@ -71,7 +94,6 @@ void main() {
     await tester.pumpWidget(buildPage());
     await tester.pump();
 
-    // Select meal type
     await tester.tap(find.text('Breakfast'));
     await tester.pump();
 
@@ -86,16 +108,13 @@ void main() {
     await tester.pumpWidget(buildPage());
     await tester.pump();
 
-    // Select meal type
     await tester.tap(find.text('Breakfast'));
     await tester.pump();
 
-    // Enter description
     await tester.enterText(
         find.byKey(AppKeys.mealDescriptionField), 'Oatmeal with berries');
     await tester.pump();
 
-    // Select stomach feeling (tap "Good")
     await tester.tap(find.text('Good'));
     await tester.pump();
 
@@ -122,7 +141,6 @@ void main() {
     await tester.tap(find.text('Good'));
     await tester.pump();
 
-    // Scroll to the save button before tapping
     await tester.ensureVisible(find.byKey(AppKeys.saveMealButton));
     await tester.pump();
 
@@ -152,5 +170,62 @@ void main() {
     expect(find.text('Okay'), findsOneWidget);
     expect(find.text('Good'), findsOneWidget);
     expect(find.text('Great'), findsOneWidget);
+  });
+
+  testWidgets(
+      'food search results appear after debounce when service returns items',
+      (tester) async {
+    when(() => mockFoodService.search(any()))
+        .thenAnswer((_) async => [tFoodItem]);
+
+    await tester.pumpWidget(buildPage());
+    await tester.pump();
+
+    await tester.enterText(find.byKey(AppKeys.foodSearchField), 'oats');
+    // Advance past debounce + async gap
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+
+    expect(find.byKey(AppKeys.foodSearchResults), findsOneWidget);
+    expect(find.text('Oats'), findsOneWidget);
+  });
+
+  testWidgets(
+      'tapping a search result adds it to food items list and clears search',
+      (tester) async {
+    when(() => mockFoodService.search(any()))
+        .thenAnswer((_) async => [tFoodItem]);
+
+    await tester.pumpWidget(buildPage());
+    await tester.pump();
+
+    await tester.enterText(find.byKey(AppKeys.foodSearchField), 'oats');
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+
+    // Tap the add button next to the result
+    await tester.tap(find.byIcon(Icons.add_circle_outline));
+    await tester.pump();
+
+    expect(find.byKey(AppKeys.foodItemsList), findsOneWidget);
+    expect(find.byKey(AppKeys.foodSearchResults), findsNothing);
+  });
+
+  testWidgets('macro totals row shows after food item is added',
+      (tester) async {
+    when(() => mockFoodService.search(any()))
+        .thenAnswer((_) async => [tFoodItem]);
+
+    await tester.pumpWidget(buildPage());
+    await tester.pump();
+
+    await tester.enterText(find.byKey(AppKeys.foodSearchField), 'oats');
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.add_circle_outline));
+    await tester.pump();
+
+    expect(find.byKey(AppKeys.macroTotalsRow), findsOneWidget);
   });
 }

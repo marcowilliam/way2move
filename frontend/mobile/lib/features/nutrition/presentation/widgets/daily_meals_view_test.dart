@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:way2move/features/auth/presentation/providers/auth_provider.dart';
 import 'package:way2move/features/nutrition/data/repositories/meal_repository_impl.dart';
+import 'package:way2move/features/nutrition/domain/entities/food_item.dart';
 import 'package:way2move/features/nutrition/domain/entities/meal.dart';
 import 'package:way2move/features/nutrition/domain/repositories/meal_repository.dart';
 import 'package:way2move/features/nutrition/presentation/widgets/daily_meals_view.dart';
@@ -16,6 +17,7 @@ Meal _meal({
   required MealType type,
   String description = 'Test food',
   int feeling = 3,
+  List<FoodItem>? foodItems,
 }) =>
     Meal(
       id: id,
@@ -25,6 +27,7 @@ Meal _meal({
       description: description,
       stomachFeeling: feeling,
       source: 'manual',
+      foodItems: foodItems,
     );
 
 Widget _buildWidget(List<Meal> meals, MockMealRepository mockRepo) {
@@ -126,5 +129,46 @@ void main() {
     await tester.pumpAndSettle();
 
     verify(() => mockRepo.deleteMeal('m1')).called(1);
+  });
+
+  testWidgets('shows macro chips when meal has food items', (tester) async {
+    final meals = [
+      _meal(
+        id: 'm1',
+        type: MealType.breakfast,
+        description: 'Oats',
+        foodItems: const [
+          FoodItem(
+            name: 'Oats',
+            portionGrams: 100,
+            calories: 389,
+            protein: 17,
+            carbs: 66,
+            fat: 7,
+          ),
+        ],
+      ),
+    ];
+
+    await tester.pumpWidget(_buildWidget(meals, mockRepo));
+    await tester.pump();
+
+    // Macro chips use emoji + value — check calories chip text is present
+    expect(find.textContaining('🔥'), findsOneWidget);
+    expect(find.textContaining('💪'), findsOneWidget);
+    expect(find.textContaining('🌾'), findsOneWidget);
+    expect(find.textContaining('🥑'), findsOneWidget);
+  });
+
+  testWidgets('does not show macro chips when meal has no food items',
+      (tester) async {
+    final meals = [
+      _meal(id: 'm1', type: MealType.breakfast, description: 'Oatmeal'),
+    ];
+
+    await tester.pumpWidget(_buildWidget(meals, mockRepo));
+    await tester.pump();
+
+    expect(find.textContaining('🔥'), findsNothing);
   });
 }
