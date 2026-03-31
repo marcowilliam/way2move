@@ -223,3 +223,4 @@ Never leave a decision only in chat history — if it matters, it must be in a d
 @.claude/rules/testing.md
 @.claude/rules/docker.md
 @../.claude/skills/flutter-animating-apps/SKILL.md
+@.claude/skills/ios-staging-codemagic/SKILL.md

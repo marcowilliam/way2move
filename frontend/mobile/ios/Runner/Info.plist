@@ -26,6 +26,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Way2Move uses the camera for movement assessment and progress photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Way2Move uses the microphone for voice journaling and movement coaching.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Way2Move uses your photo library to save and load progress photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Way2Move saves progress photos to your photo library.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
