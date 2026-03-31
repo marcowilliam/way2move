@@ -106,6 +106,10 @@ abstract class AppKeys {
   static const stomachNotesField = Key('stomach_notes_field');
   static const saveMealButton = Key('save_meal_button');
   static const voiceInputButton = Key('voice_input_button');
+  static const foodSearchField = Key('food_search_field');
+  static const foodSearchResults = Key('food_search_results');
+  static const foodItemsList = Key('food_items_list');
+  static const macroTotalsRow = Key('macro_totals_row');
 
   // Progress
   static const progressPage = Key('progress_page');

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/meal.dart';
+import 'food_item_model.dart';
 
 class MealModel {
   final String id;
@@ -12,6 +13,11 @@ class MealModel {
   final String? stomachNotes;
   final String source;
   final String? linkedJournalId;
+  final List<FoodItemModel>? foodItems;
+  final double? calories;
+  final double? protein;
+  final double? carbs;
+  final double? fat;
 
   const MealModel({
     required this.id,
@@ -23,10 +29,25 @@ class MealModel {
     this.stomachNotes,
     required this.source,
     this.linkedJournalId,
+    this.foodItems,
+    this.calories,
+    this.protein,
+    this.carbs,
+    this.fat,
   });
 
   factory MealModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    List<FoodItemModel>? foodItems;
+    final rawItems = data['foodItems'];
+    if (rawItems is List) {
+      foodItems = rawItems
+          .whereType<Map<String, dynamic>>()
+          .map(FoodItemModel.fromMap)
+          .toList();
+    }
+
     return MealModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -37,6 +58,11 @@ class MealModel {
       stomachNotes: data['stomachNotes'] as String?,
       source: data['source'] as String? ?? 'manual',
       linkedJournalId: data['linkedJournalId'] as String?,
+      foodItems: foodItems,
+      calories: (data['calories'] as num?)?.toDouble(),
+      protein: (data['protein'] as num?)?.toDouble(),
+      carbs: (data['carbs'] as num?)?.toDouble(),
+      fat: (data['fat'] as num?)?.toDouble(),
     );
   }
 
@@ -49,6 +75,12 @@ class MealModel {
         if (stomachNotes != null) 'stomachNotes': stomachNotes,
         'source': source,
         if (linkedJournalId != null) 'linkedJournalId': linkedJournalId,
+        if (foodItems != null && foodItems!.isNotEmpty)
+          'foodItems': foodItems!.map((i) => i.toMap()).toList(),
+        if (calories != null) 'calories': calories,
+        if (protein != null) 'protein': protein,
+        if (carbs != null) 'carbs': carbs,
+        if (fat != null) 'fat': fat,
       };
 
   Meal toEntity() => Meal(
@@ -61,6 +93,11 @@ class MealModel {
         stomachNotes: stomachNotes,
         source: source,
         linkedJournalId: linkedJournalId,
+        foodItems: foodItems?.map((m) => m.toEntity()).toList(),
+        calories: calories,
+        protein: protein,
+        carbs: carbs,
+        fat: fat,
       );
 
   factory MealModel.fromEntity(Meal meal) => MealModel(
@@ -73,6 +110,11 @@ class MealModel {
         stomachNotes: meal.stomachNotes,
         source: meal.source,
         linkedJournalId: meal.linkedJournalId,
+        foodItems: meal.foodItems?.map(FoodItemModel.fromEntity).toList(),
+        calories: meal.calories,
+        protein: meal.protein,
+        carbs: meal.carbs,
+        fat: meal.fat,
       );
 
   static MealType _mealTypeFromString(String s) => switch (s) {

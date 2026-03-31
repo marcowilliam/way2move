@@ -446,10 +446,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           return CustomTransitionPage(
             key: state.pageKey,
             child: ReAssessmentComparisonPage(
-              firstAssessmentId:
-                  extra['firstAssessmentId'] as String? ?? '',
-              secondAssessmentId:
-                  extra['secondAssessmentId'] as String? ?? '',
+              firstAssessmentId: extra['firstAssessmentId'] as String? ?? '',
+              secondAssessmentId: extra['secondAssessmentId'] as String? ?? '',
             ),
             transitionsBuilder: _slideTransition,
           );

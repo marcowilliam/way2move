@@ -166,6 +166,10 @@ class _MealCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                   ),
+                  if (meal.hasMacros) ...[
+                    const SizedBox(height: 4),
+                    _MacroChips(meal: meal),
+                  ],
                   if (meal.stomachNotes != null &&
                       meal.stomachNotes!.isNotEmpty) ...[
                     const SizedBox(height: 2),
@@ -212,5 +216,62 @@ class _MealCard extends StatelessWidget {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+}
+
+// ── Macro chips ───────────────────────────────────────────────────────────────
+
+class _MacroChips extends StatelessWidget {
+  final Meal meal;
+  const _MacroChips({required this.meal});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      children: [
+        _MacroChip(
+            emoji: '🔥',
+            value: meal.totalCalories.toStringAsFixed(0),
+            unit: 'kcal'),
+        _MacroChip(
+            emoji: '💪',
+            value: meal.totalProtein.toStringAsFixed(1),
+            unit: 'g'),
+        _MacroChip(
+            emoji: '🌾', value: meal.totalCarbs.toStringAsFixed(1), unit: 'g'),
+        _MacroChip(
+            emoji: '🥑', value: meal.totalFat.toStringAsFixed(1), unit: 'g'),
+      ],
+    );
+  }
+}
+
+class _MacroChip extends StatelessWidget {
+  final String emoji;
+  final String value;
+  final String unit;
+
+  const _MacroChip(
+      {required this.emoji, required this.value, required this.unit});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Text(
+        '$emoji $value$unit',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+              fontSize: 10,
+            ),
+      ),
+    );
   }
 }
