@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "way2move-dev",
+    "dev": "way2move-dev",
+    "prod": "way2move-prod"
+  }
+}
