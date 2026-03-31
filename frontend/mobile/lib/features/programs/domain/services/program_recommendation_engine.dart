@@ -22,8 +22,8 @@ abstract class ProgramRecommendationEngine {
     final userEquipment = profile.availableEquipment.toSet();
 
     final exerciseIds = _collectExercises(sorted, userEquipment);
-    final dayIndices =
-        _trainingDayIndices(profile.trainingDaysPerWeek ?? _defaultTrainingDays);
+    final dayIndices = _trainingDayIndices(
+        profile.trainingDaysPerWeek ?? _defaultTrainingDays);
     final weekTemplate = _buildWeekTemplate(exerciseIds, dayIndices, sorted);
 
     return Program(
@@ -108,8 +108,9 @@ abstract class ProgramRecommendationEngine {
 
     for (int i = 0; i < n; i++) {
       final chunk = chunks[i];
-      final focus =
-          n == 1 ? 'Corrective Work' : 'Corrective Work ${String.fromCharCode(65 + i)}';
+      final focus = n == 1
+          ? 'Corrective Work'
+          : 'Corrective Work ${String.fromCharCode(65 + i)}';
 
       if (chunk.isEmpty) continue;
 
@@ -130,7 +131,9 @@ abstract class ProgramRecommendationEngine {
   }
 
   static int _setsFor(String exerciseId, List<DetectedCompensation> sorted) {
-    return _severityFor(exerciseId, sorted) == CompensationSeverity.mild ? 2 : 3;
+    return _severityFor(exerciseId, sorted) == CompensationSeverity.mild
+        ? 2
+        : 3;
   }
 
   static String _repsFor(String exerciseId, List<DetectedCompensation> sorted) {

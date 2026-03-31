@@ -208,7 +208,9 @@ abstract class VideoCompensationDetector {
     if (nose == null || leftShoulder == null || rightShoulder == null) {
       return false;
     }
-    if (!nose.isVisible || !leftShoulder.isVisible || !rightShoulder.isVisible) {
+    if (!nose.isVisible ||
+        !leftShoulder.isVisible ||
+        !rightShoulder.isVisible) {
       return false;
     }
 

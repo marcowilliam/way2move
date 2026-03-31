@@ -6,33 +6,41 @@ import 'detected_compensation.dart';
 void main() {
   group('CompensationSeverity', () {
     test('fromFrameRatio returns mild when below 30%', () {
-      expect(CompensationSeverity.fromFrameRatio(0.0), CompensationSeverity.mild);
-      expect(CompensationSeverity.fromFrameRatio(0.10), CompensationSeverity.mild);
-      expect(CompensationSeverity.fromFrameRatio(0.299), CompensationSeverity.mild);
+      expect(
+          CompensationSeverity.fromFrameRatio(0.0), CompensationSeverity.mild);
+      expect(
+          CompensationSeverity.fromFrameRatio(0.10), CompensationSeverity.mild);
+      expect(CompensationSeverity.fromFrameRatio(0.299),
+          CompensationSeverity.mild);
     });
 
     test('fromFrameRatio returns moderate at exactly 30%', () {
-      expect(CompensationSeverity.fromFrameRatio(0.30), CompensationSeverity.moderate);
+      expect(CompensationSeverity.fromFrameRatio(0.30),
+          CompensationSeverity.moderate);
     });
 
     test('fromFrameRatio returns moderate between 30% and 60%', () {
-      expect(CompensationSeverity.fromFrameRatio(0.45), CompensationSeverity.moderate);
-      expect(CompensationSeverity.fromFrameRatio(0.599), CompensationSeverity.moderate);
+      expect(CompensationSeverity.fromFrameRatio(0.45),
+          CompensationSeverity.moderate);
+      expect(CompensationSeverity.fromFrameRatio(0.599),
+          CompensationSeverity.moderate);
     });
 
     test('fromFrameRatio returns significant at exactly 60%', () {
-      expect(CompensationSeverity.fromFrameRatio(0.60), CompensationSeverity.significant);
+      expect(CompensationSeverity.fromFrameRatio(0.60),
+          CompensationSeverity.significant);
     });
 
     test('fromFrameRatio returns significant above 60%', () {
-      expect(CompensationSeverity.fromFrameRatio(0.80), CompensationSeverity.significant);
-      expect(CompensationSeverity.fromFrameRatio(1.0), CompensationSeverity.significant);
+      expect(CompensationSeverity.fromFrameRatio(0.80),
+          CompensationSeverity.significant);
+      expect(CompensationSeverity.fromFrameRatio(1.0),
+          CompensationSeverity.significant);
     });
 
     test('severity ordering: mild < moderate < significant', () {
       expect(
-        CompensationSeverity.mild.index <
-            CompensationSeverity.moderate.index &&
+        CompensationSeverity.mild.index < CompensationSeverity.moderate.index &&
             CompensationSeverity.moderate.index <
                 CompensationSeverity.significant.index,
         isTrue,

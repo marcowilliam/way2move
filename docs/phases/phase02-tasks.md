@@ -256,26 +256,26 @@ context.push(
 
 ## Block 4 — Before/After Comparison UI
 
-- [ ] Side-by-side video playback widget (scrubbed together, same timestamp)
-- [ ] Pose landmark overlay on video using `CustomPainter` — colored dots per joint, lines between connected joints
-- [ ] Color code joints by quality: green = good alignment, amber = borderline, red = compensation detected
-- [ ] `MovementScoreChart` widget: radar chart or grouped bar chart (initial vs re-assessment score per movement)
-- [ ] Compensation reduction summary card: "Knee valgus improved from significant → mild"
-- [ ] `ReAssessmentComparisonPage` — full comparison screen triggered after completing a re-assessment
-- [ ] Tests: widget tests for overlay painter and comparison chart
+- [x] Side-by-side video playback widget (scrubbed together, same timestamp)
+- [x] Pose landmark overlay on video using `CustomPainter` — colored dots per joint, lines between connected joints
+- [x] Color code joints by quality: green = good alignment, amber = borderline, red = compensation detected
+- [x] `MovementScoreChart` widget: radar chart or grouped bar chart (initial vs re-assessment score per movement)
+- [x] Compensation reduction summary card: "Knee valgus improved from significant → mild"
+- [x] `ReAssessmentComparisonPage` — full comparison screen triggered after completing a re-assessment
+- [x] Tests: widget tests for overlay painter and comparison chart
 
 ---
 
 ## Block 5 — Re-Assessment Scheduling and Notifications
 
-- [ ] `ReAssessmentSchedule` entity (userId, nextAssessmentDate, intervalWeeks, lastCompletedDate)
-- [ ] Default interval: 4 weeks after completing an assessment; configurable in settings (4/6/8/12 weeks)
-- [ ] Cloud Function trigger: `onAssessmentComplete` — writes next re-assessment date to user doc
-- [ ] Push notifications via Firebase Cloud Messaging (FCM): "Time to re-assess — see how far you've come"
-- [ ] Notification scheduled 3 days before due date and on due date
-- [ ] Re-assessment flow: same video recording screen, but shows "last time you scored X" per movement
-- [ ] `AssessmentTimelinePage` — chronological list of past assessments with trend arrows per compensation
-- [ ] Tests: unit tests for scheduling logic and interval calculation
+- [x] `ReAssessmentSchedule` entity (userId, nextAssessmentDate, intervalWeeks, lastCompletedDate)
+- [x] Default interval: 4 weeks after completing an assessment; configurable in settings (4/6/8/12 weeks)
+- [x] Cloud Function trigger: `onAssessmentComplete` — writes next re-assessment date to user doc
+- [x] Push notifications via Firebase Cloud Messaging (FCM): "Time to re-assess — see how far you've come"
+- [x] Notification scheduled 3 days before due date and on due date
+- [x] Re-assessment flow: same video recording screen, but shows "last time you scored X" per movement
+- [x] `AssessmentTimelinePage` — chronological list of past assessments with trend arrows per compensation
+- [x] Tests: unit tests for scheduling logic and interval calculation
 
 ---
 

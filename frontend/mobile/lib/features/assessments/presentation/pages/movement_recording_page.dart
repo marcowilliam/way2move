@@ -11,6 +11,28 @@ import '../../domain/entities/video_analysis.dart';
 import '../../domain/usecases/analyze_movement_video.dart';
 import '../providers/video_analysis_providers.dart';
 
+// ── Previous score helper ─────────────────────────────────────────────────────
+
+/// Returns the previous % clean frames for [movement] from [previousAnalyses],
+/// or null if not available.
+double? _previousScoreFor(
+  ScreeningMovement movement,
+  List<VideoAnalysis>? previousAnalyses,
+) {
+  if (previousAnalyses == null) return null;
+  try {
+    final analysis = previousAnalyses.firstWhere(
+      (a) => a.movement == movement,
+    );
+    if (analysis.frames.isEmpty) return null;
+    // Use detection rate: frames with any landmarks detected are "clean"
+    final clean = analysis.frames.where((f) => f.landmarks.isNotEmpty).length;
+    return (clean / analysis.frames.length * 100).roundToDouble();
+  } catch (_) {
+    return null;
+  }
+}
+
 // ── Page entry point ─────────────────────────────────────────────────────────
 
 /// Guides the user through all five screening movements, records a short
@@ -21,10 +43,18 @@ class MovementRecordingPage extends ConsumerStatefulWidget {
   final String assessmentId;
   final String userId;
 
+  /// When true, shows the previous score banner before recording each movement.
+  final bool isReAssessment;
+
+  /// Previous analyses from the last assessment — used to show previous scores.
+  final List<VideoAnalysis>? previousAnalyses;
+
   const MovementRecordingPage({
     super.key,
     required this.assessmentId,
     required this.userId,
+    this.isReAssessment = false,
+    this.previousAnalyses,
   });
 
   @override
@@ -279,6 +309,9 @@ class _MovementRecordingPageState extends ConsumerState<MovementRecordingPage>
             currentIndex: _currentIndex,
             totalMovements: _movements.length,
             movement: _currentMovement,
+            previousScore: widget.isReAssessment
+                ? _previousScoreFor(_currentMovement, widget.previousAnalyses)
+                : null,
           ),
 
           // Bottom controls
@@ -355,10 +388,14 @@ class _TopBar extends StatelessWidget {
   final int totalMovements;
   final ScreeningMovement movement;
 
+  /// % clean frames from the previous assessment for this movement, or null.
+  final double? previousScore;
+
   const _TopBar({
     required this.currentIndex,
     required this.totalMovements,
     required this.movement,
+    this.previousScore,
   });
 
   @override
@@ -427,6 +464,37 @@ class _TopBar extends StatelessWidget {
                   ),
                 ),
               ),
+              if (previousScore != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.history_rounded,
+                        color: Colors.white70,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Last time you scored ${previousScore!.toStringAsFixed(0)}% clean',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),

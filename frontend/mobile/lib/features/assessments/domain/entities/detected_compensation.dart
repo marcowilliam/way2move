@@ -63,8 +63,7 @@ class DetectedCompensation {
   int get hashCode => pattern.hashCode;
 
   @override
-  String toString() =>
-      'DetectedCompensation(${pattern.name}, '
+  String toString() => 'DetectedCompensation(${pattern.name}, '
       'affected=$affectedFrameCount/$totalFrameCount, '
       'severity=${severity.name})';
 }

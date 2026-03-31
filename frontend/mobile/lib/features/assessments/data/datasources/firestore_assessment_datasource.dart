@@ -25,6 +25,12 @@ class FirestoreAssessmentDatasource {
     return AssessmentModel.fromFirestore(snap.docs.first);
   }
 
+  Future<AssessmentModel?> getById(String id) async {
+    final doc = await _db.collection('assessments').doc(id).get();
+    if (!doc.exists) return null;
+    return AssessmentModel.fromFirestore(doc);
+  }
+
   Future<List<AssessmentModel>> getHistory(String userId) async {
     final snap = await _db
         .collection('assessments')

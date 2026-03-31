@@ -112,8 +112,7 @@ class _ReviewAutoCreatedPageState extends ConsumerState<ReviewAutoCreatedPage> {
 
     // Store created entity IDs back in the journal
     if (createdIds.isNotEmpty) {
-      await journalRepo.updateAutoCreatedEntities(
-          widget.journalId, createdIds);
+      await journalRepo.updateAutoCreatedEntities(widget.journalId, createdIds);
     }
 
     if (!mounted) return;

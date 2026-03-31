@@ -19,7 +19,10 @@ import '../../features/goals/presentation/pages/goal_list_page.dart';
 import '../../features/goals/presentation/pages/goal_setup_page.dart';
 import '../../features/profile/presentation/pages/onboarding_flow.dart';
 import '../../features/profile/presentation/pages/profile_edit_page.dart';
+import '../../features/assessments/domain/entities/video_analysis.dart';
 import '../../features/assessments/presentation/pages/assessment_history_page.dart';
+import '../../features/assessments/presentation/pages/assessment_timeline_page.dart';
+import '../../features/assessments/presentation/pages/re_assessment_comparison_page.dart';
 import '../../features/assessments/presentation/pages/initial_assessment_flow.dart';
 import '../../features/assessments/presentation/pages/movement_recording_page.dart';
 import '../../features/exercises/presentation/pages/exercise_detail_page.dart';
@@ -41,6 +44,7 @@ import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
 import '../../features/sleep/presentation/pages/sleep_history_page.dart';
 import '../../features/sleep/presentation/pages/sleep_log_entry_page.dart';
+import '../../features/recovery/presentation/pages/recovery_detail_page.dart';
 import 'routes.dart';
 
 // Notifies GoRouter to re-evaluate redirects when auth or profile state changes.
@@ -52,7 +56,6 @@ class _RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(profileStreamProvider, (_, __) => notifyListeners());
   }
 }
-
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterRefreshNotifier(ref);
@@ -266,14 +269,25 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
+            path: 'timeline',
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const AssessmentTimelinePage(),
+              transitionsBuilder: _slideTransition,
+            ),
+          ),
+          GoRoute(
             path: 'record',
             pageBuilder: (_, state) {
-              final extra = state.extra as Map<String, String>?;
+              final extra = state.extra as Map<String, dynamic>?;
               return CustomTransitionPage(
                 key: state.pageKey,
                 child: MovementRecordingPage(
-                  assessmentId: extra?['assessmentId'] ?? '',
-                  userId: extra?['userId'] ?? '',
+                  assessmentId: extra?['assessmentId'] as String? ?? '',
+                  userId: extra?['userId'] as String? ?? '',
+                  isReAssessment: extra?['isReAssessment'] as bool? ?? false,
+                  previousAnalyses:
+                      extra?['previousAnalyses'] as List<VideoAnalysis>?,
                 ),
                 transitionsBuilder: _fadeTransition,
               );
@@ -424,6 +438,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             transitionsBuilder: _slideTransition,
           );
         },
+      ),
+      GoRoute(
+        path: Routes.assessmentComparison,
+        pageBuilder: (_, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ReAssessmentComparisonPage(
+              firstAssessmentId:
+                  extra['firstAssessmentId'] as String? ?? '',
+              secondAssessmentId:
+                  extra['secondAssessmentId'] as String? ?? '',
+            ),
+            transitionsBuilder: _slideTransition,
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.recovery,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const RecoveryDetailPage(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
     ],
   );

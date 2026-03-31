@@ -39,6 +39,19 @@ class AssessmentRepositoryImpl implements AssessmentRepository {
   }
 
   @override
+  Future<Either<AppFailure, Assessment>> getAssessmentById(String id) async {
+    try {
+      final model = await _datasource.getById(id);
+      if (model == null) return const Left(NotFoundFailure());
+      return Right(model.toEntity());
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.code));
+    } catch (_) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
   Future<Either<AppFailure, List<Assessment>>> getAssessmentHistory(
       String userId) async {
     try {

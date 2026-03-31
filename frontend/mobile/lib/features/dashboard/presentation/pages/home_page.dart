@@ -7,6 +7,7 @@ import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../recovery/presentation/widgets/recovery_banner.dart';
 import '../../../goals/domain/entities/goal.dart';
 import '../../../goals/presentation/providers/goal_providers.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
@@ -32,6 +33,8 @@ class HomePage extends ConsumerWidget {
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 16),
                 _TodaySessionCard(ref: ref),
+                const SizedBox(height: 12),
+                const RecoveryBanner(),
                 const SizedBox(height: 16),
                 _WeekStrip(ref: ref),
                 const SizedBox(height: 16),

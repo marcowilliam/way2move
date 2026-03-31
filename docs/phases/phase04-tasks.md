@@ -13,24 +13,24 @@ Phase 4 is split into two stages:
 
 ## Block 0 — Recovery Score Calculation (Phase 4a — no Phase 3 dependency)
 
-- [ ] Domain: RecoveryScore entity (id, userId, date, score, components, recommendation)
-- [ ] Define recovery score v1 formula: sleep quality (30%) + training load trend (40%) + weekly pulse composite (20%) + stomach/gut feeling (10%)
-- [ ] Domain: RecoveryService (calculateDailyScore, getTrend)
-- [ ] Cloud Function: nightly recovery score calculation (scheduled trigger)
-- [ ] Store daily recovery scores in Firestore
-- [ ] Tests: unit tests for scoring formula with various input combinations
+- [x] Domain: RecoveryScore entity (id, userId, date, score, components, recommendation)
+- [x] Define recovery score v1 formula: sleep quality (30%) + training load trend (40%) + weekly pulse composite (20%) + stomach/gut feeling (10%)
+- [x] Domain: RecoveryService (calculateDailyScore, getTrend)
+- [x] Cloud Function: nightly recovery score calculation (scheduled trigger)
+- [x] Store daily recovery scores in Firestore
+- [x] Tests: unit tests for scoring formula with various input combinations
 - [ ] **Phase 4b upgrade:** add nutrition adherence component, rebalance weights when Phase 3 data is available
 
 ---
 
 ## Block 1 — Training Adjustment Recommendations (Phase 4a)
 
-- [ ] Map recovery score ranges to training intensity recommendations (green/yellow/red zones)
-- [ ] Auto-suggest session modifications when recovery is low (reduce volume, swap to mobility, take rest day)
+- [x] Map recovery score ranges to training intensity recommendations (green/yellow/red zones)
+- [x] Auto-suggest session modifications when recovery is low (reduce volume, swap to mobility, take rest day)
 - [ ] Integrate with auto-progression system (Phase 1 Block 8) — recovery overrides progression
-- [ ] Presentation: RecoveryBanner on home dashboard with today's score and recommendation
-- [ ] Presentation: RecoveryDetailPage (score breakdown, contributing factors)
-- [ ] Tests: unit tests for recommendation logic
+- [x] Presentation: RecoveryBanner on home dashboard with today's score and recommendation
+- [x] Presentation: RecoveryDetailPage (score breakdown, contributing factors)
+- [x] Tests: unit tests for recommendation logic
 
 ---
 

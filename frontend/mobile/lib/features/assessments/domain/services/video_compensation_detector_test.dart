@@ -212,8 +212,7 @@ void main() {
         expect(valgus.first.severity, CompensationSeverity.mild);
       });
 
-      test('severity is moderate when valgus appears in 30–60 % of frames',
-          () {
+      test('severity is moderate when valgus appears in 30–60 % of frames', () {
         // 4 affected out of 10 = 40 % → moderate
         final detections = VideoCompensationDetector.detect(
           frames: _mixed(
