@@ -43,6 +43,11 @@ class _DailyNutritionPageState extends ConsumerState<DailyNutritionPage> {
             tooltip: 'Stomach patterns',
             onPressed: () => context.push(Routes.stomachPattern),
           ),
+          IconButton(
+            icon: const Icon(Icons.tune_outlined),
+            tooltip: 'Nutrition targets',
+            onPressed: () => context.push(Routes.nutritionTargetSettings),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
