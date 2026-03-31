@@ -110,6 +110,7 @@ abstract class AppKeys {
   static const foodSearchResults = Key('food_search_results');
   static const foodItemsList = Key('food_items_list');
   static const macroTotalsRow = Key('macro_totals_row');
+  static const nutritionDashboardPage = Key('nutrition_dashboard_page');
 
   // Progress
   static const progressPage = Key('progress_page');

@@ -11,4 +11,6 @@ abstract class MealRepository {
       String userId, DateTime date);
   Future<Either<AppFailure, List<Meal>>> getMealHistory(String userId,
       {int limit});
+  Future<Either<AppFailure, List<Meal>>> getMealsByDateRange(
+      String userId, DateTime start, DateTime end);
 }

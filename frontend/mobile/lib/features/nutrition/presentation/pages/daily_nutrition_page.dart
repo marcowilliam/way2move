@@ -6,8 +6,13 @@ import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/meal.dart';
+import '../../domain/entities/nutrition_target.dart';
+import '../providers/nutrition_dashboard_providers.dart';
 import '../providers/nutrition_providers.dart';
+import '../providers/nutrition_target_provider.dart';
+import '../widgets/calorie_progress_bar.dart';
 import '../widgets/daily_meals_view.dart';
+import '../widgets/macro_ring_chart.dart';
 
 class DailyNutritionPage extends ConsumerStatefulWidget {
   const DailyNutritionPage({super.key});
@@ -38,6 +43,11 @@ class _DailyNutritionPageState extends ConsumerState<DailyNutritionPage> {
       appBar: AppBar(
         title: const Text('Nutrition'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.insights_outlined),
+            tooltip: 'Weekly dashboard',
+            onPressed: () => context.push(Routes.nutritionDashboard),
+          ),
           IconButton(
             icon: const Icon(Icons.bar_chart_outlined),
             tooltip: 'Stomach patterns',
@@ -137,16 +147,19 @@ class _DateNavigator extends StatelessWidget {
       ][m];
 }
 
-class _NutritionBody extends StatelessWidget {
+class _NutritionBody extends ConsumerWidget {
   final List<Meal> meals;
   const _NutritionBody({required this.meals});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final target = ref.watch(nutritionTargetNotifierProvider).valueOrNull;
+    final streak = ref.watch(loggingStreakProvider).valueOrNull ?? 0;
+
     return Expanded(
       child: Column(
         children: [
-          _SummaryCard(meals: meals),
+          _DailyMacroSummary(meals: meals, target: target, streak: streak),
           Expanded(child: DailyMealsView(meals: meals)),
         ],
       ),
@@ -154,34 +167,38 @@ class _NutritionBody extends StatelessWidget {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
+class _DailyMacroSummary extends StatelessWidget {
   final List<Meal> meals;
-  const _SummaryCard({required this.meals});
+  final NutritionTarget? target;
+  final int streak;
+
+  const _DailyMacroSummary({
+    required this.meals,
+    required this.target,
+    required this.streak,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final totalCal = meals.fold(0.0, (s, m) => s + m.totalCalories);
+    final totalP = meals.fold(0.0, (s, m) => s + m.totalProtein);
+    final totalC = meals.fold(0.0, (s, m) => s + m.totalCarbs);
+    final totalF = meals.fold(0.0, (s, m) => s + m.totalFat);
+
     final count = meals.length;
-    final avg = count == 0
+    final avgStomach = count == 0
         ? null
         : meals.map((m) => m.stomachFeeling).reduce((a, b) => a + b) / count;
 
-    final color = avg == null
-        ? AppColors.textDisabled
-        : avg >= 4
-            ? AppColors.accentGreen
-            : avg >= 3
-                ? AppColors.secondary
-                : AppColors.accentRed;
-
-    final emoji = avg == null
+    final stomachEmoji = avgStomach == null
         ? '—'
-        : avg >= 4.5
+        : avgStomach >= 4.5
             ? '😊'
-            : avg >= 3.5
+            : avgStomach >= 3.5
                 ? '🙂'
-                : avg >= 2.5
+                : avgStomach >= 2.5
                     ? '😐'
-                    : avg >= 1.5
+                    : avgStomach >= 1.5
                         ? '😕'
                         : '😣';
 
@@ -200,46 +217,120 @@ class _SummaryCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          // Header row: meal count + streak + stomach
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   '$count meal${count == 1 ? '' : 's'} logged',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                const SizedBox(height: 4),
+              ),
+              if (streak > 0) ...[
+                const Icon(Icons.local_fire_department,
+                    color: AppColors.accent, size: 18),
+                const SizedBox(width: 2),
                 Text(
-                  'Stomach average',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.textSecondary,
+                  '$streak',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.accent,
+                      ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              if (avgStomach != null) ...[
+                Text(stomachEmoji, style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 4),
+                Text(
+                  avgStomach.toStringAsFixed(1),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: _stomachColor(avgStomach),
                       ),
                 ),
               ],
-            ),
+            ],
           ),
-          if (avg != null) ...[
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(width: 8),
-            Text(
-              avg.toStringAsFixed(1),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w800,
-                  ),
+          if (target != null) ...[
+            const SizedBox(height: 16),
+            CalorieProgressBar(
+              consumed: totalCal,
+              target: target!.baseCalories,
             ),
-          ] else
-            Text(
-              'No data',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textDisabled,
-                  ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                MacroRingChart(
+                  label: 'Protein',
+                  value: totalP,
+                  target: target!.proteinGrams,
+                  color: AppColors.accentGreen,
+                ),
+                MacroRingChart(
+                  label: 'Carbs',
+                  value: totalC,
+                  target: target!.carbsGrams,
+                  color: AppColors.accent,
+                ),
+                MacroRingChart(
+                  label: 'Fat',
+                  value: totalF,
+                  target: target!.fatGrams,
+                  color: AppColors.secondary,
+                ),
+              ],
             ),
+          ] else if (count > 0) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _SimpleChip(label: '${totalCal.round()} kcal'),
+                const SizedBox(width: 8),
+                _SimpleChip(label: '${totalP.round()}g P'),
+                const SizedBox(width: 8),
+                _SimpleChip(label: '${totalC.round()}g C'),
+                const SizedBox(width: 8),
+                _SimpleChip(label: '${totalF.round()}g F'),
+              ],
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  Color _stomachColor(double avg) => avg >= 4
+      ? AppColors.accentGreen
+      : avg >= 3
+          ? AppColors.secondary
+          : AppColors.accentRed;
+}
+
+class _SimpleChip extends StatelessWidget {
+  final String label;
+  const _SimpleChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
       ),
     );
   }

@@ -50,7 +50,7 @@ void main() {
 
     test('returns failure on error', () async {
       when(() => mockRepo.saveTarget(any()))
-          .thenAnswer((_) async => Left(ServerFailure('save failed')));
+          .thenAnswer((_) async => const Left(ServerFailure('save failed')));
 
       final result = await useCase(_target());
 
