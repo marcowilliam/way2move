@@ -536,6 +536,11 @@ class _AppScaffold extends ConsumerWidget {
             label: 'Calendar',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_outlined),
+            activeIcon: Icon(Icons.restaurant),
+            label: 'Nutrition',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center_outlined),
             activeIcon: Icon(Icons.fitness_center),
             label: 'Exercises',
@@ -557,9 +562,10 @@ class _AppScaffold extends ConsumerWidget {
 
   int _locationToIndex(String location) {
     if (location.startsWith(Routes.calendar)) return 1;
-    if (location.startsWith(Routes.exercises)) return 2;
-    if (location.startsWith(Routes.goals)) return 3;
-    if (location.startsWith(Routes.profile)) return 4;
+    if (location.startsWith(Routes.nutrition)) return 2;
+    if (location.startsWith(Routes.exercises)) return 3;
+    if (location.startsWith(Routes.goals)) return 4;
+    if (location.startsWith(Routes.profile)) return 5;
     return 0;
   }
 
@@ -567,6 +573,7 @@ class _AppScaffold extends ConsumerWidget {
     const routes = [
       Routes.home,
       Routes.calendar,
+      Routes.nutrition,
       Routes.exercises,
       Routes.goals,
       Routes.profile,

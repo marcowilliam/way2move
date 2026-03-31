@@ -17,6 +17,7 @@ abstract class AppKeys {
   static const bottomNav = Key('bottom_nav');
   static const homeNavItem = Key('home_nav_item');
   static const calendarNavItem = Key('calendar_nav_item');
+  static const nutritionNavItem = Key('nutrition_nav_item');
   static const exercisesNavItem = Key('exercises_nav_item');
   static const progressNavItem = Key('progress_nav_item');
   static const goalsNavItem = Key('goals_nav_item');
