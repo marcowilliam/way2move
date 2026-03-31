@@ -32,6 +32,7 @@ import '../../features/programs/presentation/pages/program_builder_page.dart';
 import '../../features/programs/presentation/pages/program_detail_page.dart';
 import '../../features/nutrition/presentation/pages/daily_nutrition_page.dart';
 import '../../features/nutrition/presentation/pages/meal_log_page.dart';
+import '../../features/nutrition/presentation/pages/nutrition_target_settings_page.dart';
 import '../../features/nutrition/presentation/pages/stomach_pattern_page.dart';
 import '../../features/journal/domain/entities/journal_entry.dart';
 import '../../features/journal/domain/services/entity_extraction_service.dart';
@@ -354,6 +355,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const StomachPatternPage(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+      GoRoute(
+        path: Routes.nutritionTargetSettings,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const NutritionTargetSettingsPage(),
           transitionsBuilder: _slideTransition,
         ),
       ),

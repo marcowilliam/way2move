@@ -55,15 +55,15 @@
 
 ## Block 2 — Full Meal Tracking (Macro Upgrade) ← START AFTER Block 0
 
-- [ ] Upgrade Meal entity: add calories, protein, carbs, fat, foodItems array
-- [ ] Domain: FoodItem entity (name, portion, calories, protein, carbs, fat)
-- [ ] Upgrade MealRepository with macro-aware methods
-- [ ] Food database search (external API or open-source nutritional data)
-- [ ] Presentation: MealEntryPage upgrade — photo or manual entry, edit items with macros, set meal type
-- [ ] Presentation: DailyMealsView upgrade — list all meals with running macro totals
-- [ ] Manual food search and entry (text-based lookup from food database)
-- [ ] Carry forward stomach feeling tracking from Phase 1 nutrition MVP
-- [ ] Tests: unit tests for upgraded use cases, widget tests for meal entry
+- [x] Upgrade Meal entity: add calories, protein, carbs, fat, foodItems array
+- [x] Domain: FoodItem entity (name, portion, calories, protein, carbs, fat)
+- [x] Upgrade MealRepository with macro-aware methods
+- [x] Food database search (external API or open-source nutritional data)
+- [x] Presentation: MealEntryPage upgrade — photo or manual entry, edit items with macros, set meal type
+- [x] Presentation: DailyMealsView upgrade — list all meals with running macro totals
+- [x] Manual food search and entry (text-based lookup from food database)
+- [x] Carry forward stomach feeling tracking from Phase 1 nutrition MVP
+- [x] Tests: unit tests for upgraded use cases, widget tests for meal entry
 
 ### Implementation notes for next AI
 - Existing meal code: `lib/features/nutrition/` — read this first before touching anything
@@ -77,12 +77,12 @@
 
 ## Block 3 — Macro Targets ← AFTER Block 2
 
-- [ ] Calculate daily calorie target from user profile (age, weight, height, activity level, goal)
-- [ ] Calculate macro split (protein/carbs/fat) based on training goal
-- [ ] Domain: NutritionTarget entity and NutritionTargetRepository
-- [ ] Presentation: NutritionTargetSettingsPage (view/edit targets, select goal preset)
-- [ ] Adjust targets on training vs rest days
-- [ ] Tests: unit tests for calculation formulas
+- [x] Calculate daily calorie target from user profile (age, weight, height, activity level, goal)
+- [x] Calculate macro split (protein/carbs/fat) based on training goal
+- [x] Domain: NutritionTarget entity and NutritionTargetRepository
+- [x] Presentation: NutritionTargetSettingsPage (view/edit targets, select goal preset)
+- [x] Adjust targets on training vs rest days
+- [x] Tests: unit tests for calculation formulas
 
 ### Implementation notes for next AI
 - TDEE formula: BMR (Mifflin-St Jeor) × activity multiplier — inputs from `UserProfile` (age, weight, height, activityLevel)
