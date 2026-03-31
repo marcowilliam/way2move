@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../journal/presentation/widgets/voice_input_widget.dart';
 import '../../domain/entities/meal.dart';
 import '../providers/nutrition_providers.dart';
 
@@ -20,6 +21,7 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
   final _descController = TextEditingController();
   final _notesController = TextEditingController();
   bool _isSubmitting = false;
+  bool _showVoiceInput = false;
 
   @override
   void dispose() {
@@ -103,25 +105,37 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
                 const SizedBox(width: 8),
                 IconButton(
                   key: AppKeys.voiceInputButton,
-                  icon: const Icon(Icons.mic_outlined),
+                  icon: Icon(
+                    _showVoiceInput ? Icons.mic : Icons.mic_outlined,
+                  ),
                   tooltip: 'Voice input',
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.surfaceVariant,
+                    backgroundColor: _showVoiceInput
+                        ? AppColors.primary.withValues(alpha: 0.12)
+                        : AppColors.surfaceVariant,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Voice input coming soon — add speech_to_text package'),
-                      ),
-                    );
-                  },
+                  onPressed: () =>
+                      setState(() => _showVoiceInput = !_showVoiceInput),
                 ),
               ],
             ),
+            if (_showVoiceInput) ...[
+              const SizedBox(height: 12),
+              Center(
+                child: VoiceInputWidget(
+                  onTranscription: (text) {
+                    setState(() {
+                      _descController.text = text;
+                      _descController.selection =
+                          TextSelection.collapsed(offset: text.length);
+                    });
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             const _SectionLabel('How did your stomach feel?'),
             const SizedBox(height: 8),
