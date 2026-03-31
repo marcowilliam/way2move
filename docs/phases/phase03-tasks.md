@@ -20,12 +20,12 @@
 
 > **Note: This block is app-wide, not nutrition-specific.** Cloud STT improves all voice features (journaling, session logging, meal logging, bedtime summary). It is placed here because Phase 3 benefits most from improved accuracy (food name recognition), but it could be started independently after Phase 1 without waiting for other Phase 3 blocks.
 
-- [ ] Evaluate cloud STT APIs (Google Cloud Speech-to-Text, Whisper API, Deepgram)
-- [ ] Set up API integration via Cloud Function proxy (keep API keys server-side)
-- [ ] Replace device speech_to_text with cloud API for all voice features app-wide
-- [ ] Maintain device STT as offline fallback
+- [x] Evaluate cloud STT APIs (Google Cloud Speech-to-Text, Whisper API, Deepgram)
+- [x] Set up API integration via Cloud Function proxy (keep API keys server-side)
+- [x] Replace device speech_to_text with cloud API for all voice features app-wide
+- [x] Maintain device STT as offline fallback
 - [ ] A/B comparison: measure accuracy improvement over device STT
-- [ ] Tests: unit tests for cloud STT integration
+- [x] Tests: unit tests for cloud STT integration
 
 ### Implementation notes for next AI
 - Current STT: `speech_to_text` Flutter package used in journal, session logging, and meal logging — find all usages with `grep -r "speech_to_text\|SpeechToText" lib/`

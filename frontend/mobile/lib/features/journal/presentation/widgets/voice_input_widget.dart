@@ -1,46 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/stt/stt_provider.dart';
+import '../../../../core/services/stt/stt_service.dart';
 import '../../data/services/audio_recording_service.dart';
 
 /// Animated mic button + live transcription widget.
 ///
-/// Simultaneously runs:
-/// - speech_to_text for on-device transcription (calls [onTranscription])
-/// - AudioRecordingService to record audio to a local file
+/// Simultaneously:
+/// - Captures audio via [AudioRecordingService] (for Firebase Storage upload).
+/// - Transcribes speech via the [SttService] from [sttServiceProvider].
 ///
-/// When listening stops, [onAudioRecorded] is called with the local file path
+/// For streaming services (device STT) [onTranscription] is called live during
+/// recording. For batch services (Whisper), [onTranscription] is called once
+/// after [stopListening] completes — the widget shows a "Transcribing…"
+/// indicator in the meantime.
+///
+/// When recording stops, [onAudioRecorded] is called with the local M4A path
 /// so the caller can upload to Firebase Storage.
-class VoiceInputWidget extends StatefulWidget {
-  /// Called whenever transcribed text changes.
+class VoiceInputWidget extends ConsumerStatefulWidget {
+  /// Called whenever transcribed text is updated.
+  /// For streaming STT this fires during recording; for cloud STT once at end.
   final void Function(String text) onTranscription;
 
   /// Called once when recording stops with the local audio file path.
   /// May be null if recording was not started or failed.
   final void Function(String? path)? onAudioRecorded;
 
+  /// Override the STT service — used in tests to inject a fake.
+  /// Defaults to [sttServiceProvider] when null.
+  final SttService? sttServiceOverride;
+
   const VoiceInputWidget({
     super.key,
     required this.onTranscription,
     this.onAudioRecorded,
+    this.sttServiceOverride,
   });
 
   @override
-  State<VoiceInputWidget> createState() => _VoiceInputWidgetState();
+  ConsumerState<VoiceInputWidget> createState() => _VoiceInputWidgetState();
 }
 
-class _VoiceInputWidgetState extends State<VoiceInputWidget>
+class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
     with SingleTickerProviderStateMixin {
-  final SpeechToText _speech = SpeechToText();
   final AudioRecordingService _audioRecorder = AudioRecordingService();
 
   bool _isListening = false;
+  bool _isTranscribing = false;
   bool _isAvailable = false;
   bool _permissionDenied = false;
   String _liveText = '';
 
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
+
+  SttService get _stt =>
+      widget.sttServiceOverride ?? ref.read(sttServiceProvider);
 
   @override
   void initState() {
@@ -55,15 +71,11 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
     );
 
     _pulseController.stop();
-    _initSpeech();
+    _initStt();
   }
 
-  Future<void> _initSpeech() async {
-    final available = await _speech.initialize(
-      onError: (_) {
-        if (mounted) setState(() => _isListening = false);
-      },
-    );
+  Future<void> _initStt() async {
+    final available = await _stt.isAvailable();
     if (mounted) setState(() => _isAvailable = available);
   }
 
@@ -86,11 +98,11 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
 
     setState(() {
       _isListening = true;
+      _liveText = '';
       _permissionDenied = false;
     });
     _pulseController.repeat(reverse: true);
 
-    // Start audio recording alongside STT.
     if (hasMicPermission) {
       try {
         await _audioRecorder.startRecording();
@@ -99,32 +111,43 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
       }
     }
 
-    await _speech.listen(
-      onResult: (result) {
+    await _stt.startListening(
+      onPartialResult: (text) {
         if (!mounted) return;
-        final text = result.recognizedWords;
         setState(() => _liveText = text);
         widget.onTranscription(text);
       },
-      localeId: 'en_US',
-      listenOptions: SpeechListenOptions(
-        listenMode: ListenMode.dictation,
-      ),
     );
   }
 
   Future<void> _stopListening() async {
-    await _speech.stop();
     _pulseController.stop();
+    if (mounted) setState(() => _isListening = false);
 
     String? audioPath;
     try {
       audioPath = await _audioRecorder.stopRecording();
     } catch (_) {
-      // Non-fatal — we still have the transcription.
+      // Non-fatal.
     }
 
-    if (mounted) setState(() => _isListening = false);
+    // For cloud (batch) STT: show transcribing state while the API call runs.
+    if (!_stt.supportsLiveTranscription) {
+      if (mounted) setState(() => _isTranscribing = true);
+    }
+
+    final transcript = await _stt.stopListening(audioPath: audioPath);
+
+    if (mounted) {
+      setState(() {
+        _isTranscribing = false;
+        if (transcript.isNotEmpty) _liveText = transcript;
+      });
+    }
+
+    if (transcript.isNotEmpty) {
+      widget.onTranscription(transcript);
+    }
 
     widget.onAudioRecorded?.call(audioPath);
   }
@@ -132,7 +155,7 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
   @override
   void dispose() {
     _pulseController.dispose();
-    _speech.cancel();
+    _stt.dispose();
     _audioRecorder.dispose();
     super.dispose();
   }
@@ -147,7 +170,7 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
       children: [
         // Animated mic button
         GestureDetector(
-          onTap: _toggleListening,
+          onTap: _isTranscribing ? null : _toggleListening,
           child: AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (_, child) => Transform.scale(
@@ -159,22 +182,37 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _isListening ? colorScheme.error : colorScheme.primary,
+                color: _isTranscribing
+                    ? colorScheme.secondary
+                    : _isListening
+                        ? colorScheme.error
+                        : colorScheme.primary,
                 boxShadow: [
                   BoxShadow(
-                    color:
-                        (_isListening ? colorScheme.error : colorScheme.primary)
-                            .withAlpha(102),
+                    color: (_isTranscribing
+                            ? colorScheme.secondary
+                            : _isListening
+                                ? colorScheme.error
+                                : colorScheme.primary)
+                        .withAlpha(102),
                     blurRadius: _isListening ? 20 : 8,
                     spreadRadius: _isListening ? 4 : 0,
                   ),
                 ],
               ),
-              child: Icon(
-                _isListening ? Icons.stop : Icons.mic,
-                color: colorScheme.onPrimary,
-                size: 32,
-              ),
+              child: _isTranscribing
+                  ? Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: colorScheme.onSecondary,
+                      ),
+                    )
+                  : Icon(
+                      _isListening ? Icons.stop : Icons.mic,
+                      color: colorScheme.onPrimary,
+                      size: 32,
+                    ),
             ),
           ),
         ),
@@ -193,8 +231,14 @@ class _VoiceInputWidgetState extends State<VoiceInputWidget>
                   textAlign: TextAlign.center,
                 )
               : Text(
-                  _isListening ? 'Listening...' : 'Tap to speak',
-                  key: ValueKey(_isListening),
+                  _isTranscribing
+                      ? 'Transcribing…'
+                      : _isListening
+                          ? 'Listening...'
+                          : 'Tap to speak',
+                  key: ValueKey(_isTranscribing
+                      ? 'transcribing'
+                      : _isListening.toString()),
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
