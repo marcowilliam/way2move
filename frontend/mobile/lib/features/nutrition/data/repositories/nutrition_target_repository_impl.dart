@@ -14,8 +14,7 @@ class NutritionTargetRepositoryImpl implements NutritionTargetRepository {
   NutritionTargetRepositoryImpl(this._datasource);
 
   @override
-  Future<Either<AppFailure, NutritionTarget?>> getTarget(
-      String userId) async {
+  Future<Either<AppFailure, NutritionTarget?>> getTarget(String userId) async {
     try {
       final model = await _datasource.get(userId);
       return Right(model?.toEntity());
@@ -28,7 +27,8 @@ class NutritionTargetRepositoryImpl implements NutritionTargetRepository {
   Future<Either<AppFailure, NutritionTarget>> saveTarget(
       NutritionTarget target) async {
     try {
-      final model = await _datasource.save(NutritionTargetModel.fromEntity(target));
+      final model =
+          await _datasource.save(NutritionTargetModel.fromEntity(target));
       return Right(model.toEntity());
     } on FirebaseException catch (e) {
       return Left(ServerFailure(e.code));

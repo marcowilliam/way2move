@@ -18,7 +18,9 @@ class CalculateNutritionTarget {
     final height = profile.height; // cm
     final activityLevel = profile.activityLevel;
 
-    if (age == null || weight == null || height == null ||
+    if (age == null ||
+        weight == null ||
+        height == null ||
         activityLevel == null) {
       return null;
     }

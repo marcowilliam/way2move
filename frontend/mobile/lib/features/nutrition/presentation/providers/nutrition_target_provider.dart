@@ -52,8 +52,7 @@ class NutritionTargetNotifier extends AsyncNotifier<NutritionTarget?> {
 
   /// Saves a manually edited target without recalculating from profile.
   Future<bool> saveTarget(NutritionTarget target) async {
-    final result =
-        await ref.read(_saveNutritionTargetProvider).call(target);
+    final result = await ref.read(_saveNutritionTargetProvider).call(target);
     result.fold((_) {}, (saved) => state = AsyncData(saved));
     return result.isRight();
   }

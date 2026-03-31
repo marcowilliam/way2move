@@ -54,7 +54,7 @@ void main() {
 
     test('returns failure on error', () async {
       when(() => mockRepo.getTarget('u1'))
-          .thenAnswer((_) async => Left(ServerFailure('error')));
+          .thenAnswer((_) async => const Left(ServerFailure('error')));
 
       final result = await useCase('u1');
 

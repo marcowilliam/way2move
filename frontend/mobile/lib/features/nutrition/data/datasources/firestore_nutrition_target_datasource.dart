@@ -8,8 +8,7 @@ class FirestoreNutritionTargetDatasource {
   const FirestoreNutritionTargetDatasource(this._db);
 
   Future<NutritionTargetModel?> get(String userId) async {
-    final doc =
-        await _db.collection('nutritionTargets').doc(userId).get();
+    final doc = await _db.collection('nutritionTargets').doc(userId).get();
     if (!doc.exists) return null;
     return NutritionTargetModel.fromFirestore(doc);
   }

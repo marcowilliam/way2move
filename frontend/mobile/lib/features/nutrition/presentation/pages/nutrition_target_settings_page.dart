@@ -66,8 +66,7 @@ class _NutritionTargetSettingsPageState
       body: FadeTransition(
         opacity: _fadeIn,
         child: targetAsync.when(
-          loading: () =>
-              const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
           data: (target) => _buildContent(
               context, target, hasProfileData, profile?.activityLevel),
@@ -161,9 +160,8 @@ class _NutritionTargetSettingsPageState
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withAlpha(15)
-              : AppColors.surface,
+          color:
+              isSelected ? AppColors.primary.withAlpha(15) : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
@@ -209,26 +207,26 @@ class _NutritionTargetSettingsPageState
                       _macroLabel('P', '${(proteinR * 100).round()}%',
                           AppColors.accentGreen),
                       const SizedBox(width: 12),
-                      _macroLabel('C', '${(carbsR * 100).round()}%',
-                          AppColors.accent),
+                      _macroLabel(
+                          'C', '${(carbsR * 100).round()}%', AppColors.accent),
                       const SizedBox(width: 12),
-                      _macroLabel('F', '${(fatR * 100).round()}%',
-                          AppColors.secondary),
+                      _macroLabel(
+                          'F', '${(fatR * 100).round()}%', AppColors.secondary),
                     ],
                   ),
                 ],
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: AppColors.primary, size: 24),
+              const Icon(Icons.check_circle,
+                  color: AppColors.primary, size: 24),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMacroRatioBar(
-      double protein, double carbs, double fat) {
+  Widget _buildMacroRatioBar(double protein, double carbs, double fat) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
       child: Row(
@@ -280,8 +278,10 @@ class _NutritionTargetSettingsPageState
       ),
       child: Column(
         children: [
-          _buildTargetRow('Daily calories',
-              '${target.baseCalories.round()} kcal', Icons.local_fire_department),
+          _buildTargetRow(
+              'Daily calories',
+              '${target.baseCalories.round()} kcal',
+              Icons.local_fire_department),
           const Divider(height: 20),
           Row(
             children: [
@@ -378,8 +378,8 @@ class _NutritionTargetSettingsPageState
         Icon(icon, size: 18, color: AppColors.primary),
         const SizedBox(width: 10),
         Text(label,
-            style: const TextStyle(
-                fontSize: 14, color: AppColors.textSecondary)),
+            style:
+                const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
         const Spacer(),
         Text(value,
             style: const TextStyle(

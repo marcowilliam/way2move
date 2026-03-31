@@ -94,14 +94,26 @@
 
 ---
 
-## Block 4 — Daily/Weekly Nutrition Dashboard
+## Block 4 — Daily/Weekly Nutrition Dashboard ✅
 
-- [ ] Daily view: macro ring charts (protein, carbs, fat vs targets), calorie bar, stomach feeling trend
-- [ ] Weekly view: average daily intake, consistency score, trend lines
-- [ ] Stomach-food correlation view: highlight foods that correlate with poor stomach ratings
-- [ ] Meal history list with quick-add from previous meals
-- [ ] Streak tracking for logging consistency
-- [ ] Tests: widget tests for dashboard components
+- [x] Daily view: macro ring charts (protein, carbs, fat vs targets), calorie bar, stomach feeling trend
+- [x] Weekly view: average daily intake, consistency score, trend lines
+- [x] Stomach-food correlation view: highlight foods that correlate with poor stomach ratings
+- [x] Meal history list with quick-add from previous meals
+- [x] Streak tracking for logging consistency
+- [x] Tests: widget tests for dashboard components
+
+### What was implemented (2026-03-31)
+- `DailyNutritionSummary` entity for per-day macro aggregation
+- `StomachFoodCorrelation` entity for food-stomach analysis
+- Three new use cases: `GetWeeklyNutritionSummary`, `GetStomachFoodCorrelations`, `GetLoggingStreak` — all with unit tests (13 tests)
+- `getMealsByDateRange` added to `MealRepository` interface + Firestore implementation
+- Upgraded `DailyNutritionPage` summary card: calorie progress bar, 3 animated macro ring charts (fl_chart PieChart), streak fire badge, stomach feeling emoji
+- New `NutritionDashboardPage` at `/nutrition/dashboard` with 4 sections: weekly calorie bar chart with target line, consistency stats (days logged + streak), stomach-food correlation list, meal history quick-add
+- Reusable widgets: `MacroRingChart`, `CalorieProgressBar`, `WeeklyNutritionChart`, `StomachCorrelationList`, `MealHistoryQuickAdd`
+- Riverpod providers: `weeklyNutritionProvider`, `stomachCorrelationsProvider`, `loggingStreakProvider`
+- Widget tests for dashboard page, macro ring chart, calorie bar, correlation list (8 tests)
+- `fl_chart: ^0.69.0` added as dependency
 
 ---
 

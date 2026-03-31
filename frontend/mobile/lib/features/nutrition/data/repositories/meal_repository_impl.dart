@@ -73,6 +73,19 @@ class MealRepositoryImpl implements MealRepository {
       return const Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<AppFailure, List<Meal>>> getMealsByDateRange(
+      String userId, DateTime start, DateTime end) async {
+    try {
+      final models = await _datasource.getByDateRange(userId, start, end);
+      return Right(models.map((m) => m.toEntity()).toList());
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.code));
+    } catch (_) {
+      return const Left(ServerFailure());
+    }
+  }
 }
 
 // Providers

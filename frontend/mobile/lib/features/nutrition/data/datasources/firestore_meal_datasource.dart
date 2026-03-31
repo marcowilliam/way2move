@@ -39,6 +39,19 @@ class FirestoreMealDatasource {
     return snap.docs.map(MealModel.fromFirestore).toList();
   }
 
+  Future<List<MealModel>> getByDateRange(
+      String userId, DateTime start, DateTime end) async {
+    final snap = await _db
+        .collection('meals')
+        .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('date', isLessThan: Timestamp.fromDate(end))
+        .orderBy('date')
+        .get();
+
+    return snap.docs.map(MealModel.fromFirestore).toList();
+  }
+
   Future<List<MealModel>> getHistory(String userId, {int limit = 100}) async {
     final snap = await _db
         .collection('meals')

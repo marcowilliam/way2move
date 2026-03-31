@@ -50,7 +50,7 @@ void main() {
     mockRepo = MockNutritionTargetRepository();
   });
 
-  Widget _buildPage({
+  Widget buildPage({
     NutritionTarget? existingTarget,
     UserProfile? profile,
   }) {
@@ -73,7 +73,7 @@ void main() {
 
   group('NutritionTargetSettingsPage', () {
     testWidgets('shows all three macro preset cards', (tester) async {
-      await tester.pumpWidget(_buildPage());
+      await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
 
       expect(find.text('Fat Loss'), findsOneWidget);
@@ -82,7 +82,7 @@ void main() {
     });
 
     testWidgets('shows apply button', (tester) async {
-      await tester.pumpWidget(_buildPage());
+      await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('applyTargetButton')), findsOneWidget);
@@ -90,7 +90,7 @@ void main() {
 
     testWidgets('shows existing target summary when target is saved',
         (tester) async {
-      await tester.pumpWidget(_buildPage(existingTarget: _target()));
+      await tester.pumpWidget(buildPage(existingTarget: _target()));
       await tester.pumpAndSettle();
 
       expect(find.text('Current targets'), findsOneWidget);
@@ -107,7 +107,7 @@ void main() {
         createdAt: DateTime(2024),
       );
 
-      await tester.pumpWidget(_buildPage(profile: incompleteProfile));
+      await tester.pumpWidget(buildPage(profile: incompleteProfile));
       await tester.pumpAndSettle();
 
       expect(find.text('Choose your goal'), findsNothing);
@@ -115,7 +115,7 @@ void main() {
     });
 
     testWidgets('tapping a preset card selects it', (tester) async {
-      await tester.pumpWidget(_buildPage());
+      await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Fat Loss'));
@@ -127,7 +127,7 @@ void main() {
 
     testWidgets('tapping apply button calls save and shows success snackbar',
         (tester) async {
-      await tester.pumpWidget(_buildPage());
+      await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
 
       // Select a preset first
@@ -141,9 +141,10 @@ void main() {
       verify(() => mockRepo.saveTarget(any())).called(1);
     });
 
-    testWidgets('shows training day and rest day calorie cards for saved target',
+    testWidgets(
+        'shows training day and rest day calorie cards for saved target',
         (tester) async {
-      await tester.pumpWidget(_buildPage(existingTarget: _target()));
+      await tester.pumpWidget(buildPage(existingTarget: _target()));
       await tester.pumpAndSettle();
 
       expect(find.text('Training day'), findsOneWidget);
