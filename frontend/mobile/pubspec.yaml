@@ -44,7 +44,7 @@ dependencies:
 
   # Voice
   speech_to_text: ^7.0.0
-  record: ^5.1.2
+  record: ^6.0.0
   firebase_remote_config: ^5.1.0
 
   # Pose estimation (Phase 2 — AI movement assessment)
