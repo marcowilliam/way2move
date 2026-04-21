@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400" width="480" height="400">
+  <!-- Mark -->
+  <g transform="translate(124, 16) scale(0.83)">
+    <path
+      d="M 64 94
+         C 64 38, 192 38, 192 94
+         L 52 214
+         L 224 214"
+      fill="none"
+      stroke="#C4622D"
+      stroke-width="22"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+
+  <style>
+    .wm-s {
+      font-family: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 800;
+      font-size: 54px;
+      letter-spacing: -1.6px;
+      fill: #1F1815;
+    }
+    .wm-s-2 { fill: #C4622D; }
+    .tagline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+      fill: #716660;
+    }
+  </style>
+  <text x="240" y="308" class="wm-s" text-anchor="middle">WAY<tspan class="wm-s-2">2</tspan>MOVE</text>
+  <text x="240" y="352" class="tagline" text-anchor="middle">Train from the ground up.</text>
+</svg>

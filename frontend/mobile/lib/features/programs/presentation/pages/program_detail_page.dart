@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_keys.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/program.dart';
 import '../providers/program_providers.dart';
 import '../widgets/week_template_editor.dart';
@@ -15,10 +17,19 @@ class ProgramDetailPage extends ConsumerWidget {
     final programAsync = ref.watch(activeProgramProvider);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('My Program'),
-        centerTitle: true,
+        title: const Text('My program'),
+        centerTitle: false,
         elevation: 0,
+        actions: programAsync.maybeWhen(
+          data: (program) => program == null
+              ? []
+              : [
+                  _ProgramOverflowMenu(program: program),
+                ],
+          orElse: () => [],
+        ),
       ),
       body: programAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -38,117 +49,31 @@ class ProgramDetailPage extends ConsumerWidget {
   }
 }
 
-class _ProgramBody extends ConsumerWidget {
+class _ProgramOverflowMenu extends ConsumerWidget {
   final Program program;
-  final ThemeData theme;
-
-  const _ProgramBody({super.key, required this.program, required this.theme});
+  const _ProgramOverflowMenu({required this.program});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDeactivating = ref.watch(deactivateProgramProvider).isLoading;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header card ────────────────────────────────────────────────
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  theme.colorScheme.primaryContainer,
-                  theme.colorScheme.secondaryContainer,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  program.name,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  program.goal,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withAlpha(200),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _InfoBadge(
-                      icon: Icons.calendar_today_outlined,
-                      label: '${program.durationWeeks} weeks',
-                      theme: theme,
-                    ),
-                    const SizedBox(width: 8),
-                    _InfoBadge(
-                      icon: Icons.fitness_center_outlined,
-                      label: _countTrainingDays(program.weekTemplate),
-                      theme: theme,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // ── Week template ──────────────────────────────────────────────
-          Text(
-            'Weekly Schedule',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 12),
-          WeekTemplateEditor(template: program.weekTemplate),
-          const SizedBox(height: 32),
-
-          // ── Deactivate ─────────────────────────────────────────────────
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: OutlinedButton.icon(
-              onPressed: isDeactivating
-                  ? null
-                  : () => _confirmDeactivate(context, ref),
-              icon: const Icon(Icons.stop_circle_outlined),
-              label: const Text('Deactivate Program'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-                side: BorderSide(color: theme.colorScheme.error),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (v) {
+        if (v == 'deactivate') _confirmDeactivate(context, ref);
+      },
+      itemBuilder: (_) => const [
+        PopupMenuItem(
+          value: 'deactivate',
+          child: Text('Deactivate program'),
+        ),
+      ],
     );
-  }
-
-  String _countTrainingDays(WeekTemplate template) {
-    final count = template.days.values.where((d) => !d.isRestDay).length;
-    return '$count days/week';
   }
 
   Future<void> _confirmDeactivate(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Deactivate Program'),
+        title: const Text('Deactivate program'),
         content: const Text(
             'This will deactivate your current program. You can create a new one at any time.'),
         actions: [
@@ -170,34 +95,82 @@ class _ProgramBody extends ConsumerWidget {
   }
 }
 
-class _InfoBadge extends StatelessWidget {
-  final IconData icon;
-  final String label;
+class _ProgramBody extends ConsumerWidget {
+  final Program program;
   final ThemeData theme;
 
-  const _InfoBadge(
-      {required this.icon, required this.label, required this.theme});
+  const _ProgramBody({super.key, required this.program, required this.theme});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withAlpha(180),
-        borderRadius: BorderRadius.circular(20),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final trainingDays = program.weekTemplate.days.values
+        .where((d) => !d.isRestDay)
+        .length;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.xl,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: theme.colorScheme.primary),
-          const SizedBox(width: 4),
           Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
+            program.name,
+            style: theme.textTheme.displaySmall,
           ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 14,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.xs + 2),
+              Text(
+                '${program.durationWeeks} weeks',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Icon(
+                Icons.self_improvement,
+                size: 14,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.xs + 2),
+              Text(
+                '$trainingDays days/week',
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ),
+          if (program.goal.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Text(
+                program.goal,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            'Weekly schedule',
+            style: theme.textTheme.titleLarge,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          WeekTemplateEditor(template: program.weekTemplate),
         ],
       ),
     );
@@ -212,29 +185,25 @@ class _EmptyState extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.fitness_center_outlined,
-              size: 64,
-              color: theme.colorScheme.outline,
+              Icons.self_improvement,
+              size: 56,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               'No active program',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: theme.textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'Complete your movement assessment to generate a program, or build one manually.',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.outline,
-              ),
+              style: theme.textTheme.bodyMedium,
             ),
           ],
         ),

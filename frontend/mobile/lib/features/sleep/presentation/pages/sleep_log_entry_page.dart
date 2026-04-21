@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_keys.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/sleep_log.dart';
 import '../providers/sleep_providers.dart';
 
@@ -139,71 +142,63 @@ class _SleepLogEntryPageState extends ConsumerState<SleepLogEntryPage> {
 
     return Scaffold(
       key: AppKeys.sleepEntryWidget,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Log Sleep'),
+        centerTitle: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Time pickers
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _TimePickerRow(
-                      label: 'Bed time',
-                      time: _bedTime,
-                      onTap: _pickBedTime,
-                      icon: Icons.bedtime_outlined,
-                    ),
-                    const Divider(height: 24),
-                    _TimePickerRow(
-                      label: 'Wake time',
-                      time: _wakeTime,
-                      onTap: _pickWakeTime,
-                      icon: Icons.wb_sunny_outlined,
-                    ),
-                  ],
-                ),
-              ),
+            Text(
+              'How\'d you sleep?',
+              style: theme.textTheme.displaySmall,
             ),
-            const SizedBox(height: 16),
-
-            // Duration
+            const SizedBox(height: AppSpacing.xl),
+            _TimePickerRow(
+              label: 'Bed time',
+              time: _bedTime,
+              onTap: _pickBedTime,
+              icon: Icons.bedtime_outlined,
+            ),
+            Divider(height: AppSpacing.lg, color: theme.colorScheme.outlineVariant),
+            _TimePickerRow(
+              label: 'Wake time',
+              time: _wakeTime,
+              onTap: _pickWakeTime,
+              icon: Icons.wb_sunny_outlined,
+            ),
+            const SizedBox(height: AppSpacing.xl),
             Center(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: Text(
                   _formatDuration(duration),
                   key: ValueKey('$_bedTime$_wakeTime'),
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+                  style: AppTypography.fraunces(
+                    size: 40,
+                    weight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                    letterSpacing: -0.8,
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.xs),
             Center(
               child: Text(
-                'duration',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
+                'in bed',
+                style: theme.textTheme.labelSmall,
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Quality selector
+            const SizedBox(height: AppSpacing.xl),
             Text(
-              'Sleep quality',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              'Quality',
+              style: theme.textTheme.labelSmall,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(5, (i) {
@@ -214,88 +209,106 @@ class _SleepLogEntryPageState extends ConsumerState<SleepLogEntryPage> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: 56,
-                    height: 56,
+                    height: 68,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
                       color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.surfaceContainerHighest,
+                          ? AppColors.primary.withValues(alpha: 0.12)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                       border: Border.all(
                         color: isSelected
-                            ? theme.colorScheme.primary
-                            : Colors.transparent,
-                        width: 2,
+                            ? AppColors.primary
+                            : theme.colorScheme.outline,
                       ),
                     ),
-                    child: Center(
-                      child: Text(
-                        '$q',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: isSelected
-                              ? theme.colorScheme.onPrimary
-                              : theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _qualityEmoji(q),
+                          style: const TextStyle(fontSize: 22),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '$q',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: isSelected
+                                ? AppColors.primary
+                                : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
               }),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             if (_quality != null)
-              AnimatedOpacity(
-                opacity: 1.0,
-                duration: const Duration(milliseconds: 200),
-                child: Center(
-                  child: Text(
-                    _qualityLabel(_quality!),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
+              Center(
+                child: Text(
+                  _qualityLabel(_quality!),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-            const SizedBox(height: 24),
-
-            // Notes
+            const SizedBox(height: AppSpacing.xl),
             Text(
-              'Notes (optional)',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              'Notes',
+              style: theme.textTheme.labelSmall,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _notesController,
               maxLines: 3,
               decoration: const InputDecoration(
                 hintText: 'How did you sleep? Any disturbances?',
-                border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 32),
-
-            // Save button
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: FilledButton(
-                onPressed: _quality == null || _saving ? null : _save,
-                child: _saving
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Save Sleep Log'),
+            const SizedBox(height: AppSpacing.xl),
+            FilledButton(
+              onPressed: _quality == null || _saving ? null : _save,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
               ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.textOnPrimary,
+                      ),
+                    )
+                  : const Text('Save Sleep Log'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _qualityEmoji(int q) {
+    switch (q) {
+      case 1:
+        return '😣';
+      case 2:
+        return '😕';
+      case 3:
+        return '🌙';
+      case 4:
+        return '🌠';
+      case 5:
+        return '✨';
+      default:
+        return '•';
+    }
   }
 }
 
@@ -317,13 +330,13 @@ class _TimePickerRow extends StatelessWidget {
     final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Row(
           children: [
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(width: 12),
+            Icon(icon, color: AppColors.accent, size: 20),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 label,
@@ -333,14 +346,15 @@ class _TimePickerRow extends StatelessWidget {
             Text(
               time.format(context),
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.xs),
             Icon(
               Icons.chevron_right,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ),

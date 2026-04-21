@@ -6,6 +6,10 @@ import '../../../../core/constants/app_keys.dart';
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/way2move_logo_mark.dart';
 import '../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -23,6 +27,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _emailLooksValid = false;
 
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
@@ -34,47 +39,77 @@ class _LoginPageState extends ConsumerState<LoginPage>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    );
+    _fadeAnimation =
+        CurvedAnimation(parent: _fadeController, curve: WayMotion.easeStandard);
     _fadeController.forward();
+    _emailController.addListener(_reevaluateEmail);
   }
 
   @override
   void dispose() {
+    _emailController.removeListener(_reevaluateEmail);
     _fadeController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  void _reevaluateEmail() {
+    final looks = _emailController.text.contains('@') &&
+        _emailController.text.contains('.');
+    if (looks != _emailLooksValid) {
+      setState(() => _emailLooksValid = looks);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textSecondary =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
     return Scaffold(
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg + AppSpacing.xs, // 28
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
-                _buildHeader(theme),
-                const SizedBox(height: 40),
-                _buildForm(theme),
-                const SizedBox(height: 16),
-                if (_errorMessage != null) _buildErrorBanner(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
+                const Center(child: Way2MoveLogoMark(size: 56)),
+                const SizedBox(height: AppSpacing.xl),
+                Center(
+                  child: Text(
+                    'Welcome back.',
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs + 2),
+                Center(
+                  child: Text(
+                    'Pick up where you left off.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxl - AppSpacing.sm),
+                _buildForm(textSecondary),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  _buildErrorBanner(),
+                ],
+                const SizedBox(height: AppSpacing.lg + AppSpacing.sm),
                 _buildSignInButton(),
-                const SizedBox(height: 16),
-                _buildDivider(theme),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
+                _buildOrDivider(textSecondary),
+                const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
                 _buildSocialButtons(),
-                const SizedBox(height: 32),
-                _buildCreateAccountLink(theme),
+                const SizedBox(height: AppSpacing.xl),
+                _buildCreateAccountLink(textSecondary),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),
@@ -83,68 +118,79 @@ class _LoginPageState extends ConsumerState<LoginPage>
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Way2Move',
-          style: theme.textTheme.headlineLarge?.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Your movement operating system',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildForm(ThemeData theme) {
+  Widget _buildForm(Color labelColor) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          TextFormField(
-            key: AppKeys.emailField,
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+          _LabeledField(
+            label: 'EMAIL',
+            child: TextFormField(
+              key: AppKeys.emailField,
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
+              decoration: InputDecoration(
+                hintText: 'you@email.com',
+                suffixIcon: _emailLooksValid
+                    ? const Icon(Icons.check_circle_outline,
+                        color: AppColors.accent, size: 20)
+                    : null,
+              ),
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Email is required';
+                if (!v.contains('@')) return 'Enter a valid email';
+                return null;
+              },
             ),
-            validator: (v) {
-              if (v == null || v.isEmpty) return 'Email is required';
-              if (!v.contains('@')) return 'Enter a valid email';
-              return null;
-            },
           ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: AppKeys.passwordField,
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                icon: Icon(_obscurePassword
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+          const SizedBox(height: AppSpacing.lg),
+          _LabeledField(
+            label: 'PASSWORD',
+            child: TextFormField(
+              key: AppKeys.passwordField,
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                hintText: '••••••••',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 20,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Password is required';
+                return null;
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {},
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'Forgot password?',
+                style: AppTypography.manrope(
+                  size: 13,
+                  weight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
               ),
             ),
-            validator: (v) {
-              if (v == null || v.isEmpty) return 'Password is required';
-              return null;
-            },
           ),
         ],
       ),
@@ -153,21 +199,24 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   Widget _buildErrorBanner() {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(12),
+      duration: WayMotion.standard,
+      padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
       decoration: BoxDecoration(
-        color: AppColors.accentRed.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.accentRed.withValues(alpha: 0.3)),
+        color: AppColors.error.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppColors.accentRed, size: 18),
-          const SizedBox(width: 8),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 18),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(color: AppColors.accentRed, fontSize: 13),
+              style: AppTypography.manrope(
+                size: 13,
+                weight: FontWeight.w500,
+                color: AppColors.error,
+              ),
             ),
           ),
         ],
@@ -176,7 +225,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   }
 
   Widget _buildSignInButton() {
-    return ElevatedButton(
+    return FilledButton(
       key: AppKeys.submitButton,
       onPressed: _isLoading ? null : _handleSignIn,
       child: _isLoading
@@ -184,59 +233,74 @@ class _LoginPageState extends ConsumerState<LoginPage>
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
-                  strokeWidth: 2, color: Colors.white),
+                strokeWidth: 2,
+                color: AppColors.textOnPrimary,
+              ),
             )
-          : const Text('Sign In'),
+          : const Text('Sign in'),
     );
   }
 
-  Widget _buildDivider(ThemeData theme) {
+  Widget _buildOrDivider(Color color) {
     return Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider(color: color.withValues(alpha: 0.25))),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
-            'or continue with',
-            style: theme.textTheme.bodySmall,
+            'OR',
+            style: AppTypography.manrope(
+              size: 11,
+              weight: FontWeight.w700,
+              color: color,
+              letterSpacing: 1.2,
+            ),
           ),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider(color: color.withValues(alpha: 0.25))),
       ],
     );
   }
 
   Widget _buildSocialButtons() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            key: AppKeys.googleSignInButton,
-            onPressed: _isLoading ? null : _handleGoogleSignIn,
-            icon: const Icon(Icons.g_mobiledata, size: 24),
-            label: const Text('Google'),
-          ),
+        OutlinedButton.icon(
+          key: AppKeys.googleSignInButton,
+          onPressed: _isLoading ? null : _handleGoogleSignIn,
+          icon: const Icon(Icons.g_mobiledata, size: 22),
+          label: const Text('Continue with Google'),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OutlinedButton.icon(
-            key: AppKeys.appleSignInButton,
-            onPressed: _isLoading ? null : _handleAppleSignIn,
-            icon: const Icon(Icons.apple, size: 20),
-            label: const Text('Apple'),
-          ),
+        const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+        OutlinedButton.icon(
+          key: AppKeys.appleSignInButton,
+          onPressed: _isLoading ? null : _handleAppleSignIn,
+          icon: const Icon(Icons.apple, size: 20),
+          label: const Text('Continue with Apple'),
         ),
       ],
     );
   }
 
-  Widget _buildCreateAccountLink(ThemeData theme) {
+  Widget _buildCreateAccountLink(Color color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Don't have an account? ", style: theme.textTheme.bodyMedium),
+        Text(
+          'New here? ',
+          style: AppTypography.manrope(
+            size: 14,
+            weight: FontWeight.w500,
+            color: color,
+          ),
+        ),
         TextButton(
           key: AppKeys.createAccountButton,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           onPressed: () => context.push(Routes.signup),
           child: const Text('Create account'),
         ),
@@ -317,5 +381,34 @@ class _LoginPageState extends ConsumerState<LoginPage>
       };
     }
     return 'Something went wrong. Please try again.';
+  }
+}
+
+/// Uppercase tracked label + underlined input — the signature auth-form look.
+class _LabeledField extends StatelessWidget {
+  const _LabeledField({required this.label, required this.child});
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTypography.manrope(
+            size: 11,
+            weight: FontWeight.w700,
+            color: color,
+            letterSpacing: 1.2,
+          ),
+        ),
+        child,
+      ],
+    );
   }
 }

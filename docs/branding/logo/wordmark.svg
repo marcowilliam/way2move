@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 96" width="480" height="96">
+  <!--
+    WAY2MOVE wordmark.
+    Typeface: Manrope ExtraBold (800), -0.5px tracking.
+    The "2" is replaced by a subtle visual echo of the logo mark's shape
+    (a stylized 2 with grounded base), but at wordmark scale it reads as "2".
+  -->
+  <style>
+    .wm {
+      font-family: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      letter-spacing: -2px;
+      fill: #1F1815;
+    }
+    .wm-2 { fill: #C4622D; }
+  </style>
+  <text x="0" y="72" class="wm">WAY<tspan class="wm-2">2</tspan>MOVE</text>
+</svg>

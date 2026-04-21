@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 96" width="480" height="96">
+  <style>
+    .wm {
+      font-family: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      letter-spacing: -2px;
+      fill: #F5EFE7;
+    }
+    .wm-2 { fill: #E89062; }
+  </style>
+  <text x="0" y="72" class="wm">WAY<tspan class="wm-2">2</tspan>MOVE</text>
+</svg>

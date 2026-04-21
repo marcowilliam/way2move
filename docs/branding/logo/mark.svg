@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!--
+    WAY2MOVE — Logo Mark: "The Rooted 2" (v3)
+
+    Single continuous stroke:
+      1. Start upper-left at (64, 94)
+      2. Symmetric, gently peaked arch to upper-right (192, 94)
+         (control points at y=38 keep the peak soft, not tall)
+      3. Diagonal from upper-right down to bottom-left (52, 214)
+      4. Long horizontal base extending further right than the arch
+         to (224, 214) — creates a subtle "pedestal" footprint
+
+    Reads clearly as a "2" at all sizes.
+    Differentiated from Way2Fly's mark by: (a) upright stance (no rotation),
+    (b) symmetric arch, (c) gentler arch peak, (d) extended base foot.
+
+    Stroke: 22px on 256 canvas. Rounded caps + joins.
+  -->
+  <path
+    d="M 64 94
+       C 64 38, 192 38, 192 94
+       L 52 214
+       L 224 214"
+    fill="none"
+    stroke="#C4622D"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

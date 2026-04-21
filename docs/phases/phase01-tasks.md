@@ -4,7 +4,23 @@
 > **Can run parallel with:** Phase 6 (Deployment) from mid-phase onward
 > **Blocks:** Phase 2, Phase 3, Phase 4, Phase 5
 
-**Current test count: 582 passing** (auth: 21, exercises: 17, assessments: 21, programs: 16, sessions: 24, profile: 32, compensations: 38, goals: 39, calendar: 10, dashboard: 9, sleep: 25, nutrition: 26, journal: 73 inc. audio recording + review)
+**Current test count: 721 passing + 20 theme-token tests** (10 pre-existing journal failures unrelated to revamp)
+
+## Revamp v1 — dark-mode pass (2026-04-21)
+
+Brand identity v1 translated to Flutter. Token foundation shipped; screens
+1–5 migrated in the first pass. Tracking details in
+`docs/screens/revamp-v1/discovery/plan.md`.
+
+- [x] Token layer: `app_colors`, `app_typography`, `app_spacing`, `app_motion`, `app_theme` + 20 tests
+- [x] Shared: `Way2MoveLogoMark` (CustomPainter, no SVG dep)
+- [x] Screen 1 — Splash (new) with staggered entrance animation
+- [x] Screen 2 — Login (logo, underline inputs, inline sage checkmark, terracotta CTA)
+- [x] Screen 3 — Sign Up (same language as Login)
+- [x] Screen 4 — Onboarding welcome (Fraunces italic centerpiece + sage grounded figure on terracotta baseline)
+- [x] Screen 5 — Home dashboard greeting (Fraunces displaySmall via inline sliver header)
+- [ ] Screens 6–20 — deferred to revamp v1.1
+
 
 ---
 
@@ -435,7 +451,7 @@
 - [x] Goal progress visualization: mini cards with animated progress bars, current/target values
 - [x] Bottom navigation: Home, Calendar, Exercises, Goals, Profile (swapped Progress → Goals)
 - [x] GoRouter: onboarding redirect — logged-in users without onboardingComplete → /onboarding
-- [x] Profile page: avatar initial + name header, stats row (streak/sessions/goals), nav tiles to all features, sign out
+- [x] Profile page: avatar initial + name header, stats row (streak/sessions/goals), nav tiles to all features, sign out — revamp-v1 (2026-04-21): 80px avatar with sage ring, Fraunces `displaySmall` name, stone-colored email, compact stats row (Fraunces 28 + labelSmall + inline dividers), four 14px-radius grouped cards (Training / Body awareness / Daily / You), sign out as a stone ghost `TextButton`
 - [x] App theme and styling: uses AppTheme.light/dark throughout, earth tones, rounded cards
 - [x] Animated screen transitions: all routes use CustomTransitionPage with fade/slide builders
 - [x] Quick actions: log journal (voice), log meal, log sleep, take progress photo — "Track Today" section

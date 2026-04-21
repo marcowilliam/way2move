@@ -46,7 +46,10 @@ class Way2MoveApp extends ConsumerWidget {
       title: 'Way2Move',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      // Brand revamp v1 — forcing dark mode while we translate the light-mode
+      // mockups to dark tokens screen-by-screen. Revert to ThemeMode.system
+      // once every screen is verified in light mode too.
+      themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

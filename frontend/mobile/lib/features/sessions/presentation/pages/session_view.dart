@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../../domain/entities/session.dart';
 import '../providers/session_providers.dart';
@@ -26,11 +29,11 @@ class _SessionViewState extends ConsumerState<SessionView>
     super.initState();
     _headerController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: WayMotion.settled,
     )..forward();
     _headerFade = CurvedAnimation(
       parent: _headerController,
-      curve: Curves.easeOut,
+      curve: WayMotion.easeSettled,
     );
   }
 
@@ -66,60 +69,72 @@ class _SessionViewState extends ConsumerState<SessionView>
     final session = state.session;
     final theme = Theme.of(context);
 
+    final currentIndex = session.exerciseBlocks.indexWhere(
+      (b) => !b.isStarted || b.completedSetsCount < b.plannedSets,
+    );
+
     return Scaffold(
       key: AppKeys.sessionView,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 120,
+            backgroundColor: theme.scaffoldBackgroundColor,
+            surfaceTintColor: Colors.transparent,
             leading: IconButton(
               icon: const Icon(Icons.close),
               onPressed: () => _confirmExit(context),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              title: FadeTransition(
+            actions: [
+              _ProgressChip(session: session),
+              const SizedBox(width: AppSpacing.md),
+            ],
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              0,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: FadeTransition(
                 opacity: _headerFade,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       session.focus ?? 'Workout',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: theme.textTheme.displaySmall,
                     ),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       _formatDate(session.date),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ),
-              titlePadding:
-                  const EdgeInsets.only(left: 56, bottom: 12, right: 16),
             ),
-            actions: [
-              _ProgressChip(session: session),
-              const SizedBox(width: 8),
-            ],
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              120,
+            ),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final block = session.exerciseBlocks[index];
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
                     child: _ExerciseBlockCard(
                       block: block,
                       index: index,
+                      isCurrent: index == currentIndex,
                     ),
                   );
                 },
@@ -196,23 +211,31 @@ class _ProgressChip extends StatelessWidget {
     final done = session.completedBlocksCount;
     final total = session.exerciseBlocks.length;
 
+    final theme = Theme.of(context);
+    final complete = done == total && total > 0;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      duration: WayMotion.standard,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 4,
+        vertical: AppSpacing.xs + 2,
+      ),
       decoration: BoxDecoration(
-        color: done == total && total > 0
-            ? AppColors.accentGreen.withValues(alpha: 0.15)
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: complete
+            ? AppColors.accent.withValues(alpha: 0.15)
+            : theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: complete
+              ? AppColors.accent.withValues(alpha: 0.4)
+              : theme.colorScheme.outline,
+        ),
       ),
       child: Text(
         '$done / $total',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: done == total && total > 0
-                  ? AppColors.accentGreen
-                  : Theme.of(context).colorScheme.onSurface,
-            ),
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: complete ? AppColors.accent : theme.colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -228,30 +251,48 @@ class _BottomBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final canComplete = state.session.hasAnyWork;
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: FilledButton(
-          key: AppKeys.completeSessionButton,
-          onPressed: canComplete && !state.isSubmitting
-              ? () => _completeWorkout(context, ref)
-              : null,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            offset: const Offset(0, -2),
+            blurRadius: 14,
           ),
-          child: state.isSubmitting
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text('Complete Workout'),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
+          child: FilledButton(
+            key: AppKeys.completeSessionButton,
+            onPressed: canComplete && !state.isSubmitting
+                ? () => _completeWorkout(context, ref)
+                : null,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              ),
+            ),
+            child: state.isSubmitting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.textOnPrimary,
+                    ),
+                  )
+                : const Text('Complete workout'),
+          ),
         ),
       ),
     );
@@ -305,10 +346,10 @@ class _CompleteWorkoutSheetState extends State<_CompleteWorkoutSheet> {
     final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        top: AppSpacing.lg,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.lg,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -324,54 +365,40 @@ class _CompleteWorkoutSheetState extends State<_CompleteWorkoutSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           Text(
-            'Finish Workout',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700),
+            'Finish workout',
+            style: theme.textTheme.displaySmall,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            'Add any notes before saving.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+            'Anything worth remembering?',
+            style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           TextField(
             key: AppKeys.sessionNotesField,
             controller: _notesController,
             maxLines: 3,
             decoration: const InputDecoration(
-              hintText: 'How did it feel? Any observations...',
-              border: OutlineInputBorder(),
+              hintText: 'How did it feel…',
             ),
             onChanged: widget.onNotesChanged,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context, false),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
                   child: const Text('Cancel'),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: FilledButton(
                   onPressed: () => Navigator.pop(context, true),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('Save & Finish'),
+                  child: const Text('Save & finish'),
                 ),
               ),
             ],
@@ -387,8 +414,13 @@ class _CompleteWorkoutSheetState extends State<_CompleteWorkoutSheet> {
 class _ExerciseBlockCard extends ConsumerStatefulWidget {
   final ExerciseBlock block;
   final int index;
+  final bool isCurrent;
 
-  const _ExerciseBlockCard({required this.block, required this.index});
+  const _ExerciseBlockCard({
+    required this.block,
+    required this.index,
+    required this.isCurrent,
+  });
 
   @override
   ConsumerState<_ExerciseBlockCard> createState() => _ExerciseBlockCardState();
@@ -405,23 +437,32 @@ class _ExerciseBlockCardState extends ConsumerState<_ExerciseBlockCard>
     super.initState();
     _slideController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: WayMotion.settled,
     );
     _slideAnim = Tween<Offset>(
       begin: const Offset(0.05, 0),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _slideController,
-      curve: Curves.easeOutCubic,
+      curve: WayMotion.easeSettled,
     ));
 
-    // Stagger entrance animation by index
+    _expanded = widget.isCurrent;
+
     Future.delayed(
       Duration(milliseconds: 60 * widget.index),
       () {
         if (mounted) _slideController.forward();
       },
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant _ExerciseBlockCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isCurrent && !oldWidget.isCurrent) {
+      setState(() => _expanded = true);
+    }
   }
 
   @override
@@ -434,38 +475,63 @@ class _ExerciseBlockCardState extends ConsumerState<_ExerciseBlockCard>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final block = widget.block;
+    final complete =
+        block.isStarted && block.completedSetsCount >= block.plannedSets;
 
     return SlideTransition(
       position: _slideAnim,
       child: FadeTransition(
         opacity: _slideController,
-        child: Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: block.isStarted
-                  ? AppColors.accentGreen.withValues(alpha: 0.4)
-                  : theme.colorScheme.outlineVariant,
+        child: Stack(
+          children: [
+            AnimatedContainer(
+              duration: WayMotion.standard,
+              curve: WayMotion.easeStandard,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                border: Border.all(
+                  color: complete
+                      ? AppColors.accent.withValues(alpha: 0.5)
+                      : theme.colorScheme.outline,
+                ),
+              ),
+              padding: EdgeInsets.only(left: widget.isCurrent ? 4 : 0),
+              child: Column(
+                children: [
+                  _ExerciseBlockHeader(
+                    block: block,
+                    expanded: _expanded,
+                    complete: complete,
+                    onToggle: () => setState(() => _expanded = !_expanded),
+                  ),
+                  AnimatedCrossFade(
+                    firstChild: const SizedBox.shrink(),
+                    secondChild: _ExerciseBlockBody(block: block),
+                    crossFadeState: _expanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: WayMotion.standard,
+                  ),
+                ],
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              _ExerciseBlockHeader(
-                block: block,
-                expanded: _expanded,
-                onToggle: () => setState(() => _expanded = !_expanded),
+            if (widget.isCurrent)
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  width: 4,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(AppSpacing.radiusMd),
+                    ),
+                  ),
+                ),
               ),
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: _ExerciseBlockBody(block: block),
-                crossFadeState: _expanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 250),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -477,11 +543,13 @@ class _ExerciseBlockCardState extends ConsumerState<_ExerciseBlockCard>
 class _ExerciseBlockHeader extends ConsumerWidget {
   final ExerciseBlock block;
   final bool expanded;
+  final bool complete;
   final VoidCallback onToggle;
 
   const _ExerciseBlockHeader({
     required this.block,
     required this.expanded,
+    required this.complete,
     required this.onToggle,
   });
 
@@ -489,7 +557,6 @@ class _ExerciseBlockHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    // Fetch exercise name from cache
     final exercisesAsync = ref.watch(exerciseListProvider);
     final exercise = exercisesAsync.maybeWhen(
       data: (list) => list.where((e) => e.id == block.exerciseId).firstOrNull,
@@ -498,55 +565,58 @@ class _ExerciseBlockHeader extends ConsumerWidget {
 
     return InkWell(
       onTap: onToggle,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md - 2,
+          AppSpacing.sm + 4,
+          AppSpacing.md - 2,
+        ),
         child: Row(
           children: [
-            // Completion indicator
             AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: WayMotion.standard,
               width: 32,
               height: 32,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: block.isStarted
-                    ? AppColors.accentGreen
+                color: complete
+                    ? AppColors.accent
                     : theme.colorScheme.surfaceContainerHighest,
               ),
               child: Icon(
-                block.isStarted ? Icons.check : Icons.fitness_center,
+                complete ? Icons.check : Icons.self_improvement,
                 size: 16,
-                color: block.isStarted
-                    ? Colors.white
+                color: complete
+                    ? AppColors.textOnPrimary
                     : theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.sm + 4),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     exercise?.name ?? block.exerciseId,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleMedium,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${block.plannedSets} sets × ${block.plannedReps}'
                     '${block.completedSetsCount > 0 ? ' · ${block.completedSetsCount} done' : ''}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    style: theme.textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
             AnimatedRotation(
-              duration: const Duration(milliseconds: 200),
+              duration: WayMotion.micro,
               turns: expanded ? 0.5 : 0,
-              child: const Icon(Icons.keyboard_arrow_down),
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -607,48 +677,17 @@ class _ExerciseBlockBodyState extends ConsumerState<_ExerciseBlockBody> {
         : block.actualSets.length;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        0,
+        AppSpacing.md,
+        AppSpacing.md,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          // Column headers
-          Row(
-            children: [
-              SizedBox(
-                width: 32,
-                child: Text(
-                  'Set',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Reps',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Weight',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const SizedBox(width: 40),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Set rows
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
+          const SizedBox(height: AppSpacing.sm + 4),
           for (int setNum = 1; setNum <= maxSets; setNum++)
             _SetRow(
               setNumber: setNum,
@@ -671,8 +710,7 @@ class _ExerciseBlockBodyState extends ConsumerState<_ExerciseBlockBody> {
                     );
               },
             ),
-          // RPE row
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           _RpeSelector(
             exerciseId: block.exerciseId,
             currentRpe: block.rpe,
@@ -708,92 +746,66 @@ class _SetRow extends StatelessWidget {
         .isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm + 2),
       child: Row(
         children: [
-          SizedBox(
-            width: 32,
+          GestureDetector(
+            onTap: () => onToggle(!isCompleted),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 28,
-              height: 28,
+              duration: WayMotion.standard,
+              curve: WayMotion.easeStandard,
+              width: 30,
+              height: 30,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isCompleted
-                    ? AppColors.accentGreen.withValues(alpha: 0.15)
-                    : theme.colorScheme.surfaceContainerHighest,
+                    ? AppColors.accent
+                    : Colors.transparent,
+                border: Border.all(
+                  color: isCompleted
+                      ? AppColors.accent
+                      : theme.colorScheme.outline,
+                  width: 1.5,
+                ),
               ),
               child: Center(
-                child: Text(
-                  '$setNumber',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: isCompleted
-                        ? AppColors.accentGreen
-                        : theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: isCompleted
+                    ? const Icon(
+                        Icons.check,
+                        size: 16,
+                        color: AppColors.textOnPrimary,
+                      )
+                    : Text(
+                        '$setNumber',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: TextField(
               controller: repsController,
               keyboardType: TextInputType.text,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 isDense: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                border: const OutlineInputBorder(),
-                filled: isCompleted,
-                fillColor: isCompleted
-                    ? AppColors.accentGreen.withValues(alpha: 0.07)
-                    : null,
+                hintText: 'reps',
               ),
               style: theme.textTheme.bodyMedium,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: TextField(
               controller: weightController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 isDense: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                border: const OutlineInputBorder(),
-                hintText: 'kg / BW',
-                filled: isCompleted,
-                fillColor: isCompleted
-                    ? AppColors.accentGreen.withValues(alpha: 0.07)
-                    : null,
+                hintText: 'kg',
               ),
               style: theme.textTheme.bodyMedium,
-            ),
-          ),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 40,
-            child: IconButton(
-              onPressed: () => onToggle(!isCompleted),
-              style: IconButton.styleFrom(
-                backgroundColor: isCompleted
-                    ? AppColors.accentGreen
-                    : theme.colorScheme.surfaceContainerHighest,
-                foregroundColor:
-                    isCompleted ? Colors.white : theme.colorScheme.onSurface,
-              ),
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  isCompleted ? Icons.check : Icons.radio_button_unchecked,
-                  key: ValueKey(isCompleted),
-                  size: 18,
-                ),
-              ),
-              iconSize: 18,
-              padding: EdgeInsets.zero,
             ),
           ),
         ],
@@ -818,55 +830,87 @@ class _RpeSelector extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Effort (RPE)',
+          'Effort',
           style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 6),
-        Row(
-          children: List.generate(10, (i) {
-            final rpe = i + 1;
-            final selected = currentRpe == rpe;
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => ref
-                    .read(activeSessionProvider.notifier)
-                    .setRpe(exerciseId, rpe),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                  height: 32,
+        const SizedBox(height: AppSpacing.sm),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final trackWidth = constraints.maxWidth;
+            return Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                Container(
+                  height: 6,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: selected
-                        ? _rpeColor(rpe)
-                        : theme.colorScheme.surfaceContainerHighest,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$rpe',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: selected
-                            ? Colors.white
-                            : theme.colorScheme.onSurface
-                                .withValues(alpha: 0.7),
-                      ),
+                    borderRadius: BorderRadius.circular(3),
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.accent,
+                        AppColors.warning,
+                        AppColors.primary,
+                      ],
                     ),
                   ),
                 ),
-              ),
+                Row(
+                  children: List.generate(10, (i) {
+                    final rpe = i + 1;
+                    final selected = currentRpe == rpe;
+                    return Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => ref
+                            .read(activeSessionProvider.notifier)
+                            .setRpe(exerciseId, rpe),
+                        child: SizedBox(
+                          height: AppSpacing.minTapTarget / 2,
+                          child: selected
+                              ? const SizedBox.shrink()
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                if (currentRpe != null)
+                  AnimatedPositioned(
+                    duration: WayMotion.standard,
+                    curve: WayMotion.easeStandard,
+                    left: ((currentRpe! - 1) / 9) * (trackWidth - 18),
+                    child: Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary,
+                        border: Border.all(
+                          color: theme.colorScheme.surface,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             );
-          }),
+          },
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            currentRpe == null ? 'Tap to set' : 'RPE $currentRpe / 10',
+            style: AppTypography.manrope(
+              size: 12,
+              weight: FontWeight.w600,
+              color: theme.colorScheme.onSurfaceVariant,
+              letterSpacing: 0.3,
+            ),
+          ),
         ),
       ],
     );
-  }
-
-  Color _rpeColor(int rpe) {
-    if (rpe <= 3) return AppColors.accentGreen;
-    if (rpe <= 6) return AppColors.accent;
-    return AppColors.accentRed;
   }
 }

@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/goal.dart';
 import '../providers/goal_providers.dart';
@@ -26,7 +29,7 @@ class _GoalListPageState extends ConsumerState<GoalListPage>
     super.initState();
     _staggerController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: WayMotion.reward,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _staggerController.forward();
@@ -41,6 +44,7 @@ class _GoalListPageState extends ConsumerState<GoalListPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final uid = ref.watch(currentUserIdProvider);
     if (uid == null) {
       return const Scaffold(
@@ -52,13 +56,23 @@ class _GoalListPageState extends ConsumerState<GoalListPage>
 
     return Scaffold(
       key: AppKeys.goalListPage,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Goals'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        key: AppKeys.goalAddButton,
-        onPressed: () => _showAddGoalDialog(context, uid),
-        child: const Icon(Icons.add),
+        title: Text(
+          'Goals',
+          style: theme.textTheme.displaySmall,
+        ),
+        centerTitle: false,
+        toolbarHeight: 72,
+        actions: [
+          IconButton(
+            key: AppKeys.goalAddButton,
+            icon: const Icon(Icons.add),
+            onPressed: () => _showAddGoalDialog(context, uid),
+            tooltip: 'Add goal',
+          ),
+          const SizedBox(width: AppSpacing.sm),
+        ],
       ),
       body: goalsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -103,7 +117,12 @@ class _GoalListBody extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          100,
+        ),
         itemCount: goals.length,
         itemBuilder: (context, index) {
           final delay = index * 0.08;
@@ -111,7 +130,7 @@ class _GoalListBody extends StatelessWidget {
           final end = (delay + 0.4).clamp(0.0, 1.0);
           final animation = CurvedAnimation(
             parent: staggerController,
-            curve: Interval(start, end, curve: Curves.easeOut),
+            curve: Interval(start, end, curve: WayMotion.easeStandard),
           );
           return _AnimatedGoalCard(
             goal: goals[index],
@@ -158,62 +177,73 @@ class _GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final progress = goal.progressFraction;
-    final statusColor = _statusColor(goal.status);
+    final ringColor = _statusColor(goal.status);
 
-    return Card(
-      elevation: 0,
-      color: AppColors.surface,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: AppColors.border, width: 1),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      goal.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              border: Border.all(color: theme.colorScheme.outline),
+            ),
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                _ProgressRing(progress: progress, color: ringColor),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        goal.name,
+                        style: AppTypography.manrope(
+                          size: 17,
+                          weight: FontWeight.w700,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: AppSpacing.xs + 2),
+                      Wrap(
+                        spacing: AppSpacing.xs + 2,
+                        runSpacing: AppSpacing.xs,
+                        children: [
+                          _CategoryChip(category: goal.category),
+                          if (goal.source == GoalSource.suggested)
+                            _SourceChip(source: goal.source),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        '${_format(goal.currentValue)} / ${_format(goal.targetValue)} ${goal.unit}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
                   ),
-                  _StatusBadge(status: goal.status, color: statusColor),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _CategoryChip(category: goal.category),
-                  if (goal.source == GoalSource.suggested) ...[
-                    const SizedBox(width: 6),
-                    _SourceChip(source: goal.source),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 12),
-              _ProgressBar(
-                progress: progress,
-                currentValue: goal.currentValue,
-                targetValue: goal.targetValue,
-                unit: goal.unit,
-                statusColor: statusColor,
-              ),
-            ],
+                ),
+                _StatusBadge(status: goal.status, color: ringColor),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  String _format(double v) {
+    return v.truncateToDouble() == v
+        ? v.toStringAsFixed(0)
+        : v.toStringAsFixed(1);
   }
 
   Color _statusColor(GoalStatus s) {
@@ -221,11 +251,67 @@ class _GoalCard extends StatelessWidget {
       case GoalStatus.active:
         return AppColors.primary;
       case GoalStatus.achieved:
-        return AppColors.accentGreen;
+        return AppColors.accent;
       case GoalStatus.paused:
         return AppColors.textSecondary;
     }
   }
+}
+
+class _ProgressRing extends StatelessWidget {
+  final double progress;
+  final Color color;
+  const _ProgressRing({required this.progress, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: CustomPaint(
+        painter: _RingPainter(progress: progress.clamp(0.0, 1.0), color: color),
+        child: Center(
+          child: Text(
+            '${(progress * 100).round()}%',
+            style: AppTypography.fraunces(
+              size: 13,
+              weight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  _RingPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 4;
+    final bg = Paint()
+      ..color = AppColors.border.withValues(alpha: 0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+    canvas.drawCircle(center, radius, bg);
+
+    final fg = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    canvas.drawArc(rect, -3.14159 / 2, progress * 3.14159 * 2, false, fg);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RingPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }
 
 class _StatusBadge extends StatelessWidget {
@@ -235,11 +321,15 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (status == GoalStatus.active) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       child: Text(
         _label(status),
@@ -269,18 +359,20 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(6),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Text(
         _label(category),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+        style: theme.textTheme.labelSmall,
       ),
     );
   }
@@ -315,68 +407,23 @@ class _SourceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (source != GoalSource.suggested) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.secondary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
+        color: AppColors.reward.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
-      child: Text(
+      child: const Text(
         'Suggested',
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: AppColors.secondary,
-              fontWeight: FontWeight.w500,
-            ),
-      ),
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  final double progress;
-  final double currentValue;
-  final double targetValue;
-  final String unit;
-  final Color statusColor;
-
-  const _ProgressBar({
-    required this.progress,
-    required this.currentValue,
-    required this.targetValue,
-    required this.unit,
-    required this.statusColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: AppColors.border,
-                  valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                  minHeight: 6,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              '${currentValue.toStringAsFixed(currentValue.truncateToDouble() == currentValue ? 0 : 1)}'
-              ' / '
-              '${targetValue.toStringAsFixed(targetValue.truncateToDouble() == targetValue ? 0 : 1)}'
-              ' $unit',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-          ],
+        style: TextStyle(
+          fontSize: 11,
+          color: AppColors.reward,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
         ),
-      ],
+      ),
     );
   }
 }
@@ -386,32 +433,36 @@ class _EmptyGoalsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.flag_outlined,
-              size: 64,
-              color: AppColors.textDisabled,
+            Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.flag_outlined,
+                size: 44,
+                color: AppColors.accent,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               'No goals yet',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: theme.textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'Complete an assessment to get suggestions, or tap + to add a custom goal.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: theme.textTheme.bodyMedium,
             ),
           ],
         ),

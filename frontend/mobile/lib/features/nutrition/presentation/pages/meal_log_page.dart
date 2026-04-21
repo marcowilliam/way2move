@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../journal/presentation/widgets/voice_input_widget.dart';
 import '../../domain/entities/food_item.dart';
@@ -140,13 +141,20 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       key: AppKeys.mealLogPage,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Log Meal'),
+        title: Text(
+          'Log a meal.',
+          style: theme.textTheme.displaySmall,
+        ),
+        centerTitle: false,
+        toolbarHeight: 72,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -157,12 +165,12 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
               key: AppKeys.foodSearchField,
               controller: _foodSearchController,
               decoration: InputDecoration(
-                hintText: 'Search food database...',
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search food database…',
+                prefixIcon:
+                    const Icon(Icons.search, color: AppColors.textSecondary),
                 suffixIcon: _isSearching
                     ? const Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(AppSpacing.sm + 4),
                         child: SizedBox(
                           width: 16,
                           height: 16,
@@ -237,8 +245,7 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
                     controller: _descController,
                     maxLines: 3,
                     decoration: const InputDecoration(
-                      hintText: 'Describe your meal...',
-                      border: OutlineInputBorder(),
+                      hintText: 'Describe your meal…',
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -297,13 +304,12 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
               maxLines: 2,
               decoration: const InputDecoration(
                 hintText: 'Any stomach symptoms? (bloating, pain, etc.)',
-                border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xl),
             SizedBox(
               width: double.infinity,
-              height: 52,
+              height: 56,
               child: FilledButton(
                 key: AppKeys.saveMealButton,
                 onPressed: _canSave && !_isSubmitting ? _save : null,
@@ -313,10 +319,10 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: AppColors.textOnPrimary,
                         ),
                       )
-                    : const Text('Save Meal'),
+                    : const Text('Save meal'),
               ),
             ),
           ],
@@ -607,10 +613,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+      style: Theme.of(context).textTheme.labelSmall,
     );
   }
 }

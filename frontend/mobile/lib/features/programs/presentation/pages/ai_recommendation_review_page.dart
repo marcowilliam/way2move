@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../assessments/domain/entities/compensation_report.dart';
 import '../../../assessments/domain/entities/detected_compensation.dart';
 import '../../../assessments/domain/entities/assessment.dart';
@@ -184,12 +187,16 @@ class _AIRecommendationReviewPageState
     final isSaving = ref.watch(createProgramProvider).isLoading;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Your AI Program'),
-        centerTitle: true,
+        title: Text(
+          'Your program',
+          style: theme.textTheme.displaySmall,
+        ),
+        centerTitle: false,
+        toolbarHeight: 72,
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.scaffoldBackgroundColor,
         foregroundColor: theme.colorScheme.onSurface,
       ),
       body: FadeTransition(
@@ -358,66 +365,61 @@ class _CompensationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final severity = detection.severity;
-    final (color, bg, icon) = switch (severity) {
-      CompensationSeverity.significant => (
-          const Color(0xFFD32F2F),
-          const Color(0xFFFFEBEE),
-          Icons.warning_rounded,
-        ),
-      CompensationSeverity.moderate => (
-          const Color(0xFFF57C00),
-          const Color(0xFFFFF3E0),
-          Icons.info_outline_rounded,
-        ),
-      CompensationSeverity.mild => (
-          const Color(0xFF388E3C),
-          const Color(0xFFE8F5E9),
-          Icons.check_circle_outline_rounded,
-        ),
+    final color = switch (severity) {
+      CompensationSeverity.significant => AppColors.severitySignificant,
+      CompensationSeverity.moderate => AppColors.severityModerate,
+      CompensationSeverity.mild => AppColors.severityMild,
+    };
+    final fraction = switch (severity) {
+      CompensationSeverity.significant => 1.0,
+      CompensationSeverity.moderate => 0.66,
+      CompensationSeverity.mild => 0.33,
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   _patternLabel(detection.pattern),
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.titleMedium,
                 ),
-                Text(
-                  '${_severityLabel(severity)} · ${(detection.frameRatio * 100).round()}% of frames',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: color.withValues(alpha: 0.8)),
+              ),
+              Text(
+                _severityLabel(severity),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              _severityLabel(severity),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: color,
+          const SizedBox(height: AppSpacing.xs + 2),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: Container(
+              height: 6,
+              color: theme.colorScheme.outlineVariant,
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: fraction,
+                child: Container(color: color),
               ),
             ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            '${(detection.frameRatio * 100).round()}% of frames show this pattern',
+            style: theme.textTheme.bodySmall,
           ),
         ],
       ),
@@ -447,23 +449,24 @@ class _DayCard extends StatelessWidget {
     final isRest = day.isRestDay;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: WayMotion.standard,
       decoration: BoxDecoration(
-        color: isRest
-            ? theme.colorScheme.surfaceContainerLowest
-            : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(14),
-        border: isRest
-            ? null
-            : Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.15),
-              ),
+        color: isRest ? theme.colorScheme.surface : AppColors.primary,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: isRest ? theme.colorScheme.outline : AppColors.primary,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md - 2,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
             child: Row(
               children: [
                 Container(
@@ -472,9 +475,9 @@ class _DayCard extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isRest
-                        ? theme.colorScheme.surfaceContainerHighest
-                        : theme.colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                        ? AppColors.accent.withValues(alpha: 0.12)
+                        : AppColors.textOnPrimary.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
                   ),
                   child: Text(
                     dayName,
@@ -482,43 +485,50 @@ class _DayCard extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: isRest
-                          ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
-                          : theme.colorScheme.primary,
+                          ? AppColors.accent
+                          : AppColors.textOnPrimary,
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.sm + 2),
                 Expanded(
                   child: Text(
                     isRest ? 'Rest' : (day.focus ?? 'Training'),
-                    style: theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       color: isRest
-                          ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
-                          : null,
+                          ? theme.colorScheme.onSurface
+                          : AppColors.textOnPrimary,
                     ),
                   ),
                 ),
                 if (!isRest)
                   Text(
-                    '${day.exerciseEntries.length} exercise${day.exerciseEntries.length == 1 ? '' : 's'}',
+                    '${day.exerciseEntries.length} ex',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: AppColors.textOnPrimary.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
               ],
             ),
           ),
           if (!isRest) ...[
-            const Divider(height: 1, indent: 14, endIndent: 14),
+            Divider(
+              height: 1,
+              indent: AppSpacing.md,
+              endIndent: AppSpacing.md,
+              color: AppColors.textOnPrimary.withValues(alpha: 0.25),
+            ),
             ...day.exerciseEntries.asMap().entries.map(
                   (entry) => _ExerciseRow(
                     index: entry.key,
                     exerciseEntry: entry.value,
                     onEdit: () => onEditEntry(entry.key),
                     onRemove: () => onRemoveEntry(entry.key),
+                    onPrimary: true,
                   ),
                 ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
           ],
         ],
       ),
@@ -531,67 +541,76 @@ class _ExerciseRow extends StatelessWidget {
   final ExerciseEntry exerciseEntry;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
+  final bool onPrimary;
 
   const _ExerciseRow({
     required this.index,
     required this.exerciseEntry,
     required this.onEdit,
     required this.onRemove,
+    this.onPrimary = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textColor =
+        onPrimary ? AppColors.textOnPrimary : theme.colorScheme.onSurface;
+    final mutedColor = onPrimary
+        ? AppColors.textOnPrimary.withValues(alpha: 0.65)
+        : theme.colorScheme.onSurfaceVariant;
     return InkWell(
       onTap: onEdit,
-      borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
         child: Row(
           children: [
             SizedBox(
               width: 20,
               child: Text(
                 '${index + 1}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                ),
+                style: theme.textTheme.labelSmall?.copyWith(color: mutedColor),
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.sm + 2),
             Expanded(
               child: Text(
                 _exerciseLabel(exerciseEntry.exerciseId),
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
               ),
             ),
             GestureDetector(
               onTap: onEdit,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(6),
+                  color: onPrimary
+                      ? AppColors.textOnPrimary.withValues(alpha: 0.2)
+                      : AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
                 child: Text(
                   '${exerciseEntry.sets}×${exerciseEntry.reps}',
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.w700,
+                    color: textColor,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 4),
             IconButton(
               onPressed: onRemove,
               icon: const Icon(Icons.close, size: 16),
               style: IconButton.styleFrom(
                 minimumSize: const Size(32, 32),
-                foregroundColor:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                foregroundColor: mutedColor,
               ),
             ),
           ],
@@ -609,12 +628,16 @@ class _AcceptBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm + 4,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: WayMotion.micro,
           child: isSaving
               ? const Center(
                   child: SizedBox(
@@ -623,18 +646,12 @@ class _AcceptBar extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2.5),
                   ),
                 )
-              : FilledButton.icon(
+              : FilledButton(
                   onPressed: onAccept,
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('Accept & Create Program'),
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    textStyle: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    minimumSize: const Size.fromHeight(56),
                   ),
+                  child: const Text('Accept & create program'),
                 ),
         ),
       ),

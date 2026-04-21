@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/stt/stt_provider.dart';
 import '../../../../core/services/stt/stt_service.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../data/services/audio_recording_service.dart';
 
 /// Animated mic button + live transcription widget.
@@ -63,14 +67,13 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
     super.initState();
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.25).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+      duration: WayMotion.breath,
     );
 
-    _pulseController.stop();
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 104 / 96).animate(
+      CurvedAnimation(parent: _pulseController, curve: WayMotion.easeBreath),
+    );
+
     _initStt();
   }
 
@@ -163,104 +166,118 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Animated mic button
         GestureDetector(
           onTap: _isTranscribing ? null : _toggleListening,
           child: AnimatedBuilder(
             animation: _pulseAnimation,
-            builder: (_, child) => Transform.scale(
-              scale: _isListening ? _pulseAnimation.value : 1.0,
-              child: child,
-            ),
-            child: Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _isTranscribing
-                    ? colorScheme.secondary
-                    : _isListening
-                        ? colorScheme.error
-                        : colorScheme.primary,
-                boxShadow: [
-                  BoxShadow(
-                    color: (_isTranscribing
-                            ? colorScheme.secondary
-                            : _isListening
-                                ? colorScheme.error
-                                : colorScheme.primary)
-                        .withAlpha(102),
-                    blurRadius: _isListening ? 20 : 8,
-                    spreadRadius: _isListening ? 4 : 0,
-                  ),
-                ],
-              ),
-              child: _isTranscribing
-                  ? Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: colorScheme.onSecondary,
-                      ),
-                    )
-                  : Icon(
-                      _isListening ? Icons.stop : Icons.mic,
-                      color: colorScheme.onPrimary,
-                      size: 32,
+            builder: (_, __) {
+              final scale = _isListening ? _pulseAnimation.value : 1.0;
+              final opacity = _isListening
+                  ? (1.0 - (_pulseAnimation.value - 1.0) * 0.6)
+                  : 1.0;
+              return Opacity(
+                opacity: opacity.clamp(0.85, 1.0),
+                child: Transform.scale(
+                  scale: scale,
+                  child: Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _isTranscribing
+                          ? AppColors.accent
+                          : AppColors.primary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: (_isTranscribing
+                                  ? AppColors.accent
+                                  : AppColors.primary)
+                              .withValues(alpha: _isListening ? 0.5 : 0.25),
+                          blurRadius: _isListening ? 26 : 12,
+                          spreadRadius: _isListening ? 4 : 0,
+                        ),
+                      ],
                     ),
-            ),
+                    child: _isTranscribing
+                        ? const Padding(
+                            padding: EdgeInsets.all(AppSpacing.lg),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.textOnPrimary,
+                            ),
+                          )
+                        : Icon(
+                            _isListening ? Icons.stop : Icons.mic,
+                            color: AppColors.textOnPrimary,
+                            size: 40,
+                          ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.md),
 
-        // Status label
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: WayMotion.micro,
           child: _permissionDenied
               ? Text(
                   'Microphone permission denied. Please enable in settings.',
                   key: const ValueKey('denied'),
                   style: theme.textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.error),
+                      ?.copyWith(color: theme.colorScheme.error),
                   textAlign: TextAlign.center,
                 )
               : Text(
                   _isTranscribing
                       ? 'Transcribing…'
                       : _isListening
-                          ? 'Listening...'
+                          ? 'Listening…'
                           : 'Tap to speak',
                   key: ValueKey(_isTranscribing
                       ? 'transcribing'
                       : _isListening.toString()),
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.labelSmall,
                 ),
         ),
 
-        // Live transcription preview
         if (_liveText.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-            ),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Text(
               _liveText,
-              style: theme.textTheme.bodyMedium,
+              style: AppTypography.fraunces(
+                size: 22,
+                weight: FontWeight.w400,
+                color: theme.colorScheme.onSurface,
+                style: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
       ],
     );
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    if (_isListening) {
+      if (!_pulseController.isAnimating) {
+        _pulseController.repeat(reverse: true);
+      }
+    } else {
+      _pulseController.stop();
+      _pulseController.value = 0;
+    }
   }
 }

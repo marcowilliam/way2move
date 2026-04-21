@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/goal.dart';
 import '../providers/goal_providers.dart';
 
@@ -26,13 +29,13 @@ class _GoalDetailPageState extends ConsumerState<GoalDetailPage>
     super.initState();
     _entryController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450),
+      duration: WayMotion.settled,
     );
-    _fadeIn = CurvedAnimation(parent: _entryController, curve: Curves.easeOut);
+    _fadeIn = CurvedAnimation(parent: _entryController, curve: WayMotion.easeSettled);
     _slideIn = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _entryController, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _entryController, curve: WayMotion.easeSettled));
     _entryController.forward();
   }
 
@@ -63,77 +66,54 @@ class _GoalDetailPageState extends ConsumerState<GoalDetailPage>
           );
         }
 
+        final theme = Theme.of(context);
         return Scaffold(
           key: AppKeys.goalDetailPage,
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
-            title: Text(goal.name),
+            title: Text(
+              goal.name,
+              style: theme.textTheme.titleLarge,
+            ),
           ),
           body: FadeTransition(
             opacity: _fadeIn,
             child: SlideTransition(
               position: _slideIn,
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  _GoalProgressCard(goal: goal),
-                  const SizedBox(height: 16),
+                  _GoalProgressHero(goal: goal),
+                  const SizedBox(height: AppSpacing.xl),
                   if (goal.description.isNotEmpty) ...[
-                    const _SectionTitle(label: 'Description'),
-                    Card(
-                      elevation: 0,
-                      color: AppColors.surfaceVariant,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Text(
-                          goal.description,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
+                    Text(
+                      goal.description,
+                      style: theme.textTheme.bodyLarge,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                   if (goal.compensationIds.isNotEmpty) ...[
-                    const _SectionTitle(label: 'Linked Compensations'),
-                    _ChipRow(
+                    const _SectionTitle(label: 'Linked compensations'),
+                    _LinkedChipRow(
                       ids: goal.compensationIds,
-                      color: AppColors.accentRed,
+                      color: AppColors.severityModerate,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                   if (goal.exerciseIds.isNotEmpty) ...[
-                    const _SectionTitle(label: 'Linked Exercises'),
-                    _ChipRow(
-                      ids: goal.exerciseIds,
-                      color: AppColors.primary,
+                    const _SectionTitle(label: 'Linked exercises'),
+                    Column(
+                      children: goal.exerciseIds
+                          .map((id) => _LinkedExerciseTile(id: id))
+                          .toList(),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                   if (goal.achievedAt != null) ...[
-                    const _SectionTitle(label: 'Achievement'),
-                    Card(
-                      elevation: 0,
-                      color: AppColors.accentGreen.withValues(alpha: 0.08),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: AppColors.accentGreen.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: ListTile(
-                        leading: const Icon(Icons.check_circle,
-                            color: AppColors.accentGreen),
-                        title: const Text('Goal achieved!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.accentGreen)),
-                        subtitle: Text(_formatDate(goal.achievedAt!)),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    _AchievementCard(achievedAt: goal.achievedAt!),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
-                  if (goal.status != GoalStatus.achieved) ...[
+                  if (goal.status != GoalStatus.achieved)
                     FilledButton.icon(
                       key: AppKeys.goalMarkAchievedButton,
                       onPressed: _achieveAnimating
@@ -145,19 +125,16 @@ class _GoalDetailPageState extends ConsumerState<GoalDetailPage>
                               height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white,
+                                color: AppColors.textOnPrimary,
                               ),
                             )
                           : const Icon(Icons.check_circle_outline),
-                      label: const Text('Mark as Achieved'),
+                      label: const Text('Mark as achieved'),
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.accentGreen,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                        backgroundColor: AppColors.accent,
+                        minimumSize: const Size(double.infinity, 56),
                       ),
                     ),
-                  ],
                 ],
               ),
             ),
@@ -180,111 +157,130 @@ class _GoalDetailPageState extends ConsumerState<GoalDetailPage>
         const SnackBar(
           content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
+              Icon(Icons.check_circle, color: AppColors.textOnPrimary),
+              SizedBox(width: AppSpacing.sm),
               Text('Goal achieved!'),
             ],
           ),
-          backgroundColor: AppColors.accentGreen,
+          backgroundColor: AppColors.accent,
         ),
       ),
     );
   }
 }
 
-class _GoalProgressCard extends StatelessWidget {
+class _GoalProgressHero extends StatelessWidget {
   final Goal goal;
-  const _GoalProgressCard({required this.goal});
+  const _GoalProgressHero({required this.goal});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final progress = goal.progressFraction;
     final statusColor = _statusColor(goal.status);
 
-    return Card(
-      elevation: 0,
-      color: AppColors.surfaceVariant,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                _StatusBadge(status: goal.status, color: statusColor),
-                const Spacer(),
-                _CategoryChip(category: goal.category),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              goal.targetMetric,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  goal.currentValue.toStringAsFixed(
-                      goal.currentValue.truncateToDouble() == goal.currentValue
-                          ? 0
-                          : 1),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: statusColor,
-                      ),
-                ),
-                Text(
-                  ' / ${goal.targetValue.toStringAsFixed(goal.targetValue.truncateToDouble() == goal.targetValue ? 0 : 1)} ${goal.unit}',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0, end: progress),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, _) => ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
-                  value: value,
-                  backgroundColor: AppColors.border,
-                  valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                  minHeight: 10,
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '${(progress * 100).toStringAsFixed(0)}% complete',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
+            _CategoryChip(category: goal.category),
+            const Spacer(),
+            _StatusBadge(status: goal.status, color: statusColor),
           ],
         ),
-      ),
+        const SizedBox(height: AppSpacing.lg),
+        SizedBox(
+          width: 180,
+          height: 180,
+          child: CustomPaint(
+            painter: _HeroRingPainter(
+              progress: progress.clamp(0.0, 1.0),
+              color: statusColor,
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${(progress * 100).round()}%',
+                    style: AppTypography.fraunces(
+                      size: 52,
+                      weight: FontWeight.w700,
+                      color: theme.colorScheme.onSurface,
+                      letterSpacing: -1.5,
+                    ),
+                  ),
+                  Text(
+                    'complete',
+                    style: theme.textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          goal.targetMetric,
+          style: theme.textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          '${_format(goal.currentValue)} → ${_format(goal.targetValue)} ${goal.unit}',
+          style: AppTypography.fraunces(
+            size: 20,
+            weight: FontWeight.w400,
+            color: theme.colorScheme.onSurface,
+            style: FontStyle.italic,
+          ),
+        ),
+      ],
     );
   }
+
+  String _format(double v) =>
+      v.truncateToDouble() == v ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   Color _statusColor(GoalStatus s) {
     switch (s) {
       case GoalStatus.active:
         return AppColors.primary;
       case GoalStatus.achieved:
-        return AppColors.accentGreen;
+        return AppColors.accent;
       case GoalStatus.paused:
         return AppColors.textSecondary;
     }
   }
+}
+
+class _HeroRingPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  _HeroRingPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 8;
+
+    final bg = Paint()
+      ..color = color.withValues(alpha: 0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12;
+    canvas.drawCircle(center, radius, bg);
+
+    final fg = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    canvas.drawArc(rect, -3.14159 / 2, progress * 3.14159 * 2, false, fg);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HeroRingPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }
 
 class _StatusBadge extends StatelessWidget {
@@ -295,10 +291,13 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 4,
+        vertical: AppSpacing.xs + 1,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       child: Text(
         _label(status),
@@ -328,19 +327,20 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 4,
+        vertical: AppSpacing.xs + 1,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.border),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Text(
         category.name[0].toUpperCase() + category.name.substring(1),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+        style: theme.textTheme.labelSmall,
       ),
     );
   }
@@ -353,44 +353,130 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Text(
         label,
-        style: Theme.of(context)
-            .textTheme
-            .titleSmall
-            ?.copyWith(fontWeight: FontWeight.w700),
+        style: Theme.of(context).textTheme.titleMedium,
       ),
     );
   }
 }
 
-class _ChipRow extends StatelessWidget {
+class _LinkedChipRow extends StatelessWidget {
   final List<String> ids;
   final Color color;
-  const _ChipRow({required this.ids, required this.color});
+  const _LinkedChipRow({required this.ids, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 6,
-      runSpacing: 6,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xs + 2,
       children: ids
           .map(
-            (id) => Chip(
-              label: Text(
-                id,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: color,
-                    ),
+            (id) => Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm + 2,
+                vertical: AppSpacing.xs + 2,
               ),
-              backgroundColor: color.withValues(alpha: 0.1),
-              side: BorderSide(color: color.withValues(alpha: 0.3)),
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              ),
+              child: Text(
+                id,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _LinkedExerciseTile extends StatelessWidget {
+  final String id;
+  const _LinkedExerciseTile({required this.id});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: theme.colorScheme.outline),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.self_improvement, color: AppColors.primary),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(id, style: theme.textTheme.bodyMedium),
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AchievementCard extends StatelessWidget {
+  final DateTime achievedAt;
+  const _AchievementCard({required this.achievedAt});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.reward.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: AppColors.reward.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.emoji_events_rounded, color: AppColors.reward, size: 32),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Goal achieved',
+                  style: AppTypography.fraunces(
+                    size: 20,
+                    weight: FontWeight.w700,
+                    color: AppColors.reward,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _formatDate(achievedAt),
+                  style: AppTypography.fraunces(
+                    size: 14,
+                    weight: FontWeight.w400,
+                    color: AppColors.reward,
+                    style: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

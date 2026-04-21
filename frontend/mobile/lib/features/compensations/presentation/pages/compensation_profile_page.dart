@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/compensation.dart';
 import '../providers/compensation_provider.dart';
 import '../widgets/compensation_body_map.dart';
@@ -16,16 +17,24 @@ class CompensationProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final compensationsAsync = ref.watch(compensationStreamProvider);
 
+    final theme = Theme.of(context);
     return Scaffold(
       key: AppKeys.compensationProfilePage,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Compensation Profile'),
+        title: Text(
+          'Body awareness',
+          style: theme.textTheme.displaySmall,
+        ),
+        centerTitle: false,
+        toolbarHeight: 72,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Add compensation',
             onPressed: () => context.push(Routes.compensationAdd),
           ),
+          const SizedBox(width: AppSpacing.sm),
         ],
       ),
       body: compensationsAsync.when(
@@ -60,11 +69,10 @@ class _CompensationBody extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Body map — left 40%
         Expanded(
           flex: 4,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: AspectRatio(
               aspectRatio: 0.5,
               child: CompensationBodyMap(
@@ -75,35 +83,34 @@ class _CompensationBody extends StatelessWidget {
             ),
           ),
         ),
-        // List — right 60%
         Expanded(
           flex: 6,
           child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
             children: [
               if (active.isNotEmpty) ...[
                 _SectionHeader(
                   label: 'Active',
                   count: active.length,
-                  color: AppColors.accentRed,
+                  color: AppColors.severityModerate,
                 ),
                 ...active.map((c) => _CompensationTile(compensation: c)),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
               ],
               if (improving.isNotEmpty) ...[
                 _SectionHeader(
                   label: 'Improving',
                   count: improving.length,
-                  color: AppColors.accentGreen,
+                  color: AppColors.severityImproving,
                 ),
                 ...improving.map((c) => _CompensationTile(compensation: c)),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
               ],
               if (resolved.isNotEmpty) ...[
                 _SectionHeader(
                   label: 'Resolved',
                   count: resolved.length,
-                  color: AppColors.textSecondary,
+                  color: AppColors.severityResolved,
                 ),
                 ...resolved.map((c) => _CompensationTile(compensation: c)),
               ],
@@ -154,48 +161,50 @@ class _CompensationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      child: Card(
-        elevation: 0,
-        color: AppColors.surfaceVariant,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: () => context.push(Routes.compensationDetail(compensation.id)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                _SeverityBadge(severity: compensation.severity),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        compensation.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        _regionLabel(compensation.region),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs / 2),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        onTap: () => context.push(Routes.compensationDetail(compensation.id)),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            border: Border.all(color: theme.colorScheme.outline),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm + 2,
+          ),
+          child: Row(
+            children: [
+              _SeverityBadge(severity: compensation.severity),
+              const SizedBox(width: AppSpacing.sm + 2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      compensation.name,
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      _regionLabel(compensation.region),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
                 ),
-                const Icon(Icons.chevron_right,
-                    size: 18, color: AppColors.textSecondary),
-              ],
-            ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
           ),
         ),
       ),
@@ -220,11 +229,11 @@ class _SeverityBadge extends StatelessWidget {
   Color _severityColor(CompensationSeverity s) {
     switch (s) {
       case CompensationSeverity.mild:
-        return AppColors.secondary;
+        return AppColors.severityMild;
       case CompensationSeverity.moderate:
-        return AppColors.accent;
+        return AppColors.severityModerate;
       case CompensationSeverity.severe:
-        return AppColors.accentRed;
+        return AppColors.severitySignificant;
     }
   }
 }
@@ -235,29 +244,39 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.accessibility_new_rounded,
-                size: 72, color: AppColors.primary.withValues(alpha: 0.3)),
-            const SizedBox(height: 16),
+            Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.accessibility_new_rounded,
+                size: 48,
+                color: AppColors.accent,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               'No compensations tracked',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'Track movement imbalances to build a personalised corrective programme.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               onPressed: onAdd,
               icon: const Icon(Icons.add),

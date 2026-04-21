@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/exercise.dart';
 
 class ExerciseCard extends StatelessWidget {
@@ -16,43 +17,67 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.xs + 2,
+        AppSpacing.md,
+        AppSpacing.xs + 2,
+      ),
+      child: Hero(
+        tag: 'exercise-${exercise.id}',
+        flightShuttleBuilder: (_, __, ___, ____, _____) =>
+            _HeroShuttle(exercise: exercise),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                border: Border.all(color: theme.colorScheme.outline),
+              ),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      exercise.name,
-                      style: theme.textTheme.titleMedium,
-                      maxLines: 1,
+                  Row(
+                    children: [
+                      _RegionIcon(
+                          regions: exercise.regionTags,
+                          difficulty: exercise.difficulty),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          exercise.name,
+                          style: theme.textTheme.titleMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      _DifficultyDot(difficulty: exercise.difficulty),
+                    ],
+                  ),
+                  if (exercise.description.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xs + 2),
+                    Text(
+                      exercise.description,
+                      style: theme.textTheme.bodyMedium,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  _DifficultyBadge(difficulty: exercise.difficulty),
+                  ],
+                  if (exercise.typeTags.isNotEmpty ||
+                      exercise.regionTags.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.sm + 2),
+                    _TagRow(exercise: exercise),
+                  ],
                 ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                exercise.description,
-                style: theme.textTheme.bodyMedium,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (exercise.typeTags.isNotEmpty ||
-                  exercise.regionTags.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                _TagRow(exercise: exercise),
-              ],
-            ],
+            ),
           ),
         ),
       ),
@@ -60,34 +85,74 @@ class ExerciseCard extends StatelessWidget {
   }
 }
 
-class _DifficultyBadge extends StatelessWidget {
-  final ExerciseDifficulty difficulty;
-  const _DifficultyBadge({required this.difficulty});
+class _HeroShuttle extends StatelessWidget {
+  final Exercise exercise;
+  const _HeroShuttle({required this.exercise});
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (difficulty) {
-      ExerciseDifficulty.beginner => ('Beginner', AppColors.difficultyBeginner),
-      ExerciseDifficulty.intermediate => (
-          'Intermediate',
-          AppColors.difficultyIntermediate
-        ),
-      ExerciseDifficulty.advanced => ('Advanced', AppColors.difficultyAdvanced),
+    return Material(color: Colors.transparent, child: Container());
+  }
+}
+
+class _RegionIcon extends StatelessWidget {
+  final List<BodyRegion> regions;
+  final ExerciseDifficulty difficulty;
+  const _RegionIcon({required this.regions, required this.difficulty});
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = _iconFor(regions);
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      ),
+      child: Icon(icon, size: 18, color: AppColors.accent),
+    );
+  }
+
+  IconData _iconFor(List<BodyRegion> regions) {
+    if (regions.isEmpty) return Icons.self_improvement;
+    switch (regions.first) {
+      case BodyRegion.neck:
+        return Icons.face;
+      case BodyRegion.shoulder:
+        return Icons.open_with;
+      case BodyRegion.thoracic:
+      case BodyRegion.lumbar:
+        return Icons.straighten;
+      case BodyRegion.hip:
+        return Icons.accessibility_new;
+      case BodyRegion.core:
+        return Icons.adjust;
+      case BodyRegion.knee:
+        return Icons.directions_walk;
+      case BodyRegion.ankle:
+        return Icons.hiking;
+      case BodyRegion.fullBody:
+        return Icons.accessibility;
+    }
+  }
+}
+
+class _DifficultyDot extends StatelessWidget {
+  final ExerciseDifficulty difficulty;
+  const _DifficultyDot({required this.difficulty});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (difficulty) {
+      ExerciseDifficulty.beginner => AppColors.accent,
+      ExerciseDifficulty.intermediate => AppColors.warning,
+      ExerciseDifficulty.advanced => AppColors.primary,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }
@@ -99,19 +164,18 @@ class _TagRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tags = [
-      ...exercise.typeTags.map((t) => _tagLabel(t.name)),
-      ...exercise.regionTags.map((t) => _tagLabel(t.name)),
+      ...exercise.typeTags.map((t) => _humanize(t.name)),
+      ...exercise.regionTags.map((t) => _humanize(t.name)),
     ];
 
     return Wrap(
-      spacing: 6,
-      runSpacing: 4,
-      children: tags.take(4).map((label) => _Chip(label: label)).toList(),
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xs,
+      children: tags.take(3).map((label) => _TagPill(label: label)).toList(),
     );
   }
 
-  String _tagLabel(String name) {
-    // Convert camelCase to Title Case
+  String _humanize(String name) {
     final result = StringBuffer();
     for (var i = 0; i < name.length; i++) {
       if (i > 0 && name[i] == name[i].toUpperCase()) {
@@ -123,24 +187,29 @@ class _TagRow extends StatelessWidget {
   }
 }
 
-class _Chip extends StatelessWidget {
+class _TagPill extends StatelessWidget {
   final String label;
-  const _Chip({required this.label});
+  const _TagPill({required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(6),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.45)),
       ),
       child: Text(
         label,
         style: const TextStyle(
           fontSize: 11,
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w500,
+          color: AppColors.accent,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
         ),
       ),
     );

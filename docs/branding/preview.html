@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Way2Move — Brand Identity Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #C4622D;
+    --primary-dark: #9B4A1F;
+    --primary-light: #E89062;
+    --accent: #7A9B76;
+    --accent-light: #C4D5BE;
+    --reward: #D4A84B;
+    --bg: #FAF6F0;
+    --surface: #FFFDFA;
+    --surface-raised: #F5EDE1;
+    --bg-dark: #1A1612;
+    --surface-dark: #25201B;
+    --text: #1F1815;
+    --text-secondary: #716660;
+    --text-dim: #B8ADA6;
+    --border: #EAE2D5;
+    --error: #BE4A3A;
+    --warning: #D99434;
+    --info: #5A7A96;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 48px 32px 96px;
+    line-height: 1.5;
+  }
+  .hero {
+    text-align: center;
+    padding: 48px 0 64px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+  .hero img { width: 260px; margin-bottom: 24px; }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 44px;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .hero .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 20px;
+  }
+  .container { max-width: 1120px; margin: 0 auto; }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: -0.5px;
+    margin-top: 64px;
+    margin-bottom: 8px;
+  }
+  h2 .n {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--surface);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    text-align: center;
+    line-height: 40px;
+    margin-right: 12px;
+    vertical-align: 3px;
+  }
+  h2 + .lede {
+    color: var(--text-secondary);
+    margin: 0 0 32px 52px;
+    max-width: 640px;
+  }
+
+  /* ── Logo test sheet ── */
+  .logo-sheet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .logo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 20px 20px;
+    text-align: center;
+  }
+  .logo-card.dark {
+    background: var(--bg-dark);
+    border-color: transparent;
+    color: #F5EFE7;
+  }
+  .logo-card img { max-width: 100%; height: auto; }
+  .logo-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 20px;
+  }
+  .logo-card.dark .label { color: #A89D94; }
+
+  .size-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  /* ── Color chips ── */
+  .colors { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .chip {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .chip .swatch {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    color: var(--surface);
+    font-weight: 600;
+    font-size: 13px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .chip .swatch.dark-text { color: var(--text); text-shadow: none; }
+  .chip .meta {
+    padding: 12px 16px;
+    background: var(--surface);
+  }
+  .chip .name { font-weight: 600; font-size: 14px; }
+  .chip .hex { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary); }
+
+  /* ── Type scale ── */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 24px;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row .label {
+    width: 140px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .type-display-large { font-family: 'Fraunces', serif; font-size: 52px; font-weight: 700; letter-spacing: -1px; }
+  .type-display-medium { font-family: 'Fraunces', serif; font-size: 40px; font-weight: 700; letter-spacing: -0.5px; }
+  .type-display-small { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; letter-spacing: -0.3px; }
+  .type-headline-large { font-size: 28px; font-weight: 700; letter-spacing: -0.2px; }
+  .type-headline-medium { font-size: 22px; font-weight: 700; }
+  .type-headline-small { font-size: 18px; font-weight: 700; }
+  .type-title-large { font-size: 17px; font-weight: 600; }
+  .type-title-medium { font-size: 15px; font-weight: 600; }
+  .type-body-large { font-size: 16px; font-weight: 400; }
+  .type-body-medium { font-size: 14px; font-weight: 400; }
+  .type-label-large { font-size: 13px; font-weight: 600; letter-spacing: 0.4px; }
+
+  /* ── Components ── */
+  .component-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+  .btn {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--primary); color: var(--surface); }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--accent); color: var(--surface); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-danger { background: var(--error); color: var(--surface); }
+  .btn-disabled { background: var(--border); color: var(--text-dim); cursor: not-allowed; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .pill-primary { background: rgba(196, 98, 45, 0.12); color: var(--primary); }
+  .pill-sage { background: rgba(122, 155, 118, 0.15); color: var(--accent); }
+  .pill-outline { border: 1.5px solid var(--border); color: var(--text-secondary); }
+  .pill-reward { background: rgba(212, 168, 75, 0.15); color: #8F6B20; }
+
+  .input {
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--text);
+    width: 240px;
+  }
+  .input:focus { outline: none; border-color: var(--primary); }
+
+  .card-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    width: 320px;
+  }
+  .card-demo h4 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .card-demo .meta { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+
+  .severity-bar { display: flex; gap: 4px; }
+  .severity-bar .seg { height: 6px; flex: 1; border-radius: 3px; background: var(--border); }
+  .severity-bar .seg.active { background: var(--primary); }
+  .severity-bar.sage .seg.active { background: var(--accent); }
+  .severity-bar.honey .seg.active { background: var(--warning); }
+
+  /* ── Motion demo ── */
+  @keyframes breath {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.04); opacity: 0.85; }
+  }
+  .mic-breath {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--surface);
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: breath 2.4s ease-in-out infinite;
+  }
+
+  /* ── Layout helpers ── */
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 96px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img src="logo/logo-stacked.svg" alt="Way2Move logo">
+</div>
+
+<div class="container">
+
+<h2><span class="n">1</span>Logo system</h2>
+<p class="lede">A single continuous stroke — base (the ground), diagonal (the step), arch (the body's arc). Upright and grounded, in contrast to Way2Fly's swept, tilted mark.</p>
+
+<div class="logo-sheet">
+  <div class="logo-card"><img src="logo/mark.svg" style="width: 180px"><div class="label">Mark — terracotta</div></div>
+  <div class="logo-card dark"><img src="logo/mark-dark.svg" style="width: 180px"><div class="label">Mark — reversed</div></div>
+  <div class="logo-card"><img src="logo/app-icon.svg" style="width: 180px"><div class="label">App icon — light</div></div>
+  <div class="logo-card dark"><img src="logo/app-icon-dark.svg" style="width: 180px"><div class="label">App icon — dark</div></div>
+  <div class="logo-card"><img src="logo/wordmark.svg" style="width: 240px"><div class="label">Wordmark</div></div>
+  <div class="logo-card"><img src="logo/logo-full-horizontal.svg" style="width: 280px"><div class="label">Full horizontal</div></div>
+</div>
+
+<div class="logo-card" style="margin-top:20px">
+  <div class="size-row">
+    <img src="logo/app-icon.svg" style="width: 40px; height: 40px">
+    <img src="logo/app-icon.svg" style="width: 64px; height: 64px">
+    <img src="logo/app-icon.svg" style="width: 96px; height: 96px">
+    <img src="logo/app-icon.svg" style="width: 128px; height: 128px">
+  </div>
+  <div class="label">App icon — scale test (40 / 64 / 96 / 128 px)</div>
+</div>
+
+
+<h2><span class="n">2</span>Color system</h2>
+<p class="lede">Terracotta is the workhorse (actions). Sage is the body-awareness confirmation (good, improving). Soft Gold is reserved for rare milestones. Warm linen background instead of pure white keeps the light mode feeling organic, not clinical.</p>
+
+<div class="colors">
+  <div class="chip"><div class="swatch" style="background: #C4622D"></div><div class="meta"><div class="name">Terracotta</div><div class="hex">#C4622D — primary</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #9B4A1F"></div><div class="meta"><div class="name">Burnt Umber</div><div class="hex">#9B4A1F — primary dark</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #E89062"></div><div class="meta"><div class="name">Peach Sand</div><div class="hex">#E89062 — primary light</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #7A9B76"></div><div class="meta"><div class="name">Sage</div><div class="hex">#7A9B76 — accent</div></div></div>
+  <div class="chip"><div class="swatch dark-text" style="background: #C4D5BE"></div><div class="meta"><div class="name">Mist Sage</div><div class="hex">#C4D5BE — resolved</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #D4A84B"></div><div class="meta"><div class="name">Soft Gold</div><div class="hex">#D4A84B — reward</div></div></div>
+  <div class="chip"><div class="swatch dark-text" style="background: #FAF6F0"></div><div class="meta"><div class="name">Warm Linen</div><div class="hex">#FAF6F0 — bg (light)</div></div></div>
+  <div class="chip"><div class="swatch dark-text" style="background: #FFFDFA"></div><div class="meta"><div class="name">Off-White</div><div class="hex">#FFFDFA — surface</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #1A1612"></div><div class="meta"><div class="name">Warm Charcoal</div><div class="hex">#1A1612 — bg (dark)</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #25201B"></div><div class="meta"><div class="name">Espresso</div><div class="hex">#25201B — surface (dark)</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #1F1815"></div><div class="meta"><div class="name">Espresso Ink</div><div class="hex">#1F1815 — text</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #716660"></div><div class="meta"><div class="name">Stone</div><div class="hex">#716660 — text secondary</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #BE4A3A"></div><div class="meta"><div class="name">Clay Red</div><div class="hex">#BE4A3A — error</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #D99434"></div><div class="meta"><div class="name">Honey</div><div class="hex">#D99434 — warning</div></div></div>
+  <div class="chip"><div class="swatch" style="background: #5A7A96"></div><div class="meta"><div class="name">Dusk Blue</div><div class="hex">#5A7A96 — info</div></div></div>
+  <div class="chip"><div class="swatch dark-text" style="background: #EAE2D5"></div><div class="meta"><div class="name">Fog</div><div class="hex">#EAE2D5 — border</div></div></div>
+</div>
+
+
+<h2><span class="n">3</span>Typography</h2>
+<p class="lede">Fraunces (serif) for display moments — it brings an editorial warmth that fits body awareness and journaling. Manrope (sans) everywhere else — modern humanist curves that harmonize with Fraunces and stay legible at UI sizes.</p>
+
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px;">
+  <div class="type-row"><div class="label">Display L</div><div class="type-display-large">Good morning, Marco.</div></div>
+  <div class="type-row"><div class="label">Display M</div><div class="type-display-medium">Session complete.</div></div>
+  <div class="type-row"><div class="label">Display S</div><div class="type-display-small">How'd you sleep?</div></div>
+  <div class="type-row"><div class="label">Fraunces italic</div><div style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: 22px;">How are you this morning?</div></div>
+  <div class="type-row"><div class="label">Headline L</div><div class="type-headline-large">Movement Assessment</div></div>
+  <div class="type-row"><div class="label">Headline M</div><div class="type-headline-medium">Active compensations</div></div>
+  <div class="type-row"><div class="label">Title L</div><div class="type-title-large">Thoracic extension — band assisted</div></div>
+  <div class="type-row"><div class="label">Body L</div><div class="type-body-large">Sit tall, knees over ankles, breathe into your lower back. Hold for 90 seconds.</div></div>
+  <div class="type-row"><div class="label">Label L</div><div class="type-label-large" style="text-transform: uppercase">TRAINING · 8 MIN</div></div>
+</div>
+
+
+<h2><span class="n">4</span>Buttons</h2>
+<div class="component-row">
+  <button class="btn btn-primary">Start session</button>
+  <button class="btn btn-secondary">Mark as improving</button>
+  <button class="btn btn-ghost">View later</button>
+  <button class="btn btn-danger">Deactivate program</button>
+  <button class="btn btn-disabled" disabled>Save</button>
+</div>
+
+<h2><span class="n">5</span>Pills &amp; tags</h2>
+<div class="component-row">
+  <span class="pill pill-primary">Terracotta — active state</span>
+  <span class="pill pill-sage">Sage — improving</span>
+  <span class="pill pill-outline">Outline — neutral</span>
+  <span class="pill pill-reward">Soft Gold — milestone</span>
+  <span class="pill" style="background: rgba(190, 74, 58, 0.1); color: var(--error)">Clay — significant</span>
+</div>
+
+<h2><span class="n">6</span>Inputs</h2>
+<div class="component-row">
+  <input class="input" placeholder="your.email@example.com">
+  <input class="input" placeholder="password" type="password">
+</div>
+
+<h2><span class="n">7</span>Cards</h2>
+<div class="row">
+  <div class="card-demo">
+    <div class="meta">TODAY · MONDAY</div>
+    <h4>Foundation — Lower Body</h4>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px">6 exercises · ~42 min</p>
+    <button class="btn btn-primary" style="width: 100%; justify-content: center">Start session</button>
+  </div>
+
+  <div class="card-demo" style="border-left: 4px solid var(--primary)">
+    <div class="meta"><span class="pill pill-primary" style="padding: 2px 8px; font-size: 11px">MILD</span></div>
+    <h4 style="margin-top: 8px">Forward head posture</h4>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 8px">Detected from desk sitting &amp; AI movement analysis</p>
+    <div class="severity-bar" style="margin-bottom: 12px"><div class="seg active"></div><div class="seg"></div><div class="seg"></div></div>
+    <div style="font-size: 12px; color: var(--text-secondary)">LINKED TO: Deep cervical flexor goal</div>
+  </div>
+
+  <div class="card-demo" style="border-left: 4px solid var(--accent)">
+    <h4>Deep squat hold · 2 min</h4>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px">45s → 2:00 target</p>
+    <div style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden"><div style="width: 37%; height: 100%; background: var(--accent)"></div></div>
+    <div style="margin-top: 8px; font-size: 12px; color: var(--accent); font-weight: 600">IMPROVING · 37%</div>
+  </div>
+</div>
+
+
+<h2><span class="n">8</span>Motion — "Breath, not bounce"</h2>
+<p class="lede">Where Way2Fly snaps, Way2Move breathes. The mic button in journal-entry mode is the archetype — a slow, calm pulse over 2.4 seconds.</p>
+
+<div class="component-row" style="justify-content: center; padding: 48px">
+  <div class="mic-breath">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  </div>
+</div>
+
+<div class="footer">
+  Way2Move — Brand identity v1 · 2026-04-21 · <em>Train from the ground up.</em>
+</div>
+
+</div>
+</body>
+</html>

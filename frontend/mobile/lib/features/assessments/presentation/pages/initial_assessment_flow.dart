@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/assessment.dart';
 import '../../domain/services/compensation_detection_service.dart';
 import '../providers/assessment_providers.dart';
@@ -284,34 +288,48 @@ class _InitialAssessmentFlowState extends ConsumerState<InitialAssessmentFlow> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final theme = Theme.of(context);
     final showBack = _currentStep > 0 && _currentStep < 5;
-    final showProgress = _currentStep > 0 && _currentStep < 5;
-    final progressValue = _currentStep / 4; // steps 1-4 out of 4
+    final showDots = _currentStep > 0 && _currentStep < 5;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
       child: Row(
         children: [
           if (showBack)
             IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
               onPressed: _prevStep,
+              color: theme.colorScheme.onSurface,
             )
           else
-            const SizedBox(width: 48),
-          if (showProgress)
+            const SizedBox(width: AppSpacing.minTapTarget),
+          if (showDots)
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progressValue,
-                  minHeight: 4,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 1; i <= 4; i++)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: AnimatedContainer(
+                        duration: WayMotion.standard,
+                        width: i <= _currentStep ? 24 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: i <= _currentStep
+                              ? AppColors.primary
+                              : theme.colorScheme.outline,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             )
           else
@@ -322,7 +340,7 @@ class _InitialAssessmentFlowState extends ConsumerState<InitialAssessmentFlow> {
               child: const Text('Skip'),
             )
           else
-            const SizedBox(width: 48),
+            const SizedBox(width: AppSpacing.minTapTarget),
         ],
       ),
     );
@@ -339,52 +357,70 @@ class _StepIntro extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 96,
+            height: 96,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
+              color: AppColors.accent.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.accessibility_new_rounded,
-              size: 52,
-              color: theme.colorScheme.onPrimaryContainer,
+              size: 48,
+              color: AppColors.accent,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xl),
           Text(
             'Movement Assessment',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: theme.textTheme.displaySmall,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
-            'Answer a few quick questions to identify your movement patterns and build a personalised corrective program.',
-            style: theme.textTheme.bodyLarge?.copyWith(
+            'A few quiet questions to find your movement patterns.',
+            style: AppTypography.fraunces(
+              size: 18,
+              weight: FontWeight.w400,
               color: theme.colorScheme.onSurfaceVariant,
+              style: FontStyle.italic,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          const Chip(
-            avatar: Icon(Icons.timer_outlined, size: 16),
-            label: Text('About 2 minutes'),
+          const SizedBox(height: AppSpacing.md),
+          Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md, vertical: AppSpacing.xs + 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              border: Border.all(color: theme.colorScheme.outline),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: 14,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.xs + 2),
+                Text(
+                  'About 2 minutes',
+                  style: theme.textTheme.labelSmall,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: AppSpacing.xxl),
           FilledButton(
             onPressed: onStart,
             style: FilledButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
+              minimumSize: const Size(double.infinity, 56),
             ),
             child: const Text('Start Assessment'),
           ),
@@ -661,132 +697,144 @@ class _StepResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scoreColor = overallScore >= 8
-        ? Colors.green
-        : overallScore >= 6
-            ? Colors.orange
-            : Colors.red;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: Column(
               children: [
-                const SizedBox(height: 8),
                 Text(
-                  'Your Movement Profile',
-                  style: theme.textTheme.headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  'Your movement profile',
+                  style: theme.textTheme.titleLarge,
                 ),
-                const SizedBox(height: 24),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: CircularProgressIndicator(
-                        value: overallScore / 10,
-                        strokeWidth: 10,
-                        backgroundColor:
-                            theme.colorScheme.surfaceContainerHighest,
-                        valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
+                const SizedBox(height: AppSpacing.lg),
+                SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: CustomPaint(
+                    painter: _ScoreRingPainter(value: overallScore / 10),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            overallScore.toStringAsFixed(1),
+                            style: AppTypography.fraunces(
+                              size: 52,
+                              weight: FontWeight.w700,
+                              color: theme.colorScheme.onSurface,
+                              letterSpacing: -1.5,
+                            ),
+                          ),
+                          Text(
+                            'out of 10',
+                            style: theme.textTheme.labelSmall,
+                          ),
+                        ],
                       ),
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          overallScore.toStringAsFixed(1),
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: scoreColor,
-                          ),
-                        ),
-                        Text(
-                          '/ 10',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 8),
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          if (patterns.isEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          if (patterns.isEmpty)
             const _ResultBanner(
               icon: Icons.check_circle_outline_rounded,
-              color: Colors.green,
+              color: AppColors.accent,
               title: 'No significant patterns found',
               subtitle:
-                  'Your movement profile looks solid! Keep up the good work.',
-            ),
-          ] else ...[
+                  'Your movement profile looks solid. Keep up the good work.',
+            )
+          else ...[
             Text(
-              'Detected patterns (${patterns.length})',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              'Detected patterns',
+              style: theme.textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + 4),
             ...patterns.map((p) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: _PatternTile(pattern: p),
                 )),
-            const SizedBox(height: 8),
-            _ResultBanner(
+            const SizedBox(height: AppSpacing.sm),
+            const _ResultBanner(
               icon: Icons.lightbulb_outline_rounded,
-              color: theme.colorScheme.primary,
+              color: AppColors.primary,
               title: 'Corrective exercises are ready',
               subtitle:
                   'Build your personalised program to address these patterns.',
             ),
           ],
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xl),
           if (saving)
             const Center(child: CircularProgressIndicator())
           else ...[
             FilledButton(
               onPressed: onBuildProgram,
               style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                minimumSize: const Size(double.infinity, 56),
               ),
-              child: const Text('Build My Program'),
+              child: const Text('Build my program'),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + 4),
             OutlinedButton.icon(
               onPressed: onRecordVideo,
               icon: const Icon(Icons.videocam_outlined),
-              label: const Text('Record Movement Video'),
+              label: const Text('Record movement video'),
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                minimumSize: const Size(double.infinity, 56),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + 4),
             TextButton(
               onPressed: onSaveOnly,
               style: TextButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
+                minimumSize: const Size(double.infinity, AppSpacing.minTapTarget),
               ),
-              child: const Text('Save & Continue'),
+              child: const Text('Save & continue'),
             ),
           ],
         ],
       ),
     );
   }
+}
+
+class _ScoreRingPainter extends CustomPainter {
+  final double value;
+  _ScoreRingPainter({required this.value});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width / 2) - 6;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final bg = Paint()
+      ..color = AppColors.primary.withValues(alpha: 0.10)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10;
+    canvas.drawCircle(center, radius, bg);
+
+    final sweep = value.clamp(0.0, 1.0) * 3.14159 * 2;
+    final fg = Paint()
+      ..shader = const SweepGradient(
+        colors: [AppColors.primary, AppColors.accent],
+      ).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(rect, -3.14159 / 2, sweep, false, fg);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScoreRingPainter oldDelegate) =>
+      oldDelegate.value != value;
 }
 
 // ── Reusable sub-widgets ──────────────────────────────────────────────────────
@@ -808,37 +856,41 @@ class _QuestionScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             question,
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: AppTypography.fraunces(
+              size: 24,
+              weight: FontWeight.w400,
+              color: theme.colorScheme.onSurface,
+              style: FontStyle.italic,
+            ),
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               subtitle!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: theme.textTheme.bodyMedium,
             ),
           ],
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
           Expanded(child: SingleChildScrollView(child: child)),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           AnimatedOpacity(
             opacity: onNext != null ? 1.0 : 0.4,
-            duration: const Duration(milliseconds: 200),
+            duration: WayMotion.micro,
             child: FilledButton(
               onPressed: onNext,
               style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                minimumSize: const Size(double.infinity, 56),
               ),
               child: const Text('Continue'),
             ),
@@ -865,42 +917,74 @@ class _OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: BoxDecoration(
-        color: selected
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: selected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.outlineVariant,
-          width: selected ? 2 : 1,
-        ),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(
-          icon,
-          color: selected
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onSurfaceVariant,
-        ),
-        title: Text(
-          label,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-            color: selected
-                ? theme.colorScheme.onPrimaryContainer
-                : theme.colorScheme.onSurface,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: WayMotion.standard,
+            curve: WayMotion.easeStandard,
+            padding: EdgeInsets.fromLTRB(
+              selected ? AppSpacing.md + 4 : AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              border: Border.all(
+                color: selected
+                    ? AppColors.primary
+                    : theme.colorScheme.outline,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: selected
+                      ? AppColors.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: selected
+                          ? AppColors.primary
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                if (selected)
+                  const Icon(
+                    Icons.check_circle,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+              ],
+            ),
           ),
-        ),
-        trailing: selected
-            ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
-            : null,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          if (selected)
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: 0,
+              child: Container(
+                width: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(AppSpacing.radiusMd),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -936,27 +1020,42 @@ class _PatternTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withAlpha(60),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: theme.colorScheme.error.withAlpha(80),
-        ),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            size: 18,
-            color: theme.colorScheme.error,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  CompensationDetectionService.labelFor(pattern),
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
+              Text(
+                'Moderate',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.severityModerate,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              CompensationDetectionService.labelFor(pattern),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+          const SizedBox(height: AppSpacing.sm),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Container(
+              height: 6,
+              color: theme.colorScheme.outlineVariant,
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: 0.6,
+                child: Container(color: AppColors.severityModerate),
               ),
             ),
           ),
@@ -983,32 +1082,29 @@ class _ResultBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withAlpha(20),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withAlpha(60)),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: color, size: 22),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm + 4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
             ),

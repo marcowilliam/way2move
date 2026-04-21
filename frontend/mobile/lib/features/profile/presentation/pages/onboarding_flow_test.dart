@@ -55,13 +55,14 @@ void main() {
   });
 
   group('OnboardingFlow', () {
-    testWidgets('shows welcome screen with Welcome title', (tester) async {
+    testWidgets('shows welcome screen with Fraunces centerpiece and Begin CTA',
+        (tester) async {
       await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
       await tester.pumpAndSettle();
 
       expect(find.byKey(AppKeys.onboardingFlow), findsOneWidget);
-      expect(find.text('Welcome to Way2Move'), findsOneWidget);
-      expect(find.text('Continue'), findsOneWidget);
+      expect(find.text("Let's build\nthe foundation."), findsOneWidget);
+      expect(find.text('Begin'), findsOneWidget);
     });
 
     testWidgets('tapping Continue advances to basic info step', (tester) async {
@@ -102,7 +103,7 @@ void main() {
       await tester.tap(find.byKey(AppKeys.onboardingBackButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('Welcome to Way2Move'), findsOneWidget);
+      expect(find.text("Let's build\nthe foundation."), findsOneWidget);
     });
 
     testWidgets('goal step shows all training goal options', (tester) async {

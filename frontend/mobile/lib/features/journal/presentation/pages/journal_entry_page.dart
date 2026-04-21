@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/journal_entry.dart';
 import '../../domain/services/entity_extraction_service.dart';
@@ -175,17 +178,21 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       key: AppKeys.journalEntryPage,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(_title),
-        centerTitle: true,
+        elevation: 0,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        title: Text(
+          _title,
+          style: theme.textTheme.titleLarge,
+        ),
         actions: [
           if (_isSaving)
             const Padding(
-              padding: EdgeInsets.only(right: 16),
+              padding: EdgeInsets.only(right: AppSpacing.md),
               child: Center(
                 child: SizedBox(
                   width: 20,
@@ -203,38 +210,54 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         children: [
-          // Contextual prompt
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
-            ),
+          Center(
             child: Text(
               _prompt,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colorScheme.onPrimaryContainer,
+              style: AppTypography.fraunces(
+                size: 26,
+                weight: FontWeight.w400,
+                color: theme.colorScheme.onSurface,
+                style: FontStyle.italic,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Linked session indicator
+          const SizedBox(height: AppSpacing.xl),
           if (widget.linkedSessionId != null) ...[
-            Chip(
-              avatar: const Icon(Icons.link, size: 16),
-              label: const Text('Linked to today\'s session'),
-              backgroundColor: colorScheme.secondaryContainer,
-              labelStyle: TextStyle(color: colorScheme.onSecondaryContainer),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm + 4,
+                  vertical: AppSpacing.xs + 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.link, size: 14, color: AppColors.accent),
+                    const SizedBox(width: AppSpacing.xs + 2),
+                    Text(
+                      'Linked to today\'s session',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
           ],
 
-          // Voice input — simultaneously transcribes and records audio.
           Center(
             child: VoiceInputWidget(
               onTranscription: (text) {
@@ -251,47 +274,42 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             ),
           ),
 
-          // Audio recording indicator
           if (_recordedAudioPath != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.audio_file, size: 14, color: Colors.green),
-                const SizedBox(width: 4),
+                const Icon(Icons.audio_file,
+                    size: 14, color: AppColors.accent),
+                const SizedBox(width: AppSpacing.xs),
                 Text(
                   'Audio recorded — will upload with entry',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.green,
-                      ),
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(color: AppColors.accent),
                 ),
               ],
             ),
           ],
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Text field (mirrors voice transcription, also directly editable)
           TextField(
             key: AppKeys.journalContentField,
             controller: _contentController,
             maxLines: 6,
-            minLines: 4,
-            decoration: InputDecoration(
-              hintText: 'Type or speak your entry...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerLowest,
+            minLines: 3,
+            decoration: const InputDecoration(
+              hintText: 'Or type your entry…',
             ),
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Mood selector
-          Text('Mood (optional)', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 8),
+          Text(
+            'Mood',
+            style: theme.textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(5, (i) {
@@ -301,15 +319,17 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
                 onTap: () => setState(() => _mood = selected ? null : value),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: selected
-                        ? colorScheme.primaryContainer
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
-                    border: selected
-                        ? Border.all(color: colorScheme.primary, width: 2)
-                        : null,
+                        ? AppColors.primary.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.primary
+                          : theme.colorScheme.outline,
+                    ),
                   ),
                   child: Text(
                     _moodEmojis[i],
@@ -320,14 +340,17 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             }),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Energy level
-          Text('Energy level (optional)', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 4),
+          Text(
+            'Energy',
+            style: theme.textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
-              const Icon(Icons.battery_0_bar, size: 20),
+              Icon(Icons.battery_0_bar,
+                  size: 18, color: theme.colorScheme.onSurfaceVariant),
               Expanded(
                 child: Slider(
                   value: (_energyLevel ?? 3).toDouble(),
@@ -335,21 +358,25 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
                   max: 5,
                   divisions: 4,
                   label: _energyLevel?.toString() ?? '3',
+                  activeColor: AppColors.primary,
                   onChanged: (v) => setState(() => _energyLevel = v.round()),
                 ),
               ),
-              const Icon(Icons.battery_full, size: 20),
+              Icon(Icons.battery_full,
+                  size: 18, color: theme.colorScheme.onSurfaceVariant),
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Pain points
-          Text('Pain points (optional)', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 8),
+          Text(
+            'Pain points',
+            style: theme.textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: _painPointOptions.map((point) {
               final selected = _painPoints.contains(point);
               return FilterChip(
@@ -368,16 +395,18 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             }).toList(),
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xl),
 
-          // Save button
           FilledButton(
             key: AppKeys.journalSaveButton,
             onPressed: _isSaving ? null : _save,
-            child: const Text('Save Journal Entry'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+            ),
+            child: const Text('Save entry'),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );

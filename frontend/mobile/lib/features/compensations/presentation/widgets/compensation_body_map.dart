@@ -27,22 +27,22 @@ const Map<CompensationRegion, Offset> _regionOffsets = {
 Color _severityColor(CompensationSeverity severity) {
   switch (severity) {
     case CompensationSeverity.mild:
-      return AppColors.secondary;
+      return AppColors.severityMild;
     case CompensationSeverity.moderate:
-      return AppColors.accent;
+      return AppColors.severityModerate;
     case CompensationSeverity.severe:
-      return AppColors.accentRed;
+      return AppColors.severitySignificant;
   }
 }
 
-Color _statusBorder(CompensationStatus status) {
+Color _statusGlow(CompensationStatus status, CompensationSeverity severity) {
   switch (status) {
     case CompensationStatus.active:
-      return Colors.transparent;
+      return _severityColor(severity);
     case CompensationStatus.improving:
-      return AppColors.accentGreen;
+      return AppColors.severityImproving;
     case CompensationStatus.resolved:
-      return AppColors.primary;
+      return AppColors.severityResolved;
   }
 }
 
@@ -108,8 +108,12 @@ class _CompensationDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fillColor = _severityColor(compensation.severity);
-    final borderColor = _statusBorder(compensation.status);
+    final glow = _statusGlow(compensation.status, compensation.severity);
+    final opacity = switch (compensation.status) {
+      CompensationStatus.active => 0.85,
+      CompensationStatus.improving => 0.75,
+      CompensationStatus.resolved => 0.5,
+    };
 
     return GestureDetector(
       onTap: onTap,
@@ -118,23 +122,19 @@ class _CompensationDot extends StatelessWidget {
         width: 28,
         height: 28,
         decoration: BoxDecoration(
-          color: fillColor.withValues(
-              alpha: compensation.status == CompensationStatus.resolved
-                  ? 0.35
-                  : 0.85),
+          color: glow.withValues(alpha: opacity),
           shape: BoxShape.circle,
-          border: Border.all(color: borderColor, width: 2.5),
           boxShadow: [
             BoxShadow(
-              color: fillColor.withValues(alpha: 0.4),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: glow.withValues(alpha: 0.5),
+              blurRadius: 14,
+              spreadRadius: 2,
             ),
           ],
         ),
         child: Icon(
           _statusIcon(compensation.status),
-          color: Colors.white,
+          color: AppColors.textOnPrimary,
           size: 14,
         ),
       ),
@@ -144,7 +144,7 @@ class _CompensationDot extends StatelessWidget {
   IconData _statusIcon(CompensationStatus status) {
     switch (status) {
       case CompensationStatus.active:
-        return Icons.warning_rounded;
+        return Icons.circle;
       case CompensationStatus.improving:
         return Icons.trending_up_rounded;
       case CompensationStatus.resolved:
@@ -158,10 +158,10 @@ class _BodySilhouettePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.surfaceVariant
+      ..color = AppColors.surfaceRaisedDark.withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
     final strokePaint = Paint()
-      ..color = AppColors.border
+      ..color = AppColors.accent.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 

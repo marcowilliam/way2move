@@ -41,6 +41,7 @@ dependencies:
   cached_network_image: ^3.4.1
   video_player: ^2.9.2
   fl_chart: ^0.69.0
+  google_fonts: ^6.2.1
 
   # Voice
   speech_to_text: ^7.0.0

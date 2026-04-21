@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../exercises/domain/entities/exercise.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../../../progression/domain/entities/progression_rule.dart';
@@ -38,15 +41,15 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
     super.initState();
     _celebController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: WayMotion.settled + WayMotion.standard,
     );
     _celebScale = CurvedAnimation(
       parent: _celebController,
-      curve: Curves.elasticOut,
+      curve: const Interval(0, 0.6, curve: WayMotion.easeSettled),
     );
     _fadeIn = CurvedAnimation(
       parent: _celebController,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.3, 1.0, curve: WayMotion.easeStandard),
     );
     _celebController.forward();
   }
@@ -134,88 +137,67 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
 
     return Scaffold(
       key: AppKeys.sessionSummaryPage,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Celebration icon
                     ScaleTransition(
                       scale: _celebScale,
-                      child: Container(
-                        width: 96,
-                        height: 96,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.accentGreen.withValues(alpha: 0.12),
-                        ),
-                        child: const Icon(
-                          Icons.emoji_events_rounded,
-                          size: 52,
-                          color: AppColors.accentGreen,
-                        ),
-                      ),
+                      child: _SageCheckMark(animation: _celebScale),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
                     FadeTransition(
                       opacity: _fadeIn,
                       child: Column(
                         children: [
                           Text(
                             'Workout Complete!',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: theme.textTheme.displaySmall,
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            session?.focus ?? 'Great work!',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
+                          if (session?.focus != null) ...[
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              session!.focus!,
+                              style: AppTypography.fraunces(
+                                size: 18,
+                                weight: FontWeight.w400,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                style: FontStyle.italic,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
+                          ],
                         ],
                       ),
                     ),
-                    const SizedBox(height: 28),
-                    // Stats row
+                    const SizedBox(height: AppSpacing.xl),
                     FadeTransition(
                       opacity: _fadeIn,
-                      child: Row(
-                        children: [
-                          _StatTile(
-                            label: 'Exercises',
-                            value: '${completedBlocks.length}',
-                          ),
-                          _StatTile(
-                            label: 'Sets Done',
-                            value: '$totalSets',
-                          ),
-                          _StatTile(
-                            label: 'Duration',
-                            value: session?.durationMinutes != null
-                                ? '${session!.durationMinutes}m'
-                                : '--',
-                          ),
-                        ],
+                      child: _StatsRow(
+                        exercises: completedBlocks.length,
+                        sets: totalSets,
+                        duration: session?.durationMinutes,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: AppSpacing.xl),
                     if (session?.notes?.isNotEmpty == true) ...[
                       FadeTransition(
                         opacity: _fadeIn,
                         child: _NotesCard(notes: session!.notes!),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                     ],
                   ],
                 ),
@@ -223,7 +205,7 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
             ),
             if (session != null && completedBlocks.isNotEmpty)
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -237,11 +219,14 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
                   ),
                 ),
               ),
-            // Progression suggestions
             if (_suggestions.isNotEmpty)
               SliverPadding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -251,7 +236,8 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
                         return const SizedBox.shrink();
                       }
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding:
+                            const EdgeInsets.only(bottom: AppSpacing.sm + 4),
                         child: ProgressionSuggestionCard(
                           suggestion: suggestion,
                           onAccept: () {
@@ -277,17 +263,19 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
           child: FilledButton(
             key: AppKeys.sessionDoneButton,
             onPressed: () => context.go(Routes.home),
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
+              minimumSize: const Size.fromHeight(56),
             ),
-            child: const Text('Back to Home'),
+            child: const Text('Back to home'),
           ),
         ),
       ),
@@ -295,41 +283,140 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
   }
 }
 
-class _StatTile extends StatelessWidget {
-  final String label;
-  final String value;
-  const _StatTile({required this.label, required this.value});
+class _SageCheckMark extends StatelessWidget {
+  final Animation<double> animation;
+  const _SageCheckMark({required this.animation});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (_, __) {
+        return SizedBox(
+          width: 96,
+          height: 96,
+          child: CustomPaint(
+            painter: _CheckPainter(progress: animation.value),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CheckPainter extends CustomPainter {
+  final double progress;
+  _CheckPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final ringPaint = Paint()
+      ..color = AppColors.accent.withValues(alpha: 0.25)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      size.width / 2 - 2,
+      ringPaint,
+    );
+
+    final tickPaint = Paint()
+      ..color = AppColors.accent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round;
+
+    final p1 = Offset(size.width * 0.28, size.height * 0.52);
+    final p2 = Offset(size.width * 0.44, size.height * 0.68);
+    final p3 = Offset(size.width * 0.74, size.height * 0.36);
+
+    final t = progress.clamp(0.0, 1.0);
+    if (t < 0.5) {
+      final pct = t / 0.5;
+      canvas.drawLine(
+        p1,
+        Offset.lerp(p1, p2, pct)!,
+        tickPaint,
+      );
+    } else {
+      canvas.drawLine(p1, p2, tickPaint);
+      final pct = (t - 0.5) / 0.5;
+      canvas.drawLine(
+        p2,
+        Offset.lerp(p2, p3, pct)!,
+        tickPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _CheckPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
+class _StatsRow extends StatelessWidget {
+  final int exercises;
+  final int sets;
+  final int? duration;
+
+  const _StatsRow({
+    required this.exercises,
+    required this.sets,
+    required this.duration,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(14),
+    final divider = Container(
+      width: 1,
+      height: 32,
+      color: theme.colorScheme.outline,
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _StatColumn(label: 'exercises', value: '$exercises'),
+        const SizedBox(width: AppSpacing.md),
+        divider,
+        const SizedBox(width: AppSpacing.md),
+        _StatColumn(label: 'sets', value: '$sets'),
+        const SizedBox(width: AppSpacing.md),
+        divider,
+        const SizedBox(width: AppSpacing.md),
+        _StatColumn(
+          label: 'duration',
+          value: duration != null ? '${duration}m' : '—',
         ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-          ],
+      ],
+    );
+  }
+}
+
+class _StatColumn extends StatelessWidget {
+  final String label;
+  final String value;
+  const _StatColumn({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTypography.fraunces(
+            size: 28,
+            weight: FontWeight.w700,
+            color: theme.colorScheme.onSurface,
+          ),
         ),
-      ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall,
+        ),
+      ],
     );
   }
 }
@@ -343,22 +430,20 @@ class _NotesCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(14),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Notes',
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
+            style: theme.textTheme.labelSmall,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Text(notes, style: theme.textTheme.bodyMedium),
         ],
       ),
@@ -379,50 +464,45 @@ class _ExerciseSummaryTile extends ConsumerWidget {
       orElse: () => null,
     );
 
+    final met = block.completedSetsCount >= block.plannedSets;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm + 2),
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.accentGreen.withValues(alpha: 0.12),
+              color: AppColors.accent.withValues(alpha: 0.15),
             ),
             child: const Icon(
               Icons.check,
               size: 16,
-              color: AppColors.accentGreen,
+              color: AppColors.accent,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   exercise?.name ?? block.exerciseId,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.titleMedium,
                 ),
                 Text(
                   '${block.completedSetsCount} sets done'
                   '${block.rpe != null ? ' · RPE ${block.rpe}' : ''}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
             ),
           ),
-          // Planned vs actual
           Text(
             '${block.plannedSets}→${block.completedSetsCount}',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: block.completedSetsCount >= block.plannedSets
-                  ? AppColors.accentGreen
-                  : AppColors.accentRed,
+              color: met ? AppColors.accent : AppColors.warning,
               fontWeight: FontWeight.w700,
             ),
           ),

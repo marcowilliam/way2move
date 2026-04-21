@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/exercise.dart';
 import '../providers/exercise_providers.dart';
 import '../widgets/exercise_card.dart';
@@ -26,7 +28,7 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
     super.initState();
     _listController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: WayMotion.reward,
     );
     _listController.forward();
   }
@@ -47,12 +49,17 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
     return Scaffold(
       key: AppKeys.exerciseList,
       appBar: AppBar(
-        title: const Text('Exercises'),
+        title: Text(
+          'Exercises',
+          style: theme.textTheme.displaySmall,
+        ),
+        toolbarHeight: 72,
         actions: [
           IconButton(
             icon: Badge(
               isLabelVisible: !filter.isEmpty,
-              child: const Icon(Icons.filter_list),
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.tune),
             ),
             onPressed: () => _showFilterSheet(context),
             tooltip: 'Filter',
@@ -63,33 +70,45 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
             onPressed: () => _showAddExerciseDialog(context),
             tooltip: 'Add custom exercise',
           ),
+          const SizedBox(width: AppSpacing.sm),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
             child: TextField(
               key: AppKeys.exerciseSearchField,
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search exercises...',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search exercises…',
+                prefixIcon:
+                    const Icon(Icons.search, color: AppColors.textSecondary),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.close,
+                            color: AppColors.textSecondary),
                         onPressed: () {
                           _searchController.clear();
                           ref.read(exerciseSearchQueryProvider.notifier).state =
                               '';
+                          setState(() {});
                         },
                       )
                     : null,
               ),
-              onChanged: (v) =>
-                  ref.read(exerciseSearchQueryProvider.notifier).state = v,
+              onChanged: (v) {
+                ref.read(exerciseSearchQueryProvider.notifier).state = v;
+                setState(() {});
+              },
             ),
           ),
+          _InlineTypeChips(filter: filter),
           if (!filter.isEmpty) _ActiveFiltersRow(filter: filter),
           Expanded(
             child: exercisesAsync.when(
@@ -106,7 +125,7 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
                 child: Text(
                   'Could not load exercises',
                   style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: AppColors.accentRed),
+                      ?.copyWith(color: AppColors.error),
                 ),
               ),
             ),
@@ -131,6 +150,110 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage>
     showDialog<void>(
       context: context,
       builder: (_) => const _AddExerciseDialog(),
+    );
+  }
+}
+
+// ── Inline type chips (horizontal single-row scroller) ────────────────────
+
+class _InlineTypeChips extends ConsumerWidget {
+  final ExerciseFilter filter;
+  const _InlineTypeChips({required this.filter});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          0,
+          AppSpacing.md,
+          AppSpacing.xs,
+        ),
+        children: [
+          for (final type in ExerciseType.values) ...[
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: _ScrollChip(
+                label: _humanize(type.name),
+                selected: filter.typeTags.contains(type),
+                onTap: () {
+                  final tags = List<ExerciseType>.from(filter.typeTags);
+                  if (tags.contains(type)) {
+                    tags.remove(type);
+                  } else {
+                    tags.add(type);
+                  }
+                  ref.read(exerciseFilterProvider.notifier).state =
+                      filter.copyWith(typeTags: tags);
+                },
+                theme: theme,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  static String _humanize(String name) {
+    final result = StringBuffer();
+    for (var i = 0; i < name.length; i++) {
+      if (i > 0 && name[i] == name[i].toUpperCase()) {
+        result.write(' ');
+      }
+      result.write(i == 0 ? name[i].toUpperCase() : name[i]);
+    }
+    return result.toString();
+  }
+}
+
+class _ScrollChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final ThemeData theme;
+
+  const _ScrollChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      child: AnimatedContainer(
+        duration: WayMotion.micro,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          border: Border.all(
+            color: selected
+                ? AppColors.primary
+                : theme.colorScheme.outline,
+          ),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: selected ? AppColors.primary : theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -189,20 +312,21 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isFiltered ? Icons.search_off : Icons.fitness_center_outlined,
-            size: 64,
-            color: AppColors.textDisabled,
+            isFiltered ? Icons.search_off : Icons.self_improvement,
+            size: 56,
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             isFiltered ? 'No exercises match your filters' : 'No exercises yet',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
+            style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
           ),
         ],
@@ -285,11 +409,14 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      margin: const EdgeInsets.only(right: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -299,10 +426,10 @@ class _FilterChip extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               color: AppColors.primary,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.xs),
           InkWell(
             onTap: onRemove,
             child: const Icon(Icons.close, size: 14, color: AppColors.primary),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../splash/splash_page.dart';
+import '../theme/app_motion.dart';
 import '../../features/progress/presentation/pages/photo_capture_page.dart';
 import '../../features/progress/presentation/pages/photo_timeline_page.dart';
 import '../../features/progress/presentation/pages/progress_page.dart';
@@ -64,7 +66,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: Routes.splash,
     refreshListenable: notifier,
     redirect: (context, state) {
       final authState = ref.read(firebaseAuthStateProvider);
@@ -72,18 +74,29 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final isLoggedIn = authState.valueOrNull != null;
       final isOnAuthRoute = state.matchedLocation.startsWith(Routes.auth);
+      final isOnSplash = state.matchedLocation == Routes.splash;
       final isOnboarding = state.matchedLocation == Routes.onboarding;
 
-      if (authState.isLoading) return null;
+      // Hold on splash while we don't know yet whether the user is signed in.
+      if (authState.isLoading) {
+        return isOnSplash ? null : Routes.splash;
+      }
       if (!isLoggedIn && !isOnAuthRoute) return Routes.login;
-      if (isLoggedIn && isOnAuthRoute) return Routes.home;
+      if (isLoggedIn && (isOnAuthRoute || isOnSplash)) {
+        // Let profile load decide the final destination below.
+      }
 
       // Wait for profile to load before checking onboarding status.
-      if (isLoggedIn && profileAsync.isLoading) return null;
+      if (isLoggedIn && profileAsync.isLoading) {
+        return isOnSplash ? null : Routes.splash;
+      }
 
       if (isLoggedIn) {
         final onboardingDone =
             profileAsync.valueOrNull?.onboardingComplete ?? false;
+        if (isOnSplash) {
+          return onboardingDone ? Routes.home : Routes.onboarding;
+        }
         if (isOnboarding && onboardingDone) return Routes.home;
         if (!isOnboarding && !onboardingDone) return Routes.onboarding;
       }
@@ -91,6 +104,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: Routes.splash,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const SplashPage(),
+          transitionsBuilder: wayFadeTransition,
+        ),
+      ),
       GoRoute(
         path: Routes.login,
         pageBuilder: (_, state) => CustomTransitionPage(

@@ -46,6 +46,8 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
+      await tester.ensureVisible(find.byKey(AppKeys.submitButton));
+      await tester.pump();
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
 
@@ -62,6 +64,8 @@ void main() {
       await tester.enterText(find.byKey(AppKeys.passwordField), 'Password1!');
       await tester.enterText(
           find.byKey(AppKeys.confirmPasswordField), 'DifferentPass!');
+      await tester.ensureVisible(find.byKey(AppKeys.submitButton));
+      await tester.pump();
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
 
@@ -76,6 +80,8 @@ void main() {
       await tester.enterText(
           find.byKey(AppKeys.emailField), 'test@way2move.com');
       await tester.enterText(find.byKey(AppKeys.passwordField), 'short');
+      await tester.ensureVisible(find.byKey(AppKeys.submitButton));
+      await tester.pump();
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
 
@@ -96,6 +102,8 @@ void main() {
       await tester.enterText(find.byKey(AppKeys.passwordField), 'Password1!');
       await tester.enterText(
           find.byKey(AppKeys.confirmPasswordField), 'Password1!');
+      await tester.ensureVisible(find.byKey(AppKeys.submitButton));
+      await tester.pump();
       await tester.tap(find.byKey(AppKeys.submitButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));

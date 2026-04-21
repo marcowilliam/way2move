@@ -26,11 +26,11 @@ class HomePage extends ConsumerWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
-          _GreetingAppBar(ref: ref),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                _GreetingHeader(ref: ref),
                 const SizedBox(height: 16),
                 _TodaySessionCard(ref: ref),
                 const SizedBox(height: 12),
@@ -54,10 +54,10 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-// ── Greeting SliverAppBar ─────────────────────────────────────────────────────
+// ── Greeting header (inline in sliver list) ───────────────────────────────────
 
-class _GreetingAppBar extends ConsumerWidget {
-  const _GreetingAppBar({required this.ref});
+class _GreetingHeader extends ConsumerWidget {
+  const _GreetingHeader({required this.ref});
   final WidgetRef ref;
 
   @override
@@ -68,42 +68,32 @@ class _GreetingAppBar extends ConsumerWidget {
     final greeting = _greeting(now.hour);
     final firstName = profile?.name.split(' ').first ?? '';
 
-    return SliverAppBar(
-      expandedHeight: 100,
-      floating: true,
-      snap: true,
-      pinned: false,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$greeting${firstName.isNotEmpty ? ', $firstName' : ''}.',
-                    style: Theme.of(context).textTheme.titleLarge,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    DateFormat('EEEE, MMMM d').format(now),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$greeting${firstName.isNotEmpty ? ', $firstName' : ''}.',
+                style: Theme.of(context).textTheme.displaySmall,
+                maxLines: 2,
               ),
-            ),
-            if (streak > 0) ...[
-              const SizedBox(width: 8),
-              _StreakBadge(streak: streak),
+              const SizedBox(height: 4),
+              Text(
+                DateFormat('EEEE, MMMM d').format(now),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
-          ],
+          ),
         ),
-      ),
+        if (streak > 0) ...[
+          const SizedBox(width: 8),
+          _StreakBadge(streak: streak),
+        ],
+      ],
     );
   }
 

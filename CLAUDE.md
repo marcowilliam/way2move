@@ -4,6 +4,28 @@
 Way2Move is a movement-first training platform for normal life athletes.
 Think "the movement operating system" — build body awareness through voice-first journaling, track compensations and movement goals, follow PRI/DNS-based corrective programs, log training + recovery sessions, track nutrition (with IBS/gut awareness), sleep, and progress photos. Gait cycle education teaches users to move from the ground up.
 
+## Central Nervous System
+
+This project is part of Marco's CNS at `/projects/my-projects/marco-cns/`.
+Project state: `marco-cns/projects/way2move/`
+
+### Read from CNS
+- Domain knowledge (defaults): `marco-cns/cortex/` (dev-workflow, design, architecture, etc.)
+- This project's state: `marco-cns/projects/way2move/` (PROFILE, STATUS, ROADMAP, DECISIONS, LEARNINGS)
+- This project's domain overrides: `marco-cns/projects/way2move/cortex/` (when they exist)
+- Templates: `marco-cns/templates/`
+- Prompts: `marco-cns/spine/prompts/`
+
+### Write to CNS (not to this repo) when:
+- Status/roadmap/decisions change → update `marco-cns/projects/way2move/`
+- You discover a reusable pattern → append to `marco-cns/projects/way2move/LEARNINGS.md`
+- A decision affects multiple projects → append to `marco-cns/DECISIONS.md`
+- Session ending → update `marco-cns/projects/way2move/SESSION_HANDOFF.md`
+
+### Override model
+Check `marco-cns/projects/way2move/DECISIONS.md` for domain overrides before applying general defaults.
+Full routing rules: `marco-cns/spine/rules/cns-update-rules.md`
+
 ## Repo structure
 ```
 /projects/way2move/

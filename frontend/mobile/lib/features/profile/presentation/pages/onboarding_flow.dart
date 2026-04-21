@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/user_profile.dart';
 import '../providers/profile_provider.dart';
@@ -258,12 +260,6 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                     onPressed: (_canAdvance && !_saving)
                         ? (_currentStep == _totalSteps - 1 ? _complete : _next)
                         : null,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
                     child: _saving
                         ? const SizedBox(
                             width: 22,
@@ -274,13 +270,11 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                             ),
                           )
                         : Text(
-                            _currentStep == _totalSteps - 1
-                                ? 'Get Started'
-                                : 'Continue',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            _currentStep == 0
+                                ? 'Begin'
+                                : _currentStep == _totalSteps - 1
+                                    ? 'Get Started'
+                                    : 'Continue',
                           ),
                   ),
                 ),
@@ -293,31 +287,29 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
   }
 
   Widget _buildWelcomeStep() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.directions_run,
-            size: 80,
-            color: AppColors.primary,
-          ),
-          const SizedBox(height: 32),
+          const _GroundedFigure(size: 160),
+          const SizedBox(height: AppSpacing.xl + AppSpacing.sm),
           Text(
-            'Welcome to Way2Move',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+            "Let's build\nthe foundation.",
+            style: AppTypography.fraunces(
+              size: 36,
+              weight: FontWeight.w400,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+              style: FontStyle.italic,
+              letterSpacing: -0.5,
+            ).copyWith(height: 1.15),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
-            'Let\'s set up your profile so we can personalize your training experience.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            'Train from the ground up — pelvis, ribcage, gait. Two minutes to set you up.',
+            style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
         ],
@@ -724,4 +716,89 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
       ),
     );
   }
+}
+
+/// Stylized standing figure on a terracotta ground line — echoes the logo
+/// mark's "rooted" construction. Used on the onboarding welcome and the
+/// home-dashboard empty state (§4 of the discovery plan).
+class _GroundedFigure extends StatelessWidget {
+  const _GroundedFigure({this.size = 160});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(painter: _GroundedFigurePainter()),
+    );
+  }
+}
+
+class _GroundedFigurePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    final bodyPaint = Paint()
+      ..color = AppColors.accent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.022
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    // Head.
+    canvas.drawCircle(Offset(w / 2, h * 0.24), w * 0.08, bodyPaint);
+
+    // Torso.
+    final torso = Path()
+      ..moveTo(w / 2, h * 0.32)
+      ..lineTo(w / 2, h * 0.60);
+    canvas.drawPath(torso, bodyPaint);
+
+    // Arms — slight outward curve.
+    canvas.drawPath(
+      Path()
+        ..moveTo(w / 2, h * 0.38)
+        ..quadraticBezierTo(w * 0.30, h * 0.48, w * 0.28, h * 0.60),
+      bodyPaint,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(w / 2, h * 0.38)
+        ..quadraticBezierTo(w * 0.70, h * 0.48, w * 0.72, h * 0.60),
+      bodyPaint,
+    );
+
+    // Legs — standing, shoulder-width apart.
+    canvas.drawPath(
+      Path()
+        ..moveTo(w / 2, h * 0.60)
+        ..lineTo(w * 0.40, h * 0.86),
+      bodyPaint,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(w / 2, h * 0.60)
+        ..lineTo(w * 0.60, h * 0.86),
+      bodyPaint,
+    );
+
+    // Terracotta ground line — "foundation".
+    final groundPaint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.035
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+      Offset(w * 0.14, h * 0.88),
+      Offset(w * 0.86, h * 0.88),
+      groundPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _GroundedFigurePainter old) => false;
 }
