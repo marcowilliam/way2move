@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/meal.dart';
 import 'food_item_model.dart';
 
@@ -11,13 +12,15 @@ class MealModel {
   final String description;
   final int stomachFeeling;
   final String? stomachNotes;
-  final String source;
+  final String origin;
   final String? linkedJournalId;
   final List<FoodItemModel>? foodItems;
   final double? calories;
   final double? protein;
   final double? carbs;
   final double? fat;
+  final String source;
+  final String? idempotencyKey;
 
   const MealModel({
     required this.id,
@@ -27,17 +30,20 @@ class MealModel {
     required this.description,
     required this.stomachFeeling,
     this.stomachNotes,
-    required this.source,
+    required this.origin,
     this.linkedJournalId,
     this.foodItems,
     this.calories,
     this.protein,
     this.carbs,
     this.fat,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory MealModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
 
     List<FoodItemModel>? foodItems;
     final rawItems = data['foodItems'];
@@ -56,13 +62,15 @@ class MealModel {
       description: data['description'] as String? ?? '',
       stomachFeeling: (data['stomachFeeling'] as num?)?.toInt() ?? 3,
       stomachNotes: data['stomachNotes'] as String?,
-      source: data['source'] as String? ?? 'manual',
+      origin: data['origin'] as String? ?? 'manual',
       linkedJournalId: data['linkedJournalId'] as String?,
       foodItems: foodItems,
       calories: (data['calories'] as num?)?.toDouble(),
       protein: (data['protein'] as num?)?.toDouble(),
       carbs: (data['carbs'] as num?)?.toDouble(),
       fat: (data['fat'] as num?)?.toDouble(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -73,7 +81,7 @@ class MealModel {
         'description': description,
         'stomachFeeling': stomachFeeling,
         if (stomachNotes != null) 'stomachNotes': stomachNotes,
-        'source': source,
+        'origin': origin,
         if (linkedJournalId != null) 'linkedJournalId': linkedJournalId,
         if (foodItems != null && foodItems!.isNotEmpty)
           'foodItems': foodItems!.map((i) => i.toMap()).toList(),
@@ -81,6 +89,7 @@ class MealModel {
         if (protein != null) 'protein': protein,
         if (carbs != null) 'carbs': carbs,
         if (fat != null) 'fat': fat,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Meal toEntity() => Meal(
@@ -91,7 +100,7 @@ class MealModel {
         description: description,
         stomachFeeling: stomachFeeling,
         stomachNotes: stomachNotes,
-        source: source,
+        origin: origin,
         linkedJournalId: linkedJournalId,
         foodItems: foodItems?.map((m) => m.toEntity()).toList(),
         calories: calories,
@@ -108,7 +117,7 @@ class MealModel {
         description: meal.description,
         stomachFeeling: meal.stomachFeeling,
         stomachNotes: meal.stomachNotes,
-        source: meal.source,
+        origin: meal.origin,
         linkedJournalId: meal.linkedJournalId,
         foodItems: meal.foodItems?.map(FoodItemModel.fromEntity).toList(),
         calories: meal.calories,

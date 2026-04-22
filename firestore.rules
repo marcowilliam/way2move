@@ -11,109 +11,195 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Cross-app assistant ingest contract.
+    // See .claude/rules/firebase_backend/assistant_ingest.md
+
+    // `source` must be one of the four provenance values.
+    function isValidSource() {
+      return request.resource.data.source in [
+        'in-app-typed',
+        'in-app-voice',
+        'assistant-ingest',
+        'assistant-edit'
+      ];
+    }
+
+    // `source` and `idempotencyKey` are immutable once written.
+    function isAssistantMetaImmutable() {
+      return !request.resource.data.diff(resource.data)
+        .affectedKeys().hasAny(['source', 'idempotencyKey']);
+    }
+
     // Seed / reference data: read-only for all authenticated users
     match /exercises/{id} {
       allow read: if isSignedIn();
       allow write: if isSignedIn()
         && resource == null
         && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.isBuiltIn == false;
+        && request.resource.data.isBuiltIn == false
+        && isValidSource();
     }
 
     // User documents: own profile only
     match /users/{userId} {
       allow read: if isOwner(userId);
       // Allow create so onboarding save works even if onUserCreate hasn't fired yet
-      allow create: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && isValidSource();
       allow update: if isOwner(userId)
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['id', 'email', 'meta']);
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['id', 'email', 'meta'])
+        && isAssistantMetaImmutable();
       allow delete: if false;
     }
 
     // Programs: own data only
     match /programs/{programId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Sessions: own data only
     match /sessions/{sessionId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Assessments: own data only
     match /assessments/{assessmentId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Sleep logs: own data only
     match /sleepLogs/{sleepLogId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Progression rules: own data only (doc IDs are {userId}_{exerciseId} or {userId}_global)
     match /progressionRules/{ruleId} {
-      allow read, write: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
-      allow create: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
+      allow read: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
+      allow update: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*')
+        && isAssistantMetaImmutable();
+      allow create: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*')
+        && isValidSource();
+      allow delete: if isSignedIn() && ruleId.matches(request.auth.uid + '_.*');
     }
 
     // Goals: own data only
     match /goals/{goalId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Compensations: own data only
     match /compensations/{compensationId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Meals: own data only
     match /meals/{mealId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Progress photos: own data only
     match /progressPhotos/{photoId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Weight logs: own data only
     match /weightLogs/{logId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
 
     // Journals: own data only
     match /journals/{journalId} {
-      allow read, write: if isSignedIn()
+      allow read: if isSignedIn()
         && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
       allow create: if isSignedIn()
-        && request.auth.uid == request.resource.data.userId;
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
     }
   }
 }

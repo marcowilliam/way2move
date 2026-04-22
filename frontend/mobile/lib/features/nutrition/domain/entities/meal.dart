@@ -10,7 +10,7 @@ class Meal {
   final String description;
   final int stomachFeeling; // 1–5
   final String? stomachNotes;
-  final String source; // 'manual' | 'voice'
+  final String origin; // 'manual' | 'voice'
   final String? linkedJournalId;
 
   // Macro tracking fields (nullable for backwards compatibility)
@@ -28,7 +28,7 @@ class Meal {
     required this.description,
     required this.stomachFeeling,
     this.stomachNotes,
-    this.source = 'manual',
+    this.origin = 'manual',
     this.linkedJournalId,
     this.foodItems,
     this.calories,
@@ -63,7 +63,7 @@ class Meal {
     String? description,
     int? stomachFeeling,
     String? stomachNotes,
-    String? source,
+    String? origin,
     String? linkedJournalId,
     List<FoodItem>? foodItems,
     double? calories,
@@ -79,7 +79,7 @@ class Meal {
         description: description ?? this.description,
         stomachFeeling: stomachFeeling ?? this.stomachFeeling,
         stomachNotes: stomachNotes ?? this.stomachNotes,
-        source: source ?? this.source,
+        origin: origin ?? this.origin,
         linkedJournalId: linkedJournalId ?? this.linkedJournalId,
         foodItems: foodItems ?? this.foodItems,
         calories: calories ?? this.calories,

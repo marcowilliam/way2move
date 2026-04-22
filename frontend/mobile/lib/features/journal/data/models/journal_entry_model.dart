@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/journal_entry.dart';
 
 class JournalEntryModel {
@@ -14,6 +15,8 @@ class JournalEntryModel {
   final List<String> painPoints;
   final String? linkedSessionId;
   final List<String> autoCreatedEntities;
+  final String source;
+  final String? idempotencyKey;
 
   const JournalEntryModel({
     required this.id,
@@ -27,10 +30,13 @@ class JournalEntryModel {
     required this.painPoints,
     this.linkedSessionId,
     required this.autoCreatedEntities,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory JournalEntryModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return JournalEntryModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -43,6 +49,8 @@ class JournalEntryModel {
       painPoints: List<String>.from(data['painPoints'] ?? []),
       linkedSessionId: data['linkedSessionId'] as String?,
       autoCreatedEntities: List<String>.from(data['autoCreatedEntities'] ?? []),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -62,6 +70,7 @@ class JournalEntryModel {
           'updatedAt': FieldValue.serverTimestamp(),
         },
         '_schemaVersion': 1,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   JournalEntry toEntity() => JournalEntry(

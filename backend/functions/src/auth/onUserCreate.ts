@@ -11,6 +11,7 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
       avatarUrl: user.photoURL ?? '',
       roles: ['athlete'],
       totalXp: 0,
+      source: 'assistant-ingest',
       meta: {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       },

@@ -17,7 +17,7 @@ Goal _goal(String id, String compensationId) => Goal(
       targetMetric: 'reps',
       targetValue: 10,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
       compensationIds: [compensationId],
     );
 

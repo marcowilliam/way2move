@@ -177,7 +177,7 @@ class _AddGoalDialogState extends ConsumerState<AddGoalDialog> {
       targetMetric: _targetMetricController.text.trim(),
       targetValue: double.parse(_targetValueController.text.trim()),
       unit: _unitController.text.trim(),
-      source: GoalSource.manual,
+      origin: GoalOrigin.manual,
     );
 
     final result =

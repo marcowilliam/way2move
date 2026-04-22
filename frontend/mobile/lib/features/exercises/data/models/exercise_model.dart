@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/exercise.dart';
 
 class ExerciseModel {
@@ -18,6 +19,8 @@ class ExerciseModel {
   final List<String> cues;
   final bool isCustom;
   final String? createdByUserId;
+  final String source;
+  final String? idempotencyKey;
 
   const ExerciseModel({
     required this.id,
@@ -35,10 +38,13 @@ class ExerciseModel {
     this.cues = const [],
     this.isCustom = false,
     this.createdByUserId,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory ExerciseModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return ExerciseModel(
       id: doc.id,
       name: data['name'] as String? ?? '',
@@ -55,6 +61,8 @@ class ExerciseModel {
       cues: List<String>.from(data['cues'] ?? []),
       isCustom: data['isCustom'] as bool? ?? false,
       createdByUserId: data['createdByUserId'] as String?,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -93,6 +101,7 @@ class ExerciseModel {
         'cues': cues,
         'isCustom': isCustom,
         if (createdByUserId != null) 'createdByUserId': createdByUserId,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Exercise toEntity() => Exercise(

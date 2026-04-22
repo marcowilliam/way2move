@@ -21,7 +21,7 @@ final _tComp = Compensation(
   region: CompensationRegion.pelvis,
   severity: CompensationSeverity.moderate,
   status: CompensationStatus.active,
-  source: CompensationSource.assessment,
+  origin: CompensationOrigin.assessment,
   detectedAt: DateTime(2026, 1, 1),
   history: [
     CompensationHistoryEntry(

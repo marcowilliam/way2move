@@ -26,7 +26,7 @@ Meal _meal({
       mealType: type,
       description: description,
       stomachFeeling: feeling,
-      source: 'manual',
+      origin: 'manual',
       foodItems: foodItems,
     );
 

@@ -20,7 +20,7 @@ void main() {
     description: 'Salad with chicken',
     stomachFeeling: 3,
     stomachNotes: 'Slight bloating',
-    source: 'manual',
+    origin: 'manual',
   );
 
   setUp(() {

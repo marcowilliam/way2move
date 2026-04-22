@@ -189,7 +189,7 @@ void main() {
         mealType: MealType.lunch,
         description: 'Chicken and rice for lunch',
         stomachFeeling: 3,
-        source: 'voice',
+        origin: 'voice',
       );
 
       when(() => sessionRepo.createSession(any()))

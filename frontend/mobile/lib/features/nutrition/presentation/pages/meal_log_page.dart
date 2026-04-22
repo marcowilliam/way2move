@@ -124,7 +124,7 @@ class _MealLogPageState extends ConsumerState<MealLogPage> {
       stomachNotes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
-      source: 'manual',
+      origin: 'manual',
       foodItems: _foodItems.isEmpty ? null : List.unmodifiable(_foodItems),
     );
 

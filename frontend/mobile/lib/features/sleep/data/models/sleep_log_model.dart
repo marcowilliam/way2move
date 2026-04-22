@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/sleep_log.dart';
 
 class SleepLogModel {
@@ -10,6 +11,8 @@ class SleepLogModel {
   final int quality;
   final String? notes;
   final DateTime date;
+  final String source;
+  final String? idempotencyKey;
 
   const SleepLogModel({
     required this.id,
@@ -19,10 +22,13 @@ class SleepLogModel {
     required this.quality,
     this.notes,
     required this.date,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory SleepLogModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return SleepLogModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -31,6 +37,8 @@ class SleepLogModel {
       quality: (data['quality'] as num).toInt(),
       notes: data['notes'] as String?,
       date: (data['date'] as Timestamp).toDate(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -46,6 +54,7 @@ class SleepLogModel {
           'updatedAt': FieldValue.serverTimestamp(),
         },
         '_schemaVersion': 1,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   SleepLog toEntity() => SleepLog(

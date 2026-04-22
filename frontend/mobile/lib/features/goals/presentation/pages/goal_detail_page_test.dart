@@ -29,7 +29,7 @@ Goal _goal({
       targetValue: 20,
       currentValue: current,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
       status: status,
       achievedAt: achievedAt,
     );
@@ -72,7 +72,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.manual,
+        origin: GoalOrigin.manual,
       ),
     );
   });

@@ -27,7 +27,7 @@ void main() {
     mealType: MealType.breakfast,
     description: 'Oatmeal',
     stomachFeeling: 4,
-    source: 'manual',
+    origin: 'manual',
   );
 
   const tFoodItem = FoodItem(

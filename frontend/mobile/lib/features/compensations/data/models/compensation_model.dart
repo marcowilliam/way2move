@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/compensation.dart';
 
 class CompensationHistoryEntryModel {
@@ -57,12 +58,14 @@ class CompensationModel {
   final CompensationRegion region;
   final CompensationSeverity severity;
   final CompensationStatus status;
-  final CompensationSource source;
+  final CompensationOrigin origin;
   final List<String> relatedGoalIds;
   final List<String> relatedExerciseIds;
   final List<CompensationHistoryEntryModel> history;
   final DateTime detectedAt;
   final DateTime? resolvedAt;
+  final String source;
+  final String? idempotencyKey;
 
   const CompensationModel({
     required this.id,
@@ -72,16 +75,19 @@ class CompensationModel {
     required this.region,
     required this.severity,
     required this.status,
-    required this.source,
+    required this.origin,
     required this.relatedGoalIds,
     required this.relatedExerciseIds,
     required this.history,
     required this.detectedAt,
     this.resolvedAt,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory CompensationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return CompensationModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -90,7 +96,7 @@ class CompensationModel {
       region: _parseRegion(data['region'] as String),
       severity: _parseSeverity(data['severity'] as String),
       status: _parseStatus(data['status'] as String),
-      source: _parseSource(data['source'] as String),
+      origin: _parseSource(data['origin'] as String),
       relatedGoalIds: List<String>.from(data['relatedGoalIds'] ?? []),
       relatedExerciseIds: List<String>.from(data['relatedExerciseIds'] ?? []),
       history: ((data['history'] as List<dynamic>?) ?? [])
@@ -101,6 +107,8 @@ class CompensationModel {
       resolvedAt: data['resolvedAt'] != null
           ? (data['resolvedAt'] as Timestamp).toDate()
           : null,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -111,7 +119,7 @@ class CompensationModel {
         'region': region.name,
         'severity': severity.name,
         'status': status.name,
-        'source': source.name,
+        'origin': origin.name,
         'relatedGoalIds': relatedGoalIds,
         'relatedExerciseIds': relatedExerciseIds,
         'history': history.map((h) => h.toMap()).toList(),
@@ -122,6 +130,7 @@ class CompensationModel {
           'updatedAt': FieldValue.serverTimestamp(),
         },
         '_schemaVersion': 1,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Compensation toEntity() => Compensation(
@@ -132,7 +141,7 @@ class CompensationModel {
         region: region,
         severity: severity,
         status: status,
-        source: source,
+        origin: origin,
         relatedGoalIds: relatedGoalIds,
         relatedExerciseIds: relatedExerciseIds,
         history: history.map((h) => h.toEntity()).toList(),
@@ -149,7 +158,7 @@ class CompensationModel {
       region: entity.region,
       severity: entity.severity,
       status: entity.status,
-      source: entity.source,
+      origin: entity.origin,
       relatedGoalIds: entity.relatedGoalIds,
       relatedExerciseIds: entity.relatedExerciseIds,
       history:
@@ -174,5 +183,5 @@ CompensationSeverity _parseSeverity(String s) => CompensationSeverity.values
 CompensationStatus _parseStatus(String s) => CompensationStatus.values
     .firstWhere((e) => e.name == s, orElse: () => CompensationStatus.active);
 
-CompensationSource _parseSource(String s) => CompensationSource.values
-    .firstWhere((e) => e.name == s, orElse: () => CompensationSource.manual);
+CompensationOrigin _parseSource(String s) => CompensationOrigin.values
+    .firstWhere((e) => e.name == s, orElse: () => CompensationOrigin.manual);

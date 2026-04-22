@@ -41,7 +41,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.manual,
+        origin: GoalOrigin.manual,
       ),
     );
   });
@@ -80,7 +80,7 @@ void main() {
       targetMetric: 'reps',
       targetValue: 20,
       unit: 'reps',
-      source: GoalSource.manual,
+      origin: GoalOrigin.manual,
     );
 
     when(() => mockRepo.getAll(any())).thenAnswer((_) async => const Right([]));

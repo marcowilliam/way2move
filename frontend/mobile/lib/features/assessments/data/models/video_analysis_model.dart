@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/assessment.dart';
 import '../../domain/entities/pose_frame.dart';
 import '../../domain/entities/pose_landmark.dart';
@@ -54,6 +55,8 @@ class VideoAnalysisModel {
   final List<String> detectedCompensations;
   final String? storageVideoPath;
   final DateTime analyzedAt;
+  final String source;
+  final String? idempotencyKey;
 
   const VideoAnalysisModel({
     required this.id,
@@ -64,10 +67,13 @@ class VideoAnalysisModel {
     required this.detectedCompensations,
     required this.analyzedAt,
     this.storageVideoPath,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory VideoAnalysisModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return VideoAnalysisModel(
       id: doc.id,
       assessmentId: data['assessmentId'] as String? ?? '',
@@ -80,6 +86,8 @@ class VideoAnalysisModel {
           List<String>.from(data['detectedCompensations'] as List? ?? []),
       storageVideoPath: data['storageVideoPath'] as String?,
       analyzedAt: (data['analyzedAt'] as Timestamp).toDate(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -91,6 +99,7 @@ class VideoAnalysisModel {
         'detectedCompensations': detectedCompensations,
         if (storageVideoPath != null) 'storageVideoPath': storageVideoPath,
         'analyzedAt': Timestamp.fromDate(analyzedAt),
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   VideoAnalysis toEntity() => VideoAnalysis(

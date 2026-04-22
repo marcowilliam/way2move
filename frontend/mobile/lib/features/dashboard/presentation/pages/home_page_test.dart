@@ -54,7 +54,7 @@ Goal _goal(String id) => Goal(
       targetValue: 20,
       currentValue: 10,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
       status: GoalStatus.active,
     );
 
@@ -150,7 +150,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.manual,
+        origin: GoalOrigin.manual,
       ),
     );
   });

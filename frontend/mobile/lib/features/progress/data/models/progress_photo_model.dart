@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/progress_photo.dart';
 
 class ProgressPhotoModel {
@@ -8,6 +9,8 @@ class ProgressPhotoModel {
   final String photoUrl;
   final String angle;
   final String? notes;
+  final String source;
+  final String? idempotencyKey;
 
   const ProgressPhotoModel({
     required this.id,
@@ -16,10 +19,13 @@ class ProgressPhotoModel {
     required this.photoUrl,
     required this.angle,
     this.notes,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory ProgressPhotoModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return ProgressPhotoModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -27,6 +33,8 @@ class ProgressPhotoModel {
       photoUrl: data['photoUrl'] as String,
       angle: data['angle'] as String,
       notes: data['notes'] as String?,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -47,6 +55,7 @@ class ProgressPhotoModel {
         'photoUrl': photoUrl,
         'angle': angle,
         if (notes != null) 'notes': notes,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   ProgressPhoto toEntity() => ProgressPhoto(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/goal.dart';
 
 class GoalModel {
@@ -15,9 +16,11 @@ class GoalModel {
   final String? sport;
   final List<String> compensationIds;
   final List<String> exerciseIds;
-  final GoalSource source;
+  final GoalOrigin origin;
   final GoalStatus status;
   final DateTime? achievedAt;
+  final String source;
+  final String? idempotencyKey;
 
   const GoalModel({
     required this.id,
@@ -32,13 +35,16 @@ class GoalModel {
     this.sport,
     required this.compensationIds,
     required this.exerciseIds,
-    required this.source,
+    required this.origin,
     required this.status,
     this.achievedAt,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory GoalModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return GoalModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -52,11 +58,13 @@ class GoalModel {
       sport: data['sport'] as String?,
       compensationIds: List<String>.from(data['compensationIds'] ?? []),
       exerciseIds: List<String>.from(data['exerciseIds'] ?? []),
-      source: _parseSource(data['source'] as String),
+      origin: _parseSource(data['origin'] as String),
       status: _parseStatus(data['status'] as String),
       achievedAt: data['achievedAt'] != null
           ? (data['achievedAt'] as Timestamp).toDate()
           : null,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -72,7 +80,7 @@ class GoalModel {
         'sport': sport,
         'compensationIds': compensationIds,
         'exerciseIds': exerciseIds,
-        'source': source.name,
+        'origin': origin.name,
         'status': status.name,
         'achievedAt':
             achievedAt != null ? Timestamp.fromDate(achievedAt!) : null,
@@ -80,6 +88,7 @@ class GoalModel {
           'updatedAt': FieldValue.serverTimestamp(),
         },
         '_schemaVersion': 1,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Goal toEntity() => Goal(
@@ -95,7 +104,7 @@ class GoalModel {
         sport: sport,
         compensationIds: compensationIds,
         exerciseIds: exerciseIds,
-        source: source,
+        origin: origin,
         status: status,
         achievedAt: achievedAt,
       );
@@ -113,7 +122,7 @@ class GoalModel {
         sport: entity.sport,
         compensationIds: entity.compensationIds,
         exerciseIds: entity.exerciseIds,
-        source: entity.source,
+        origin: entity.origin,
         status: entity.status,
         achievedAt: entity.achievedAt,
       );
@@ -122,8 +131,8 @@ class GoalModel {
 GoalCategory _parseCategory(String s) => GoalCategory.values
     .firstWhere((e) => e.name == s, orElse: () => GoalCategory.general);
 
-GoalSource _parseSource(String s) => GoalSource.values
-    .firstWhere((e) => e.name == s, orElse: () => GoalSource.manual);
+GoalOrigin _parseSource(String s) => GoalOrigin.values
+    .firstWhere((e) => e.name == s, orElse: () => GoalOrigin.manual);
 
 GoalStatus _parseStatus(String s) => GoalStatus.values
     .firstWhere((e) => e.name == s, orElse: () => GoalStatus.active);

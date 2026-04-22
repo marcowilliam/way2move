@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/recovery_score.dart';
 
 class RecoveryScoreModel {
@@ -12,6 +13,8 @@ class RecoveryScoreModel {
   final double weeklyPulseComponent;
   final double gutFeelingComponent;
   final String recommendation;
+  final String source;
+  final String? idempotencyKey;
 
   const RecoveryScoreModel({
     required this.id,
@@ -23,10 +26,13 @@ class RecoveryScoreModel {
     required this.weeklyPulseComponent,
     required this.gutFeelingComponent,
     required this.recommendation,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory RecoveryScoreModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     final components = data['components'] as Map<String, dynamic>? ?? {};
     return RecoveryScoreModel(
       id: doc.id,
@@ -41,6 +47,8 @@ class RecoveryScoreModel {
       gutFeelingComponent:
           (components['gutFeeling'] as num?)?.toDouble() ?? 50.0,
       recommendation: data['recommendation'] as String? ?? '',
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -55,6 +63,7 @@ class RecoveryScoreModel {
           'gutFeeling': gutFeelingComponent,
         },
         'recommendation': recommendation,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   RecoveryScore toEntity() => RecoveryScore(

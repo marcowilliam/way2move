@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/user.dart';
 
 class UserModel {
@@ -8,6 +9,8 @@ class UserModel {
   final String name;
   final String avatarUrl;
   final DateTime createdAt;
+  final String source;
+  final String? idempotencyKey;
 
   const UserModel({
     required this.id,
@@ -15,10 +18,13 @@ class UserModel {
     required this.name,
     required this.avatarUrl,
     required this.createdAt,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return UserModel(
       id: doc.id,
       email: data['email'] as String? ?? '',
@@ -29,6 +35,8 @@ class UserModel {
           ? ((data['meta'] as Map<String, dynamic>)['createdAt'] as Timestamp)
               .toDate()
           : DateTime.now(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -40,6 +48,7 @@ class UserModel {
         'meta': {
           'createdAt': Timestamp.fromDate(createdAt),
         },
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   AppUser toEntity() => AppUser(

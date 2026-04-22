@@ -224,7 +224,7 @@ Never leave a decision only in chat history — if it matters, it must be in a d
 - **Never hit real Firebase in tests** — always use the Local Emulator Suite.
 - TypeScript for all Cloud Functions code. No plain JS.
 - Phase 1–3: clients talk to Firebase SDKs directly — no custom REST API.
-- Firebase Spark (free) plan until Phase 5. No custom Node server until Phase 5.
+- Prefer Firebase Spark (free) plan through the early phases. A custom Node server is fine earlier if it's justified — e.g. the cross-app assistant ingest service, or anything that needs long-lived workers, shared state across apps, or libraries that don't fit Cloud Functions. Default stays: clients talk to Firebase SDKs directly; reach for a Node service when Functions genuinely won't do.
 - Feature plans live in `docs/features/`. No Jira — everything lives in this repo.
 - **Zero lint/analyze warnings before finishing any task** — Lefthook runs `flutter analyze` and `dart format` on pre-commit. Fix all issues as part of the task, not as a separate clean-up step. Common issues to watch: `prefer_const_constructors` (add `const` to constructors that accept only literal/const args), `deprecated_member_use` (follow the migration hint in the warning). Run `flutter analyze` and `dart format .` from `frontend/mobile/` before considering a task done.
 

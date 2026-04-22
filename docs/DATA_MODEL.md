@@ -22,6 +22,21 @@
 
 ---
 
+## Cross-cutting fields (every user-writeable document)
+
+Every document in every **user-writeable** collection below carries two extra fields that are not repeated in each per-collection schema:
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `source` | string enum | yes (on create) | Provenance: `in-app-typed` \| `in-app-voice` \| `assistant-ingest` \| `assistant-edit` |
+| `idempotencyKey` | string (≤64) | no | Assistant-set dedupe key, unique per collection |
+
+Both fields are **immutable on update** — provenance is recorded at creation and never rewritten. See `.claude/rules/firebase_backend/assistant_ingest.md` for the full contract and rationale.
+
+Seed/reference data (e.g. built-in exercises) is exempt — those documents are written by Cloud Functions and don't need provenance tracking.
+
+---
+
 ## Firestore Collections
 
 ### users/{userId}

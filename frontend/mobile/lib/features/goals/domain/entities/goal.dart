@@ -9,7 +9,7 @@ enum GoalCategory {
   general,
 }
 
-enum GoalSource {
+enum GoalOrigin {
   assessment,
   manual,
   suggested,
@@ -34,7 +34,7 @@ class Goal {
   final String? sport;
   final List<String> compensationIds;
   final List<String> exerciseIds;
-  final GoalSource source;
+  final GoalOrigin origin;
   final GoalStatus status;
   final DateTime? achievedAt;
 
@@ -51,7 +51,7 @@ class Goal {
     this.sport,
     this.compensationIds = const [],
     this.exerciseIds = const [],
-    required this.source,
+    required this.origin,
     this.status = GoalStatus.active,
     this.achievedAt,
   });
@@ -74,7 +74,7 @@ class Goal {
     String? sport,
     List<String>? compensationIds,
     List<String>? exerciseIds,
-    GoalSource? source,
+    GoalOrigin? origin,
     GoalStatus? status,
     DateTime? achievedAt,
   }) {
@@ -91,7 +91,7 @@ class Goal {
       sport: sport ?? this.sport,
       compensationIds: compensationIds ?? this.compensationIds,
       exerciseIds: exerciseIds ?? this.exerciseIds,
-      source: source ?? this.source,
+      origin: origin ?? this.origin,
       status: status ?? this.status,
       achievedAt: achievedAt ?? this.achievedAt,
     );

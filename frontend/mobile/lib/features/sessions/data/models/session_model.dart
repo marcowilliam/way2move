@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/session.dart';
 
 class SetEntryModel {
@@ -110,6 +111,8 @@ class SessionModel {
   final List<ExerciseBlockModel> exerciseBlocks;
   final String? notes;
   final int? durationMinutes;
+  final String source;
+  final String? idempotencyKey;
 
   const SessionModel({
     required this.id,
@@ -121,10 +124,13 @@ class SessionModel {
     required this.exerciseBlocks,
     this.notes,
     this.durationMinutes,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory SessionModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return SessionModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -139,6 +145,8 @@ class SessionModel {
       durationMinutes: data['durationMinutes'] != null
           ? (data['durationMinutes'] as num).toInt()
           : null,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -151,6 +159,7 @@ class SessionModel {
         'exerciseBlocks': exerciseBlocks.map((b) => b.toMap()).toList(),
         if (notes != null) 'notes': notes,
         if (durationMinutes != null) 'durationMinutes': durationMinutes,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Session toEntity() => Session(

@@ -4,7 +4,7 @@ import '../entities/goal.dart';
 class GetSuggestedGoals {
   const GetSuggestedGoals();
 
-  /// Returns a list of suggested Goal objects (source: suggested, status: active)
+  /// Returns a list of suggested Goal objects (origin: suggested, status: active)
   /// based on detected [compensationPatterns]. The goals have empty id/userId
   /// so callers must set those before persisting.
   List<Goal> call(List<CompensationPattern> compensationPatterns) {
@@ -28,7 +28,7 @@ class GetSuggestedGoals {
       targetMetric: 'chin tuck reps',
       targetValue: 15,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.roundedShoulders: const Goal(
       id: '',
@@ -39,7 +39,7 @@ class GetSuggestedGoals {
       targetMetric: 'wall slide reps',
       targetValue: 20,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.anteriorPelvicTilt: const Goal(
       id: '',
@@ -50,7 +50,7 @@ class GetSuggestedGoals {
       targetMetric: 'deadbug sets',
       targetValue: 3,
       unit: 'sets',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.poorCoreStability: const Goal(
       id: '',
@@ -61,7 +61,7 @@ class GetSuggestedGoals {
       targetMetric: 'plank seconds',
       targetValue: 60,
       unit: 'seconds',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.weakGluteMed: const Goal(
       id: '',
@@ -72,7 +72,7 @@ class GetSuggestedGoals {
       targetMetric: 'clamshell reps',
       targetValue: 20,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.limitedDorsiflexion: const Goal(
       id: '',
@@ -83,7 +83,7 @@ class GetSuggestedGoals {
       targetMetric: 'dorsiflexion degrees',
       targetValue: 15,
       unit: 'degrees',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.thoracicKyphosis: const Goal(
       id: '',
@@ -94,7 +94,7 @@ class GetSuggestedGoals {
       targetMetric: 'thoracic rotation reps',
       targetValue: 10,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.kneeValgus: const Goal(
       id: '',
@@ -105,7 +105,7 @@ class GetSuggestedGoals {
       targetMetric: 'single leg squat reps',
       targetValue: 10,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.limitedHipInternalRotation: const Goal(
       id: '',
@@ -116,7 +116,7 @@ class GetSuggestedGoals {
       targetMetric: 'hip 90/90 seconds',
       targetValue: 60,
       unit: 'seconds',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
     CompensationPattern.overPronation: const Goal(
       id: '',
@@ -127,7 +127,7 @@ class GetSuggestedGoals {
       targetMetric: 'single leg balance seconds',
       targetValue: 30,
       unit: 'seconds',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     ),
   };
 }

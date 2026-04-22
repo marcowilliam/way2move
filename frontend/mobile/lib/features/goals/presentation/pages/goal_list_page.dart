@@ -219,8 +219,8 @@ class _GoalCard extends StatelessWidget {
                         runSpacing: AppSpacing.xs,
                         children: [
                           _CategoryChip(category: goal.category),
-                          if (goal.source == GoalSource.suggested)
-                            _SourceChip(source: goal.source),
+                          if (goal.origin == GoalOrigin.suggested)
+                            _OriginChip(origin: goal.origin),
                         ],
                       ),
                       const SizedBox(height: AppSpacing.sm),
@@ -399,13 +399,13 @@ class _CategoryChip extends StatelessWidget {
   }
 }
 
-class _SourceChip extends StatelessWidget {
-  final GoalSource source;
-  const _SourceChip({required this.source});
+class _OriginChip extends StatelessWidget {
+  final GoalOrigin origin;
+  const _OriginChip({required this.origin});
 
   @override
   Widget build(BuildContext context) {
-    if (source != GoalSource.suggested) return const SizedBox.shrink();
+    if (origin != GoalOrigin.suggested) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm + 2,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/nutrition_target.dart';
 
 class NutritionTargetModel {
@@ -13,6 +14,8 @@ class NutritionTargetModel {
   final double carbsGrams;
   final double fatGrams;
   final DateTime updatedAt;
+  final String source;
+  final String? idempotencyKey;
 
   const NutritionTargetModel({
     required this.userId,
@@ -25,10 +28,13 @@ class NutritionTargetModel {
     required this.carbsGrams,
     required this.fatGrams,
     required this.updatedAt,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory NutritionTargetModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return NutritionTargetModel(
       userId: data['userId'] as String,
       preset: data['preset'] as String,
@@ -40,6 +46,8 @@ class NutritionTargetModel {
       carbsGrams: (data['carbsGrams'] as num).toDouble(),
       fatGrams: (data['fatGrams'] as num).toDouble(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -54,6 +62,7 @@ class NutritionTargetModel {
         'carbsGrams': carbsGrams,
         'fatGrams': fatGrams,
         'updatedAt': FieldValue.serverTimestamp(),
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   factory NutritionTargetModel.fromEntity(NutritionTarget target) {

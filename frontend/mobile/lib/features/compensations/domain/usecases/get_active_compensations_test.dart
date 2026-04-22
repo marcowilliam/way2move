@@ -23,7 +23,7 @@ void main() {
       region: CompensationRegion.pelvis,
       severity: CompensationSeverity.moderate,
       status: CompensationStatus.active,
-      source: CompensationSource.assessment,
+      origin: CompensationOrigin.assessment,
       detectedAt: DateTime(2026, 1, 1),
     ),
     Compensation(
@@ -34,7 +34,7 @@ void main() {
       region: CompensationRegion.leftShoulder,
       severity: CompensationSeverity.mild,
       status: CompensationStatus.active,
-      source: CompensationSource.manual,
+      origin: CompensationOrigin.manual,
       detectedAt: DateTime(2026, 1, 2),
     ),
   ];

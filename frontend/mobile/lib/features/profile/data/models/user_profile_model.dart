@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/user_profile.dart';
 
 class InjuryModel {
@@ -69,6 +70,8 @@ class UserProfileModel {
   final List<InjuryModel> injuries;
   final bool onboardingComplete;
   final DateTime createdAt;
+  final String source;
+  final String? idempotencyKey;
 
   const UserProfileModel({
     required this.id,
@@ -86,10 +89,13 @@ class UserProfileModel {
     this.injuries = const [],
     this.onboardingComplete = false,
     required this.createdAt,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory UserProfileModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return UserProfileModel(
       id: doc.id,
       name: data['name'] as String? ?? '',
@@ -113,6 +119,8 @@ class UserProfileModel {
           ? ((data['meta'] as Map<String, dynamic>)['createdAt'] as Timestamp)
               .toDate()
           : DateTime.now(),
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -129,6 +137,7 @@ class UserProfileModel {
         'availableEquipment': availableEquipment,
         'injuries': injuries.map((i) => i.toMap()).toList(),
         'onboardingComplete': onboardingComplete,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   UserProfile toEntity() => UserProfile(

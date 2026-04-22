@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/assessment.dart';
 
 class AssessmentModel {
@@ -9,6 +10,8 @@ class AssessmentModel {
   final List<String> compensationResults;
   final List<Map<String, dynamic>> movementScores;
   final double overallScore;
+  final String source;
+  final String? idempotencyKey;
 
   const AssessmentModel({
     required this.id,
@@ -18,10 +21,13 @@ class AssessmentModel {
     required this.compensationResults,
     required this.movementScores,
     required this.overallScore,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory AssessmentModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return AssessmentModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
@@ -33,6 +39,8 @@ class AssessmentModel {
           (data['movementScores'] as List? ?? [])
               .map((e) => Map<String, dynamic>.from(e as Map))),
       overallScore: (data['overallScore'] as num?)?.toDouble() ?? 0.0,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -43,6 +51,7 @@ class AssessmentModel {
         'compensationResults': compensationResults,
         'movementScores': movementScores,
         'overallScore': overallScore,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Assessment toEntity() => Assessment(
@@ -91,6 +100,8 @@ class WeeklyPulseModel {
   final int motivationScore;
   final int sleepQualityScore;
   final String? notes;
+  final String source;
+  final String? idempotencyKey;
 
   const WeeklyPulseModel({
     required this.id,
@@ -101,10 +112,13 @@ class WeeklyPulseModel {
     required this.motivationScore,
     required this.sleepQualityScore,
     this.notes,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory WeeklyPulseModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return WeeklyPulseModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
@@ -114,6 +128,8 @@ class WeeklyPulseModel {
       motivationScore: (data['motivationScore'] as num?)?.toInt() ?? 3,
       sleepQualityScore: (data['sleepQualityScore'] as num?)?.toInt() ?? 3,
       notes: data['notes'] as String?,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -125,6 +141,7 @@ class WeeklyPulseModel {
         'motivationScore': motivationScore,
         'sleepQualityScore': sleepQualityScore,
         if (notes != null) 'notes': notes,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   WeeklyPulse toEntity() => WeeklyPulse(

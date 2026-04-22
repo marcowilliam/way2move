@@ -54,7 +54,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.manual,
+        origin: GoalOrigin.manual,
       ),
     );
   });
@@ -70,7 +70,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.suggested,
+        origin: GoalOrigin.suggested,
       )),
     );
 
@@ -114,7 +114,7 @@ void main() {
         targetMetric: '',
         targetValue: 0,
         unit: '',
-        source: GoalSource.suggested,
+        origin: GoalOrigin.suggested,
       )),
     );
 

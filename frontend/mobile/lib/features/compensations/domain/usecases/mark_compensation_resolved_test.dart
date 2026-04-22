@@ -22,7 +22,7 @@ void main() {
     region: CompensationRegion.pelvis,
     severity: CompensationSeverity.mild,
     status: CompensationStatus.resolved,
-    source: CompensationSource.assessment,
+    origin: CompensationOrigin.assessment,
     detectedAt: DateTime(2026, 1, 1),
     resolvedAt: DateTime(2026, 3, 1),
   );

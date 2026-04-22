@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/weight_log.dart';
 
 class WeightLogModel {
@@ -8,6 +9,8 @@ class WeightLogModel {
   final double weight;
   final String unit;
   final String? notes;
+  final String source;
+  final String? idempotencyKey;
 
   const WeightLogModel({
     required this.id,
@@ -16,10 +19,13 @@ class WeightLogModel {
     required this.weight,
     required this.unit,
     this.notes,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory WeightLogModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return WeightLogModel(
       id: doc.id,
       userId: data['userId'] as String,
@@ -27,6 +33,8 @@ class WeightLogModel {
       weight: (data['weight'] as num).toDouble(),
       unit: data['unit'] as String,
       notes: data['notes'] as String?,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -47,6 +55,7 @@ class WeightLogModel {
         'weight': weight,
         'unit': unit,
         if (notes != null) 'notes': notes,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   WeightLog toEntity() => WeightLog(

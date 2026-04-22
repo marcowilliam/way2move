@@ -22,7 +22,7 @@ void main() {
       mealType: MealType.breakfast,
       description: 'Oatmeal',
       stomachFeeling: 4,
-      source: 'manual',
+      origin: 'manual',
     ),
     Meal(
       id: 'm2',
@@ -31,7 +31,7 @@ void main() {
       mealType: MealType.lunch,
       description: 'Salad',
       stomachFeeling: 3,
-      source: 'manual',
+      origin: 'manual',
     ),
   ];
 

@@ -29,7 +29,7 @@ void main() {
         targetValue: 20,
         currentValue: 20,
         unit: 'reps',
-        source: GoalSource.suggested,
+        origin: GoalOrigin.suggested,
         status: GoalStatus.achieved,
         achievedAt: DateTime(2025, 1, 1),
       );

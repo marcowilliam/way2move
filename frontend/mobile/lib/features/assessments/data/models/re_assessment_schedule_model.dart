@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/re_assessment_schedule.dart';
 
 class ReAssessmentScheduleModel {
@@ -8,6 +9,8 @@ class ReAssessmentScheduleModel {
   final DateTime nextAssessmentDate;
   final int intervalWeeks;
   final DateTime? lastCompletedDate;
+  final String source;
+  final String? idempotencyKey;
 
   const ReAssessmentScheduleModel({
     required this.id,
@@ -15,10 +18,13 @@ class ReAssessmentScheduleModel {
     required this.nextAssessmentDate,
     required this.intervalWeeks,
     this.lastCompletedDate,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory ReAssessmentScheduleModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return ReAssessmentScheduleModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
@@ -27,6 +33,8 @@ class ReAssessmentScheduleModel {
       lastCompletedDate: data['lastCompletedDate'] != null
           ? (data['lastCompletedDate'] as Timestamp).toDate()
           : null,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -36,6 +44,7 @@ class ReAssessmentScheduleModel {
         'intervalWeeks': intervalWeeks,
         if (lastCompletedDate != null)
           'lastCompletedDate': Timestamp.fromDate(lastCompletedDate!),
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   ReAssessmentSchedule toEntity() => ReAssessmentSchedule(

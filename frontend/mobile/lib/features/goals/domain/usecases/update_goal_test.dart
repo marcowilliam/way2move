@@ -18,7 +18,7 @@ Goal _testGoal({double currentValue = 10}) => Goal(
       targetValue: 20,
       currentValue: currentValue,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     );
 
 void main() {

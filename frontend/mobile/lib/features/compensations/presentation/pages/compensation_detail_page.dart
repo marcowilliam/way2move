@@ -228,7 +228,7 @@ class _StatusCard extends StatelessWidget {
             ),
             _InfoRow(
               label: 'Source',
-              value: _sourceLabel(compensation.source),
+              value: _sourceLabel(compensation.origin),
             ),
             _InfoRow(
               label: 'Detected',
@@ -525,13 +525,13 @@ String _regionLabel(CompensationRegion r) {
   return labels[r] ?? r.name;
 }
 
-String _sourceLabel(CompensationSource s) {
+String _sourceLabel(CompensationOrigin s) {
   switch (s) {
-    case CompensationSource.assessment:
+    case CompensationOrigin.assessment:
       return 'Assessment';
-    case CompensationSource.journal:
+    case CompensationOrigin.journal:
       return 'Journal';
-    case CompensationSource.manual:
+    case CompensationOrigin.manual:
       return 'Manual';
   }
 }

@@ -25,7 +25,7 @@ void main() {
       expect(result.first.name, 'Correct forward head posture');
       expect(result.first.targetMetric, 'chin tuck reps');
       expect(result.first.targetValue, 15);
-      expect(result.first.source, GoalSource.suggested);
+      expect(result.first.origin, GoalOrigin.suggested);
     });
 
     test('returns one suggestion for poorCoreStability', () {
@@ -68,11 +68,11 @@ void main() {
       expect(result, isEmpty);
     });
 
-    test('all suggested goals have source: suggested', () {
+    test('all suggested goals have origin: suggested', () {
       final result = getSuggestedGoals(CompensationPattern.values);
 
       for (final goal in result) {
-        expect(goal.source, GoalSource.suggested);
+        expect(goal.origin, GoalOrigin.suggested);
       }
     });
   });

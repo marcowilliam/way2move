@@ -18,7 +18,7 @@ final _tActive = Compensation(
   region: CompensationRegion.pelvis,
   severity: CompensationSeverity.moderate,
   status: CompensationStatus.active,
-  source: CompensationSource.assessment,
+  origin: CompensationOrigin.assessment,
   detectedAt: DateTime(2026, 1, 1),
 );
 
@@ -30,7 +30,7 @@ final _tResolved = Compensation(
   region: CompensationRegion.leftShoulder,
   severity: CompensationSeverity.mild,
   status: CompensationStatus.resolved,
-  source: CompensationSource.manual,
+  origin: CompensationOrigin.manual,
   detectedAt: DateTime(2026, 1, 2),
   resolvedAt: DateTime(2026, 2, 1),
 );

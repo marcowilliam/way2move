@@ -103,7 +103,7 @@ class _ReviewAutoCreatedPageState extends ConsumerState<ReviewAutoCreatedPage> {
         mealType: _toNutritionMealType(item.mealType),
         description: item.meal.description,
         stomachFeeling: item.meal.stomachFeeling,
-        source: 'voice',
+        origin: 'voice',
         linkedJournalId: widget.journalId,
       );
       final result = await CreateMeal(mealRepo)(meal);

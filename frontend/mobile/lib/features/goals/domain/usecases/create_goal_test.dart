@@ -17,7 +17,7 @@ Goal _testGoal({String id = 'g1'}) => Goal(
       targetMetric: 'clamshell reps',
       targetValue: 20,
       unit: 'reps',
-      source: GoalSource.suggested,
+      origin: GoalOrigin.suggested,
     );
 
 void main() {

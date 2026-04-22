@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../shared/data/assistant_meta.dart';
 import '../../domain/entities/program.dart';
 
 class ProgramModel {
@@ -11,6 +12,8 @@ class ProgramModel {
   final bool isActive;
   final DateTime createdAt;
   final String? basedOnAssessmentId;
+  final String source;
+  final String? idempotencyKey;
 
   const ProgramModel({
     required this.id,
@@ -22,10 +25,13 @@ class ProgramModel {
     required this.isActive,
     required this.createdAt,
     this.basedOnAssessmentId,
+    this.source = WriteSource.inAppTyped,
+    this.idempotencyKey,
   });
 
   factory ProgramModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final meta = readAssistantMeta(data);
     return ProgramModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
@@ -37,6 +43,8 @@ class ProgramModel {
       isActive: data['isActive'] as bool? ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       basedOnAssessmentId: data['basedOnAssessmentId'] as String?,
+      source: meta.source,
+      idempotencyKey: meta.idempotencyKey,
     );
   }
 
@@ -50,6 +58,7 @@ class ProgramModel {
         'createdAt': Timestamp.fromDate(createdAt),
         if (basedOnAssessmentId != null)
           'basedOnAssessmentId': basedOnAssessmentId,
+        ...writeAssistantMeta(source: source, idempotencyKey: idempotencyKey),
       };
 
   Program toEntity() => Program(

@@ -17,7 +17,7 @@ Goal _goal(String id) => Goal(
       targetMetric: 'reps',
       targetValue: 10,
       unit: 'reps',
-      source: GoalSource.manual,
+      origin: GoalOrigin.manual,
     );
 
 void main() {

@@ -28,7 +28,7 @@ enum CompensationSeverity { mild, moderate, severe }
 
 enum CompensationStatus { active, improving, resolved }
 
-enum CompensationSource { assessment, journal, manual }
+enum CompensationOrigin { assessment, journal, manual }
 
 class CompensationHistoryEntry {
   final DateTime date;
@@ -63,7 +63,7 @@ class Compensation {
   final CompensationRegion region;
   final CompensationSeverity severity;
   final CompensationStatus status;
-  final CompensationSource source;
+  final CompensationOrigin origin;
   final List<String> relatedGoalIds;
   final List<String> relatedExerciseIds;
   final List<CompensationHistoryEntry> history;
@@ -78,7 +78,7 @@ class Compensation {
     required this.region,
     required this.severity,
     required this.status,
-    required this.source,
+    required this.origin,
     this.relatedGoalIds = const [],
     this.relatedExerciseIds = const [],
     this.history = const [],
@@ -94,7 +94,7 @@ class Compensation {
     CompensationRegion? region,
     CompensationSeverity? severity,
     CompensationStatus? status,
-    CompensationSource? source,
+    CompensationOrigin? origin,
     List<String>? relatedGoalIds,
     List<String>? relatedExerciseIds,
     List<CompensationHistoryEntry>? history,
@@ -109,7 +109,7 @@ class Compensation {
       region: region ?? this.region,
       severity: severity ?? this.severity,
       status: status ?? this.status,
-      source: source ?? this.source,
+      origin: origin ?? this.origin,
       relatedGoalIds: relatedGoalIds ?? this.relatedGoalIds,
       relatedExerciseIds: relatedExerciseIds ?? this.relatedExerciseIds,
       history: history ?? this.history,

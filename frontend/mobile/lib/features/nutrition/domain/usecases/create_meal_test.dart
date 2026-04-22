@@ -19,7 +19,7 @@ void main() {
     mealType: MealType.breakfast,
     description: 'Oatmeal with berries',
     stomachFeeling: 4,
-    source: 'manual',
+    origin: 'manual',
   );
 
   setUp(() {
