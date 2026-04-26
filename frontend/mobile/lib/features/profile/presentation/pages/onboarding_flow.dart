@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_keys.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -21,7 +22,6 @@ class OnboardingFlow extends ConsumerStatefulWidget {
 class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     with TickerProviderStateMixin {
   late final PageController _pageController;
-  late final AnimationController _progressController;
   int _currentStep = 0;
 
   // Form data
@@ -75,17 +75,11 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
   void initState() {
     super.initState();
     _pageController = PageController();
-    _progressController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _updateProgress();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _progressController.dispose();
     _nameController.dispose();
     _ageController.dispose();
     _heightController.dispose();
@@ -93,19 +87,14 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     super.dispose();
   }
 
-  void _updateProgress() {
-    _progressController.animateTo((_currentStep + 1) / _totalSteps);
-  }
-
   void _next() {
     if (_currentStep < _totalSteps - 1) {
       setState(() => _currentStep++);
       _pageController.animateToPage(
         _currentStep,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
+        duration: WayMotion.standard,
+        curve: WayMotion.easeStandard,
       );
-      _updateProgress();
     }
   }
 
@@ -114,10 +103,9 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
       setState(() => _currentStep--);
       _pageController.animateToPage(
         _currentStep,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
+        duration: WayMotion.standard,
+        curve: WayMotion.easeStandard,
       );
-      _updateProgress();
     }
   }
 
@@ -169,7 +157,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
       case 0:
         return true; // welcome — always can advance
       case 1:
-        return true; // name/age/body — optional fields
+        return true; // body info — optional fields
       case 2:
         return _selectedGoal != null;
       case 3:
@@ -190,46 +178,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
       body: SafeArea(
         child: Column(
           children: [
-            // Progress bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                children: [
-                  if (_currentStep > 0)
-                    IconButton(
-                      key: AppKeys.onboardingBackButton,
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: _back,
-                    )
-                  else
-                    const SizedBox(width: 48),
-                  Expanded(
-                    child: AnimatedBuilder(
-                      animation: _progressController,
-                      builder: (_, __) => ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: _progressController.value,
-                          minHeight: 6,
-                          backgroundColor: AppColors.surfaceVariant,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.primary),
-                        ),
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    key: AppKeys.onboardingSkipButton,
-                    onPressed: _saving ? null : _complete,
-                    child: const Text(
-                      'Skip',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Pages
+            _buildHeader(),
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -244,15 +193,15 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                 ],
               ),
             ),
-            // Bottom button
+            // Bottom button — pinned, theme-defaulted to terracotta.
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: AnimatedOpacity(
                   opacity: _canAdvance ? 1.0 : 0.4,
-                  duration: const Duration(milliseconds: 200),
+                  duration: WayMotion.micro,
                   child: FilledButton(
                     key: _currentStep == _totalSteps - 1
                         ? AppKeys.onboardingDoneButton
@@ -286,6 +235,66 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     );
   }
 
+  // ── Header — back · stretching dots · skip ────────────────────────────────
+
+  Widget _buildHeader() {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          if (_currentStep > 0)
+            IconButton(
+              key: AppKeys.onboardingBackButton,
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+              onPressed: _back,
+              color: theme.colorScheme.onSurface,
+            )
+          else
+            const SizedBox(width: AppSpacing.minTapTarget),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (int i = 0; i < _totalSteps; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: AnimatedContainer(
+                      duration: WayMotion.standard,
+                      curve: WayMotion.easeStandard,
+                      width: i <= _currentStep ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: i <= _currentStep
+                            ? AppColors.primary
+                            : theme.colorScheme.outline,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          TextButton(
+            key: AppKeys.onboardingSkipButton,
+            onPressed: _saving ? null : _complete,
+            child: Text(
+              'Skip',
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Step 0 — Welcome (already revamped in v1.0; left untouched) ───────────
+
   Widget _buildWelcomeStep() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
@@ -308,7 +317,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Train from the ground up — pelvis, ribcage, gait. Two minutes to set you up.',
+            'Pelvis, ribcage, gait. Two minutes to set you up.',
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -317,50 +326,36 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     );
   }
 
+  // ── Step 1 — Basic info (revamped) ────────────────────────────────────────
+
   Widget _buildBasicInfoStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+    return _StepShell(
+      prompt: 'A little about your body.',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
-          Text(
-            'About You',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'All fields are optional — fill in what you\'re comfortable with.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-          ),
-          const SizedBox(height: 32),
           TextField(
             key: AppKeys.onboardingNameField,
             controller: _nameController,
             decoration: const InputDecoration(
-              labelText: 'Display Name',
+              labelText: 'Name',
               hintText: 'How should we call you?',
-              prefixIcon: Icon(Icons.person_outline),
             ),
             textCapitalization: TextCapitalization.words,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           TextField(
             key: AppKeys.onboardingAgeField,
             controller: _ageController,
             decoration: const InputDecoration(
               labelText: 'Age',
               hintText: 'Years',
-              prefixIcon: Icon(Icons.cake_outlined),
             ),
             keyboardType: TextInputType.number,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: TextField(
@@ -368,21 +363,19 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                   controller: _heightController,
                   decoration: const InputDecoration(
                     labelText: 'Height',
-                    hintText: 'cm',
-                    prefixIcon: Icon(Icons.height),
+                    suffixText: 'cm',
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: TextField(
                   key: AppKeys.onboardingWeightField,
                   controller: _weightController,
                   decoration: const InputDecoration(
                     labelText: 'Weight',
-                    hintText: 'kg',
-                    prefixIcon: Icon(Icons.monitor_weight_outlined),
+                    suffixText: 'kg',
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -394,35 +387,27 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     );
   }
 
+  // ── Step 2 — Goal (revamped) ─────────────────────────────────────────────
+
   Widget _buildGoalStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+    return _StepShell(
+      prompt: "What's your main goal?",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(
-            'What\'s your main goal?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+        children: _goalOptions
+            .map(
+              (entry) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+                child: _OnboardingOptionCard(
+                  icon: entry.$1,
+                  label: entry.$2,
+                  subtitle: entry.$3,
+                  selected: _selectedGoal == entry.$4,
+                  onTap: () => setState(() => _selectedGoal = entry.$4),
                 ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'This helps us tailor your program recommendations.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-          ),
-          const SizedBox(height: 24),
-          ..._goalOptions.map((entry) => _buildSelectionTile(
-                icon: entry.$1,
-                label: entry.$2,
-                subtitle: entry.$3,
-                isSelected: _selectedGoal == entry.$4,
-                onTap: () => setState(() => _selectedGoal = entry.$4),
-              )),
-        ],
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -456,35 +441,34 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     (Icons.healing, 'Rehab', 'Recover from injury', TrainingGoal.rehab),
   ];
 
+  // ── Step 3 — Activity level (revamped) ───────────────────────────────────
+
   Widget _buildActivityLevelStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+    final theme = Theme.of(context);
+    return _StepShell(
+      prompt: 'How active are you right now?',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
-          Text(
-            'How active are you currently?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 24),
-          ..._activityOptions.map((entry) => _buildSelectionTile(
+          ..._activityOptions.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+              child: _OnboardingOptionCard(
                 icon: entry.$1,
                 label: entry.$2,
                 subtitle: entry.$3,
-                isSelected: _selectedActivityLevel == entry.$4,
-                onTap: () => setState(() => _selectedActivityLevel = entry.$4),
-              )),
-          const SizedBox(height: 24),
+                selected: _selectedActivityLevel == entry.$4,
+                onTap: () =>
+                    setState(() => _selectedActivityLevel = entry.$4),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
           Text(
             'Training days per week',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: theme.textTheme.titleSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm + 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(7, (i) {
@@ -493,23 +477,29 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
               return GestureDetector(
                 onTap: () => setState(() => _trainingDaysPerWeek = day),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 40,
-                  height: 40,
+                  duration: WayMotion.micro,
+                  curve: WayMotion.easeMicro,
+                  width: AppSpacing.minTapTarget - 8,
+                  height: AppSpacing.minTapTarget - 8,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    color: isSelected
+                        ? AppColors.primary
+                        : theme.colorScheme.surface,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusSm),
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected
+                          ? AppColors.primary
+                          : theme.colorScheme.outline,
                     ),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     '$day',
-                    style: TextStyle(
+                    style: theme.textTheme.labelLarge?.copyWith(
                       color: isSelected
                           ? AppColors.textOnPrimary
-                          : AppColors.textPrimary,
+                          : theme.colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -555,168 +545,250 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
     ),
   ];
 
+  // ── Step 4 — Sports (revamped) ───────────────────────────────────────────
+
   Widget _buildSportsStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(
-            'What sports or activities do you do?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Select all that apply. This helps us suggest relevant exercises.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _sportOptions.map((sport) {
-              final tag = sport.toLowerCase().replaceAll(' ', '_');
-              final isSelected = _selectedSports.contains(tag);
-              return FilterChip(
-                label: Text(sport),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      _selectedSports.add(tag);
-                    } else {
-                      _selectedSports.remove(tag);
-                    }
-                  });
-                },
-                selectedColor: AppColors.primaryLight.withValues(alpha: 0.3),
-                checkmarkColor: AppColors.primaryDark,
-              );
-            }).toList(),
-          ),
-        ],
+    return _StepShell(
+      prompt: 'What movement do you do?',
+      child: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: _sportOptions.map((sport) {
+          final tag = sport.toLowerCase().replaceAll(' ', '_');
+          final isSelected = _selectedSports.contains(tag);
+          return _OnboardingTagPill(
+            label: sport,
+            selected: isSelected,
+            onTap: () => setState(() {
+              if (isSelected) {
+                _selectedSports.remove(tag);
+              } else {
+                _selectedSports.add(tag);
+              }
+            }),
+          );
+        }).toList(),
       ),
     );
   }
+
+  // ── Step 5 — Equipment (revamped) ────────────────────────────────────────
 
   Widget _buildEquipmentStep() {
+    return _StepShell(
+      prompt: 'What do you have access to?',
+      child: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: _equipmentOptions.map((entry) {
+          final isSelected = _selectedEquipment.contains(entry.$1);
+          return _OnboardingTagPill(
+            label: entry.$2,
+            selected: isSelected,
+            onTap: () => setState(() {
+              if (isSelected) {
+                _selectedEquipment.remove(entry.$1);
+              } else {
+                _selectedEquipment.add(entry.$1);
+              }
+            }),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// ── Shared step shell — Fraunces italic prompt + scrollable content ─────────
+
+class _StepShell extends StatelessWidget {
+  const _StepShell({required this.prompt, required this.child});
+
+  final String prompt;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
           Text(
-            'What equipment do you have access to?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            prompt,
+            style: AppTypography.fraunces(
+              size: 24,
+              weight: FontWeight.w400,
+              color: theme.colorScheme.onSurface,
+              style: FontStyle.italic,
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'We\'ll only recommend exercises you can actually do.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _equipmentOptions.map((entry) {
-              final isSelected = _selectedEquipment.contains(entry.$1);
-              return FilterChip(
-                label: Text(entry.$2),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      _selectedEquipment.add(entry.$1);
-                    } else {
-                      _selectedEquipment.remove(entry.$1);
-                    }
-                  });
-                },
-                selectedColor: AppColors.primaryLight.withValues(alpha: 0.3),
-                checkmarkColor: AppColors.primaryDark,
-              );
-            }).toList(),
-          ),
+          const SizedBox(height: AppSpacing.lg),
+          child,
         ],
       ),
     );
   }
+}
 
-  Widget _buildSelectionTile({
-    required IconData icon,
-    required String label,
-    required String subtitle,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.08)
-                : AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected ? AppColors.primary : AppColors.border,
-              width: isSelected ? 2 : 1,
+// ── Option card — terracotta 4px left strip on selected ─────────────────────
+
+class _OnboardingOptionCard extends StatelessWidget {
+  const _OnboardingOptionCard({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: WayMotion.standard,
+            curve: WayMotion.easeStandard,
+            padding: EdgeInsets.fromLTRB(
+              selected ? AppSpacing.md + 4 : AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              border: Border.all(
+                color:
+                    selected ? AppColors.primary : theme.colorScheme.outline,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: selected
+                      ? AppColors.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: selected
+                              ? AppColors.primary
+                              : theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                if (selected)
+                  const Icon(
+                    Icons.check_circle,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+              ],
             ),
           ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                size: 28,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
-                            ? AppColors.primaryDark
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+          if (selected)
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: 0,
+              child: Container(
+                width: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(AppSpacing.radiusMd),
+                  ),
                 ),
               ),
-              if (isSelected)
-                const Icon(Icons.check_circle, color: AppColors.primary),
-            ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Tag pill — sage outlined chip, terracotta text on selected ─────────────
+
+class _OnboardingTagPill extends StatelessWidget {
+  const _OnboardingTagPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: WayMotion.micro,
+        curve: WayMotion.easeMicro,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.accent.withValues(alpha: 0.18)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          border: Border.all(
+            color: AppColors.accent.withValues(alpha: selected ? 0.9 : 0.45),
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? AppColors.primary : AppColors.accent,
+            letterSpacing: 0.2,
           ),
         ),
       ),
     );
   }
 }
+
+// ── Welcome step illustration (kept from v1.0) ──────────────────────────────
 
 /// Stylized standing figure on a terracotta ground line — echoes the logo
 /// mark's "rooted" construction. Used on the onboarding welcome and the

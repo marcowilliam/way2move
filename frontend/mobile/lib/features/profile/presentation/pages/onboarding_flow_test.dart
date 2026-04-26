@@ -72,7 +72,7 @@ void main() {
       await tester.tap(find.byKey(AppKeys.onboardingNextButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('About You'), findsOneWidget);
+      expect(find.text('A little about your body.'), findsOneWidget);
       expect(find.byKey(AppKeys.onboardingNameField), findsOneWidget);
       expect(find.byKey(AppKeys.onboardingAgeField), findsOneWidget);
     });
@@ -172,7 +172,7 @@ void main() {
       await tester.tap(find.byKey(AppKeys.onboardingNextButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('What sports or activities do you do?'), findsOneWidget);
+      expect(find.text('What movement do you do?'), findsOneWidget);
       expect(find.text('Running'), findsOneWidget);
       expect(find.text('Climbing'), findsOneWidget);
     });
@@ -226,10 +226,89 @@ void main() {
       await tester.pumpAndSettle();
 
       // Step 5: equipment — should show "Get Started"
-      expect(
-          find.text('What equipment do you have access to?'), findsOneWidget);
+      expect(find.text('What do you have access to?'), findsOneWidget);
       expect(find.byKey(AppKeys.onboardingDoneButton), findsOneWidget);
       expect(find.text('Get Started'), findsOneWidget);
+    });
+  });
+
+  group('OnboardingFlow revamped step prompts (C2)', () {
+    Future<void> advanceTo(WidgetTester tester, int targetStep) async {
+      // Helper — taps Continue [targetStep] times, selecting required options
+      // along the way (goal at step 2, activity at step 3) so the next button
+      // stays enabled.
+      for (int s = 0; s < targetStep; s++) {
+        if (s == 2) {
+          await tester.tap(find.text('Strength'));
+          await tester.pump();
+        } else if (s == 3) {
+          await tester.tap(find.text('Moderately Active'));
+          await tester.pump();
+        }
+        await tester.tap(find.byKey(AppKeys.onboardingNextButton));
+        await tester.pumpAndSettle();
+      }
+    }
+
+    testWidgets('step 1 shows Fraunces italic body prompt', (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+      await advanceTo(tester, 1);
+
+      expect(find.text('A little about your body.'), findsOneWidget);
+      expect(find.byKey(AppKeys.onboardingNextButton), findsOneWidget);
+    });
+
+    testWidgets('step 2 shows Fraunces italic goal prompt', (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+      await advanceTo(tester, 2);
+
+      expect(find.text("What's your main goal?"), findsOneWidget);
+      expect(find.byKey(AppKeys.onboardingNextButton), findsOneWidget);
+    });
+
+    testWidgets('step 3 shows Fraunces italic activity prompt', (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+      await advanceTo(tester, 3);
+
+      expect(find.text('How active are you right now?'), findsOneWidget);
+      expect(find.byKey(AppKeys.onboardingNextButton), findsOneWidget);
+    });
+
+    testWidgets('step 4 shows Fraunces italic movement prompt',
+        (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+      await advanceTo(tester, 4);
+
+      expect(find.text('What movement do you do?'), findsOneWidget);
+      expect(find.byKey(AppKeys.onboardingNextButton), findsOneWidget);
+    });
+
+    testWidgets('step 5 shows Fraunces italic equipment prompt + Done CTA',
+        (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+      await advanceTo(tester, 5);
+
+      expect(find.text('What do you have access to?'), findsOneWidget);
+      expect(find.byKey(AppKeys.onboardingDoneButton), findsOneWidget);
+    });
+
+    testWidgets('header renders six progress dots', (tester) async {
+      await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
+      await tester.pumpAndSettle();
+
+      // 6 stretching AnimatedContainers in the header — one per step.
+      // We assert ≥6 since AnimatedContainers also appear in option cards
+      // once we reach steps that use them, but on the welcome step (0) the
+      // body has no AnimatedContainers.
+      expect(
+        find.byType(AnimatedContainer),
+        findsNWidgets(6),
+      );
     });
   });
 }
