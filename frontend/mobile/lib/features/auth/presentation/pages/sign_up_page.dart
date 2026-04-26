@@ -100,7 +100,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
                 const SizedBox(height: AppSpacing.xl),
                 Center(
                   child: Text(
-                    'Start from the ground up.',
+                    'Create your account.',
                     style: Theme.of(context).textTheme.displaySmall,
                     textAlign: TextAlign.center,
                   ),

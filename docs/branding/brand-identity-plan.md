@@ -242,14 +242,7 @@ Used only for: weight/rep data in a compact table, timestamps inside a journal e
 | `logo/app-icon-dark.svg` | Mark on warm-charcoal rounded square | Dark-mode icon variant |
 | `logo/wordmark.svg` | "WAY2MOVE" text only | Web headers when space is tight |
 | `logo/logo-full-horizontal.svg` | Mark + wordmark side by side | Splash screens, marketing headers |
-| `logo/logo-stacked.svg` | Mark above wordmark + tagline | Splash screen, centered layouts |
-
-### Tagline
-
-**Primary:** "Train from the ground up."
-**Secondary (for longer copy):** "The movement OS for normal-life athletes."
-
-Primary goes under the logo lockup in the splash screen. It's five words. It says what we do (train) and the fundamental methodology (ground up — PRI/DNS, gait cycle). It's a command, not a claim.
+| `logo/logo-stacked.svg` | Mark above wordmark | Splash screen, centered layouts |
 
 ---
 

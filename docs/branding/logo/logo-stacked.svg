@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400" width="480" height="400">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360">
   <!-- Mark -->
   <g transform="translate(124, 16) scale(0.83)">
     <path
@@ -23,15 +23,6 @@
       fill: #1F1815;
     }
     .wm-s-2 { fill: #C4622D; }
-    .tagline {
-      font-family: 'Fraunces', Georgia, serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 20px;
-      letter-spacing: 0.2px;
-      fill: #716660;
-    }
   </style>
   <text x="240" y="308" class="wm-s" text-anchor="middle">WAY<tspan class="wm-s-2">2</tspan>MOVE</text>
-  <text x="240" y="352" class="tagline" text-anchor="middle">Train from the ground up.</text>
 </svg>

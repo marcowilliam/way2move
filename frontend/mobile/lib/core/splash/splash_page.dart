@@ -8,8 +8,8 @@ import '../../shared/widgets/way2move_logo_mark.dart';
 
 /// First-paint screen shown while auth / profile state is loading. Matches
 /// mockup §1: stacked logo fades in (280ms), wordmark slides in (200ms
-/// delay), italic-Fraunces tagline ghosts in (500ms delay), mark pulses once
-/// softly (680ms reward curve) before the router transitions away.
+/// delay), mark pulses once softly (680ms reward curve) before the router
+/// transitions away.
 ///
 /// This widget owns only the visual; the router decides when to leave it.
 class SplashPage extends StatefulWidget {
@@ -26,7 +26,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late final Animation<double> _markOpacity;
   late final Animation<double> _wordmarkOpacity;
   late final Animation<Offset> _wordmarkSlide;
-  late final Animation<double> _taglineOpacity;
   late final Animation<double> _markScale;
 
   @override
@@ -57,12 +56,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(_wordmarkOpacity);
-
-    // Tagline ghosts in 500–900ms.
-    _taglineOpacity = CurvedAnimation(
-      parent: _fadeController,
-      curve: const Interval(0.56, 1.0, curve: WayMotion.easeStandard),
-    );
 
     // Soft pulse — 1.0 → 1.04 → 1.0 over 680ms.
     _markScale = TweenSequence<double>([
@@ -113,21 +106,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 child: FadeTransition(
                   opacity: _wordmarkOpacity,
                   child: _Wordmark(textColor: textColor),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              FadeTransition(
-                opacity: _taglineOpacity,
-                child: Text(
-                  'Train from the ground up.',
-                  style: AppTypography.fraunces(
-                    size: 18,
-                    weight: FontWeight.w400,
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : AppColors.textSecondary,
-                    style: FontStyle.italic,
-                  ),
                 ),
               ),
             ],

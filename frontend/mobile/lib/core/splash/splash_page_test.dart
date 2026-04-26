@@ -6,7 +6,7 @@ import 'package:way2move/shared/widgets/way2move_logo_mark.dart';
 
 void main() {
   group('SplashPage', () {
-    testWidgets('renders mark, wordmark, and tagline', (tester) async {
+    testWidgets('renders mark and wordmark', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.dark,
@@ -19,10 +19,9 @@ void main() {
       expect(find.text('WAY'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('MOVE'), findsOneWidget);
-      expect(find.text('Train from the ground up.'), findsOneWidget);
     });
 
-    testWidgets('tagline fades in after the mark (staggered entrance)',
+    testWidgets('wordmark fades in after the mark (staggered entrance)',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -39,17 +38,17 @@ void main() {
           )
           .first);
 
-      // The tagline's interval starts at 56% of the 900ms timeline, so at
-      // 16ms it is still fully hidden.
-      final earlyTaglineOpacity =
-          firstFade(find.text('Train from the ground up.')).opacity.value;
-      expect(earlyTaglineOpacity, lessThan(0.05));
+      // The wordmark's interval starts at 22% of the 900ms timeline, so at
+      // 16ms it is still nearly fully hidden.
+      final earlyWordmarkOpacity =
+          firstFade(find.text('WAY')).opacity.value;
+      expect(earlyWordmarkOpacity, lessThan(0.1));
 
-      // After the full entrance the tagline is fully visible.
+      // After the full entrance the wordmark is fully visible.
       await tester.pump(const Duration(milliseconds: 950));
-      final lateTaglineOpacity =
-          firstFade(find.text('Train from the ground up.')).opacity.value;
-      expect(lateTaglineOpacity, greaterThan(0.9));
+      final lateWordmarkOpacity =
+          firstFade(find.text('WAY')).opacity.value;
+      expect(lateWordmarkOpacity, greaterThan(0.9));
     });
   });
 }
