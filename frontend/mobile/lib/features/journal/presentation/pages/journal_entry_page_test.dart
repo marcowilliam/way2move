@@ -5,6 +5,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:way2move/core/constants/app_keys.dart';
+import 'package:way2move/core/services/stt/stt_provider.dart';
+import 'package:way2move/core/services/stt/stt_service.dart';
 import 'package:way2move/features/auth/presentation/providers/auth_provider.dart';
 import 'package:way2move/features/journal/data/repositories/journal_repository_impl.dart';
 import 'package:way2move/features/journal/domain/entities/journal_entry.dart';
@@ -12,6 +14,27 @@ import 'package:way2move/features/journal/domain/repositories/journal_repository
 import 'package:way2move/features/journal/presentation/pages/journal_entry_page.dart';
 
 class MockJournalRepository extends Mock implements JournalRepository {}
+
+/// Test fake — VoiceInputWidget reads [sttServiceProvider] in initState, which
+/// would otherwise resolve [FirebaseRemoteConfig.instance] and crash the test.
+class _FakeSttService implements SttService {
+  @override
+  bool get supportsLiveTranscription => false;
+
+  @override
+  Future<bool> isAvailable() async => false;
+
+  @override
+  Future<void> startListening({
+    required void Function(String text) onPartialResult,
+  }) async {}
+
+  @override
+  Future<String> stopListening({String? audioPath}) async => '';
+
+  @override
+  void dispose() {}
+}
 
 JournalEntry _stubEntry() => JournalEntry(
       id: 'j1',
@@ -40,6 +63,7 @@ void main() {
       overrides: [
         journalRepositoryProvider.overrideWithValue(mockRepo),
         currentUserIdProvider.overrideWithValue('u1'),
+        sttServiceProvider.overrideWithValue(_FakeSttService()),
       ],
       child: MaterialApp(
         home: JournalEntryPage(type: type),

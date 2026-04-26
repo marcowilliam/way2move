@@ -59,8 +59,9 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
 
-  SttService get _stt =>
-      widget.sttServiceOverride ?? ref.read(sttServiceProvider);
+  // Resolved once in initState so dispose() never re-reads the provider after
+  // the consumer element is unmounted (which throws StateError under Riverpod).
+  late final SttService _stt;
 
   @override
   void initState() {
@@ -73,6 +74,8 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
     _pulseAnimation = Tween<double>(begin: 1.0, end: 104 / 96).animate(
       CurvedAnimation(parent: _pulseController, curve: WayMotion.easeBreath),
     );
+
+    _stt = widget.sttServiceOverride ?? ref.read(sttServiceProvider);
 
     _initStt();
   }
