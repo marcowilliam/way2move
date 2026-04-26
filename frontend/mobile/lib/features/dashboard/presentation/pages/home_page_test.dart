@@ -175,7 +175,8 @@ void main() {
     expect(find.textContaining('Test'), findsWidgets);
   });
 
-  testWidgets('shows "No session today" card when no sessions', (tester) async {
+  testWidgets('shows "No session today" focal card when no sessions',
+      (tester) async {
     await tester.pumpWidget(_buildPage(
         sessionRepo: sessionRepo,
         goalRepo: goalRepo,
@@ -185,7 +186,7 @@ void main() {
     expect(find.text('No session today'), findsOneWidget);
   });
 
-  testWidgets('shows planned session card when session is planned',
+  testWidgets('shows planned session focal card when session is planned',
       (tester) async {
     final sessions = [_session(focus: 'Mobility Flow')];
     when(() => sessionRepo.watchSessionsByDate(any(), any()))
@@ -198,10 +199,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Mobility Flow'), findsOneWidget);
-    expect(find.text('Start Session'), findsWidgets);
+    expect(find.text('Start Session'), findsOneWidget);
   });
 
-  testWidgets('shows completed card when session is done today',
+  testWidgets('shows completed focal card when session is done today',
       (tester) async {
     final sessions = [_session(status: SessionStatus.completed, focus: 'Core')];
     when(() => sessionRepo.watchSessionsByDate(any(), any()))
@@ -216,25 +217,25 @@ void main() {
     expect(find.text('Great work today!'), findsOneWidget);
   });
 
-  testWidgets('shows quick action tiles', (tester) async {
+  testWidgets('shows quick log pill row with all four pills', (tester) async {
     await tester.pumpWidget(_buildPage(
         sessionRepo: sessionRepo,
         goalRepo: goalRepo,
         profileRepo: profileRepo));
     await tester.pumpAndSettle();
 
-    // Scroll down to reveal sections below the monthly heat map.
+    // Scroll to the bottom — pill row is the last section.
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -800));
     await tester.pumpAndSettle();
 
-    expect(find.text('Quick Actions'), findsOneWidget);
-    expect(find.text('New Session'), findsOneWidget);
-    expect(find.text('Assessment'), findsOneWidget);
-    expect(find.text('My Program'), findsOneWidget);
-    expect(find.text('Exercises'), findsOneWidget);
+    expect(find.byKey(AppKeys.trackTodayGrid), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogJournal), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogMeal), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionLogSleep), findsOneWidget);
+    expect(find.byKey(AppKeys.quickActionProgressPhoto), findsOneWidget);
   });
 
-  testWidgets('shows track today tiles', (tester) async {
+  testWidgets('shows pill row labels', (tester) async {
     await tester.pumpWidget(_buildPage(
         sessionRepo: sessionRepo,
         goalRepo: goalRepo,
@@ -244,11 +245,10 @@ void main() {
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(AppKeys.trackTodayGrid), findsOneWidget);
-    expect(find.byKey(AppKeys.quickActionLogJournal), findsOneWidget);
-    expect(find.byKey(AppKeys.quickActionLogMeal), findsOneWidget);
-    expect(find.byKey(AppKeys.quickActionLogSleep), findsOneWidget);
-    expect(find.byKey(AppKeys.quickActionProgressPhoto), findsOneWidget);
+    expect(find.text('Journal'), findsOneWidget);
+    expect(find.text('Meal'), findsOneWidget);
+    expect(find.text('Sleep'), findsOneWidget);
+    expect(find.text('Photo'), findsOneWidget);
   });
 
   testWidgets('shows goal progress cards when goals exist', (tester) async {
@@ -267,6 +267,28 @@ void main() {
 
     expect(find.text('Active Goals'), findsOneWidget);
     expect(find.text('Goal g1'), findsOneWidget);
+  });
+
+  testWidgets('caps goal section at two visible goals with see-all link',
+      (tester) async {
+    final goals = [_goal('g1'), _goal('g2'), _goal('g3'), _goal('g4')];
+    when(() => goalRepo.getByStatus(any(), any()))
+        .thenAnswer((_) async => Right(goals));
+
+    await tester.pumpWidget(_buildPage(
+        sessionRepo: sessionRepo,
+        goalRepo: goalRepo,
+        profileRepo: profileRepo));
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Goal g1'), findsOneWidget);
+    expect(find.text('Goal g2'), findsOneWidget);
+    expect(find.text('Goal g3'), findsNothing);
+    expect(find.text('Goal g4'), findsNothing);
+    expect(find.text('See all goals'), findsOneWidget);
   });
 
   testWidgets('shows no goals CTA when goals list is empty', (tester) async {
