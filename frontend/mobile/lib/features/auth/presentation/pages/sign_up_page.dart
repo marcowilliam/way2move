@@ -197,8 +197,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage>
               ),
               validator: (v) {
                 if (v == null || v.isEmpty) return 'Password is required';
-                if (v.length < 8)
+                if (v.length < 8) {
                   return 'Password must be at least 8 characters';
+                }
                 return null;
               },
             ),
