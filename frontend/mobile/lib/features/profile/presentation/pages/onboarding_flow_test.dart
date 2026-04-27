@@ -277,8 +277,7 @@ void main() {
       expect(find.byKey(AppKeys.onboardingNextButton), findsOneWidget);
     });
 
-    testWidgets('step 4 shows Fraunces italic movement prompt',
-        (tester) async {
+    testWidgets('step 4 shows Fraunces italic movement prompt', (tester) async {
       await tester.pumpWidget(_buildTestWidget(repo: mockRepo));
       await tester.pumpAndSettle();
       await advanceTo(tester, 4);

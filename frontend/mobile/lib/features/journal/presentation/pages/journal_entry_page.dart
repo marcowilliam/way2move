@@ -247,9 +247,9 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
                     Text(
                       'Linked to today\'s session',
                       style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.accent,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -257,7 +257,6 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             ),
             const SizedBox(height: AppSpacing.lg),
           ],
-
           Center(
             child: VoiceInputWidget(
               onTranscription: (text) {
@@ -273,14 +272,12 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
               },
             ),
           ),
-
           if (_recordedAudioPath != null) ...[
             const SizedBox(height: AppSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.audio_file,
-                    size: 14, color: AppColors.accent),
+                const Icon(Icons.audio_file, size: 14, color: AppColors.accent),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   'Audio recorded — will upload with entry',
@@ -290,9 +287,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
               ],
             ),
           ],
-
           const SizedBox(height: AppSpacing.lg),
-
           TextField(
             key: AppKeys.journalContentField,
             controller: _contentController,
@@ -302,9 +297,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
               hintText: 'Or type your entry…',
             ),
           ),
-
           const SizedBox(height: AppSpacing.lg),
-
           Text(
             'Mood',
             style: theme.textTheme.labelSmall,
@@ -339,9 +332,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
               );
             }),
           ),
-
           const SizedBox(height: AppSpacing.lg),
-
           Text(
             'Energy',
             style: theme.textTheme.labelSmall,
@@ -366,9 +357,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
                   size: 18, color: theme.colorScheme.onSurfaceVariant),
             ],
           ),
-
           const SizedBox(height: AppSpacing.lg),
-
           Text(
             'Pain points',
             style: theme.textTheme.labelSmall,
@@ -394,9 +383,7 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
               );
             }).toList(),
           ),
-
           const SizedBox(height: AppSpacing.xl),
-
           FilledButton(
             key: AppKeys.journalSaveButton,
             onPressed: _isSaving ? null : _save,
@@ -405,7 +392,6 @@ class _JournalEntryPageState extends ConsumerState<JournalEntryPage> {
             ),
             child: const Text('Save entry'),
           ),
-
           const SizedBox(height: AppSpacing.lg),
         ],
       ),

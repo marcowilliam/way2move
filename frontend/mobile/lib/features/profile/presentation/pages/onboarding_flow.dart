@@ -458,8 +458,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                 label: entry.$2,
                 subtitle: entry.$3,
                 selected: _selectedActivityLevel == entry.$4,
-                onTap: () =>
-                    setState(() => _selectedActivityLevel = entry.$4),
+                onTap: () => setState(() => _selectedActivityLevel = entry.$4),
               ),
             ),
           ),
@@ -485,8 +484,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                     color: isSelected
                         ? AppColors.primary
                         : theme.colorScheme.surface,
-                    borderRadius:
-                        BorderRadius.circular(AppSpacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     border: Border.all(
                       color: isSelected
                           ? AppColors.primary
@@ -675,8 +673,7 @@ class _OnboardingOptionCard extends StatelessWidget {
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(
-                color:
-                    selected ? AppColors.primary : theme.colorScheme.outline,
+                color: selected ? AppColors.primary : theme.colorScheme.outline,
               ),
             ),
             child: Row(

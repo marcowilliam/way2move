@@ -61,10 +61,10 @@ void main() {
   });
 
   group('StartSessionFromWorkout', () {
-    test('creates a session that copies workout name, kind, and blocks', () async {
+    test('creates a session that copies workout name, kind, and blocks',
+        () async {
       Session? captured;
-      when(() => mockSessionRepo.createSession(any()))
-          .thenAnswer((inv) async {
+      when(() => mockSessionRepo.createSession(any())).thenAnswer((inv) async {
         captured = inv.positionalArguments.first as Session;
         return Right(captured!);
       });
@@ -87,8 +87,7 @@ void main() {
 
     test('skips parked (currentlyIncluded=false) blocks by default', () async {
       Session? captured;
-      when(() => mockSessionRepo.createSession(any()))
-          .thenAnswer((inv) async {
+      when(() => mockSessionRepo.createSession(any())).thenAnswer((inv) async {
         captured = inv.positionalArguments.first as Session;
         return Right(captured!);
       });
@@ -109,8 +108,7 @@ void main() {
 
     test('includes parked blocks when includeParked: true', () async {
       Session? captured;
-      when(() => mockSessionRepo.createSession(any()))
-          .thenAnswer((inv) async {
+      when(() => mockSessionRepo.createSession(any())).thenAnswer((inv) async {
         captured = inv.positionalArguments.first as Session;
         return Right(captured!);
       });
@@ -128,8 +126,7 @@ void main() {
 
     test('derives durationCategory from workout estimatedMinutes', () async {
       Session? captured;
-      when(() => mockSessionRepo.createSession(any()))
-          .thenAnswer((inv) async {
+      when(() => mockSessionRepo.createSession(any())).thenAnswer((inv) async {
         captured = inv.positionalArguments.first as Session;
         return Right(captured!);
       });
@@ -146,8 +143,7 @@ void main() {
 
     test('passes optional place through to the session', () async {
       Session? captured;
-      when(() => mockSessionRepo.createSession(any()))
-          .thenAnswer((inv) async {
+      when(() => mockSessionRepo.createSession(any())).thenAnswer((inv) async {
         captured = inv.positionalArguments.first as Session;
         return Right(captured!);
       });

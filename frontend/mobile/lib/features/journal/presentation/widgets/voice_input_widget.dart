@@ -224,9 +224,7 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
             },
           ),
         ),
-
         const SizedBox(height: AppSpacing.md),
-
         AnimatedSwitcher(
           duration: WayMotion.micro,
           child: _permissionDenied
@@ -249,7 +247,6 @@ class _VoiceInputWidgetState extends ConsumerState<VoiceInputWidget>
                   style: theme.textTheme.labelSmall,
                 ),
         ),
-
         if (_liveText.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           Container(

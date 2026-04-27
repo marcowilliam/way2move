@@ -63,7 +63,8 @@ class _ExerciseDetailViewState extends State<_ExerciseDetailView>
       vsync: this,
       duration: WayMotion.settled,
     );
-    _fadeAnim = CurvedAnimation(parent: _controller, curve: WayMotion.easeSettled);
+    _fadeAnim =
+        CurvedAnimation(parent: _controller, curve: WayMotion.easeSettled);
     _controller.forward();
   }
 
@@ -150,8 +151,7 @@ class _ExerciseDetailViewState extends State<_ExerciseDetailView>
                                 padding: const EdgeInsets.only(
                                     bottom: AppSpacing.sm),
                                 child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
                                       width: 24,
@@ -216,8 +216,7 @@ class _ExerciseDetailViewState extends State<_ExerciseDetailView>
                         spacing: AppSpacing.sm,
                         runSpacing: AppSpacing.xs,
                         children: exercise.equipmentTags
-                            .map((t) =>
-                                _RegionChip(label: _humanize(t.name)))
+                            .map((t) => _RegionChip(label: _humanize(t.name)))
                             .toList(),
                       ),
                     ],
@@ -409,7 +408,8 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(widget.title, style: theme.textTheme.titleMedium),
+                    child:
+                        Text(widget.title, style: theme.textTheme.titleMedium),
                   ),
                   AnimatedRotation(
                     duration: WayMotion.micro,
@@ -465,13 +465,15 @@ class _RelatedList extends ConsumerWidget {
                   onTap: () => context.push(Routes.exerciseDetail(id)),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                     child: Row(
                       children: [
                         Icon(Icons.self_improvement, size: 18, color: accent),
                         const SizedBox(width: AppSpacing.sm + 2),
                         Expanded(
-                          child: Text(ex.name, style: theme.textTheme.bodyMedium),
+                          child:
+                              Text(ex.name, style: theme.textTheme.bodyMedium),
                         ),
                         Icon(
                           Icons.chevron_right,

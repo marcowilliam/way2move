@@ -179,7 +179,8 @@ void main() {
       expect(find.text('Core completed'), findsOneWidget);
     });
 
-    testWidgets('no-session state shows missed-yesterday banner when applicable',
+    testWidgets(
+        'no-session state shows missed-yesterday banner when applicable',
         (tester) async {
       when(() => sessionRepo.watchSessionsByDate(any(), any()))
           .thenAnswer((_) => Stream.value([]));

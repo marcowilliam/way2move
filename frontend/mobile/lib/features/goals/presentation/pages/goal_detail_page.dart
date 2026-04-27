@@ -31,11 +31,13 @@ class _GoalDetailPageState extends ConsumerState<GoalDetailPage>
       vsync: this,
       duration: WayMotion.settled,
     );
-    _fadeIn = CurvedAnimation(parent: _entryController, curve: WayMotion.easeSettled);
+    _fadeIn =
+        CurvedAnimation(parent: _entryController, curve: WayMotion.easeSettled);
     _slideIn = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _entryController, curve: WayMotion.easeSettled));
+    ).animate(CurvedAnimation(
+        parent: _entryController, curve: WayMotion.easeSettled));
     _entryController.forward();
   }
 
@@ -448,7 +450,8 @@ class _AchievementCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.emoji_events_rounded, color: AppColors.reward, size: 32),
+          const Icon(Icons.emoji_events_rounded,
+              color: AppColors.reward, size: 32),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(

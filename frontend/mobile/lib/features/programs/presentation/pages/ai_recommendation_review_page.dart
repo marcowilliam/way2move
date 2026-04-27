@@ -484,9 +484,8 @@ class _DayCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: isRest
-                          ? AppColors.accent
-                          : AppColors.textOnPrimary,
+                      color:
+                          isRest ? AppColors.accent : AppColors.textOnPrimary,
                     ),
                   ),
                 ),
@@ -587,8 +586,7 @@ class _ExerciseRow extends StatelessWidget {
               onTap: onEdit,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.xs),
+                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: onPrimary
                       ? AppColors.textOnPrimary.withValues(alpha: 0.2)

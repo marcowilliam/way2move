@@ -68,8 +68,7 @@ void main() {
     );
 
     expect(captured!.plannedSlots.length, 2);
-    final newSlot =
-        captured!.plannedSlots.firstWhere((s) => s.day == 2);
+    final newSlot = captured!.plannedSlots.firstWhere((s) => s.day == 2);
     expect(newSlot.slot, SessionSlot.morning);
     expect(newSlot.workoutId, 'day-b');
     expect(newSlot.autoAssigned, false);

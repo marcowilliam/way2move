@@ -43,133 +43,133 @@ class ProfilePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-          _ProfileHeader(name: name, email: email),
-          const SizedBox(height: AppSpacing.md),
-          _StatsRow(
-            streak: streak,
-            sessions: totalSessions,
-            goals: activeGoalsCount,
-          ),
-          if (!onboardingDone) ...[
-            const SizedBox(height: AppSpacing.lg),
-            const _OnboardingCta(),
-          ],
-          const SizedBox(height: AppSpacing.xl),
-          _NavGroupCard(
-            title: 'Training',
-            tiles: [
-              _NavEntry(
-                icon: Icons.fitness_center_outlined,
-                label: 'Exercises',
-                subtitle: 'Browse the movement library',
-                onTap: () => context.go(Routes.exercises),
-              ),
-              _NavEntry(
-                icon: Icons.grid_view_outlined,
-                label: 'My Program',
-                subtitle: 'View and manage training program',
-                onTap: () => context.go(Routes.programs),
-              ),
-              _NavEntry(
-                icon: Icons.trending_up_outlined,
-                label: 'Progressions',
-                subtitle: 'Auto-progression rules',
-                onTap: () => context.push(Routes.progressionSettings),
-              ),
+            _ProfileHeader(name: name, email: email),
+            const SizedBox(height: AppSpacing.md),
+            _StatsRow(
+              streak: streak,
+              sessions: totalSessions,
+              goals: activeGoalsCount,
+            ),
+            if (!onboardingDone) ...[
+              const SizedBox(height: AppSpacing.lg),
+              const _OnboardingCta(),
             ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _NavGroupCard(
-            title: 'Body awareness',
-            tiles: [
-              _NavEntry(
-                icon: Icons.assignment_outlined,
-                label: 'Movement Assessment',
-                subtitle: 'Run or view your latest assessment',
-                onTap: () => context.push(Routes.assessment),
-              ),
-              _NavEntry(
-                icon: Icons.accessibility_new_outlined,
-                label: 'Compensation Profile',
-                subtitle: 'Tracked movement imbalances',
-                onTap: () => context.push(Routes.compensationProfile),
-              ),
-              _NavEntry(
-                icon: Icons.flag_outlined,
-                label: 'Movement Goals',
-                subtitle: 'Active goals and progress',
-                onTap: () => context.go(Routes.goals),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _NavGroupCard(
-            title: 'Daily',
-            tiles: [
-              _NavEntry(
-                icon: Icons.mic_none_outlined,
-                label: 'Journal',
-                subtitle: 'Voice-first reflections',
-                onTap: () => context.push(Routes.journalHistory),
-              ),
-              _NavEntry(
-                icon: Icons.restaurant_outlined,
-                label: 'Nutrition',
-                subtitle: 'Meals and gut awareness',
-                onTap: () => context.go(Routes.nutrition),
-              ),
-              _NavEntry(
-                icon: Icons.nightlight_outlined,
-                label: 'Sleep',
-                subtitle: 'Bed, wake, and quality',
-                onTap: () => context.push(Routes.sleepHistory),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _NavGroupCard(
-            title: 'You',
-            tiles: [
-              _NavEntry(
-                icon: Icons.photo_library_outlined,
-                label: 'Photos',
-                subtitle: 'Progress timeline',
-                onTap: () => context.push(Routes.photoTimeline),
-              ),
-              _NavEntry(
-                icon: Icons.person_outline,
-                label: 'Edit Profile',
-                subtitle: 'Name, age, height, weight',
-                onTap: () => context.push(Routes.profileEdit),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Center(
-            child: TextButton.icon(
-              key: AppKeys.signOutButton,
-              onPressed: () =>
-                  ref.read(authNotifierProvider.notifier).signOut(),
-              icon: Icon(
-                Icons.logout,
-                size: 18,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              label: Text(
-                'Sign Out',
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.sm,
+            const SizedBox(height: AppSpacing.xl),
+            _NavGroupCard(
+              title: 'Training',
+              tiles: [
+                _NavEntry(
+                  icon: Icons.fitness_center_outlined,
+                  label: 'Exercises',
+                  subtitle: 'Browse the movement library',
+                  onTap: () => context.go(Routes.exercises),
+                ),
+                _NavEntry(
+                  icon: Icons.grid_view_outlined,
+                  label: 'My Program',
+                  subtitle: 'View and manage training program',
+                  onTap: () => context.go(Routes.programs),
+                ),
+                _NavEntry(
+                  icon: Icons.trending_up_outlined,
+                  label: 'Progressions',
+                  subtitle: 'Auto-progression rules',
+                  onTap: () => context.push(Routes.progressionSettings),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _NavGroupCard(
+              title: 'Body awareness',
+              tiles: [
+                _NavEntry(
+                  icon: Icons.assignment_outlined,
+                  label: 'Movement Assessment',
+                  subtitle: 'Run or view your latest assessment',
+                  onTap: () => context.push(Routes.assessment),
+                ),
+                _NavEntry(
+                  icon: Icons.accessibility_new_outlined,
+                  label: 'Compensation Profile',
+                  subtitle: 'Tracked movement imbalances',
+                  onTap: () => context.push(Routes.compensationProfile),
+                ),
+                _NavEntry(
+                  icon: Icons.flag_outlined,
+                  label: 'Movement Goals',
+                  subtitle: 'Active goals and progress',
+                  onTap: () => context.go(Routes.goals),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _NavGroupCard(
+              title: 'Daily',
+              tiles: [
+                _NavEntry(
+                  icon: Icons.mic_none_outlined,
+                  label: 'Journal',
+                  subtitle: 'Voice-first reflections',
+                  onTap: () => context.push(Routes.journalHistory),
+                ),
+                _NavEntry(
+                  icon: Icons.restaurant_outlined,
+                  label: 'Nutrition',
+                  subtitle: 'Meals and gut awareness',
+                  onTap: () => context.go(Routes.nutrition),
+                ),
+                _NavEntry(
+                  icon: Icons.nightlight_outlined,
+                  label: 'Sleep',
+                  subtitle: 'Bed, wake, and quality',
+                  onTap: () => context.push(Routes.sleepHistory),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _NavGroupCard(
+              title: 'You',
+              tiles: [
+                _NavEntry(
+                  icon: Icons.photo_library_outlined,
+                  label: 'Photos',
+                  subtitle: 'Progress timeline',
+                  onTap: () => context.push(Routes.photoTimeline),
+                ),
+                _NavEntry(
+                  icon: Icons.person_outline,
+                  label: 'Edit Profile',
+                  subtitle: 'Name, age, height, weight',
+                  onTap: () => context.push(Routes.profileEdit),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Center(
+              child: TextButton.icon(
+                key: AppKeys.signOutButton,
+                onPressed: () =>
+                    ref.read(authNotifierProvider.notifier).signOut(),
+                icon: Icon(
+                  Icons.logout,
+                  size: 18,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                label: Text(
+                  'Sign Out',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.onSurfaceVariant,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
         ),
       ),
     );
@@ -327,8 +327,7 @@ class _OnboardingCta extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.waving_hand_outlined,
-                    color: AppColors.accent),
+                const Icon(Icons.waving_hand_outlined, color: AppColors.accent),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
@@ -447,8 +446,7 @@ class _NavTile extends StatelessWidget {
           vertical: AppSpacing.sm + 2,
         ),
         child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(minHeight: AppSpacing.minTapTarget),
+          constraints: const BoxConstraints(minHeight: AppSpacing.minTapTarget),
           child: Row(
             children: [
               Icon(entry.icon, color: AppColors.primary, size: 22),

@@ -17,8 +17,7 @@ DateTime mondayOf(DateTime d) {
 }
 
 /// Returns next Monday (exclusive end of `d`'s ISO week).
-DateTime nextMondayOf(DateTime d) =>
-    mondayOf(d).add(const Duration(days: 7));
+DateTime nextMondayOf(DateTime d) => mondayOf(d).add(const Duration(days: 7));
 
 /// Formats `d`'s ISO week as "YYYY-Www" — e.g. `2026-W18`.
 ///
@@ -45,8 +44,7 @@ String isoYearWeekOf(DateTime d) {
     mondayLocal.month,
     mondayLocal.day,
   );
-  final weekNumber =
-      (mondayUtc.difference(firstMondayUtc).inDays ~/ 7) + 1;
+  final weekNumber = (mondayUtc.difference(firstMondayUtc).inDays ~/ 7) + 1;
 
   return '$year-W${weekNumber.toString().padLeft(2, '0')}';
 }

@@ -793,7 +793,8 @@ class _StepResults extends StatelessWidget {
             TextButton(
               onPressed: onSaveOnly,
               style: TextButton.styleFrom(
-                minimumSize: const Size(double.infinity, AppSpacing.minTapTarget),
+                minimumSize:
+                    const Size(double.infinity, AppSpacing.minTapTarget),
               ),
               child: const Text('Save & continue'),
             ),
@@ -935,9 +936,7 @@ class _OptionCard extends StatelessWidget {
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(
-                color: selected
-                    ? AppColors.primary
-                    : theme.colorScheme.outline,
+                color: selected ? AppColors.primary : theme.colorScheme.outline,
               ),
             ),
             child: Row(

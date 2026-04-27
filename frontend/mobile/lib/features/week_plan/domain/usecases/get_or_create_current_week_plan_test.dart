@@ -90,7 +90,8 @@ void main() {
     when(() => mockWeekPlanRepo.getWeekPlan('user1', '2026-W18'))
         .thenAnswer((_) async => const Right(null));
     when(() => mockWorkoutRepo.getWorkouts('user1', kind: WorkoutKind.abcde))
-        .thenAnswer((_) async => const Right([tDayA, tDayB, tDayC, tDayD, tDayE]));
+        .thenAnswer(
+            (_) async => const Right([tDayA, tDayB, tDayC, tDayD, tDayE]));
 
     WeekPlan? captured;
     when(() => mockWeekPlanRepo.createWeekPlan(any())).thenAnswer((inv) async {

@@ -163,7 +163,8 @@ class _SleepLogEntryPageState extends ConsumerState<SleepLogEntryPage> {
               onTap: _pickBedTime,
               icon: Icons.bedtime_outlined,
             ),
-            Divider(height: AppSpacing.lg, color: theme.colorScheme.outlineVariant),
+            Divider(
+                height: AppSpacing.lg, color: theme.colorScheme.outlineVariant),
             _TimePickerRow(
               label: 'Wake time',
               time: _wakeTime,

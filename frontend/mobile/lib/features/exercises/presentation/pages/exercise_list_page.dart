@@ -241,9 +241,7 @@ class _ScrollChip extends StatelessWidget {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           border: Border.all(
-            color: selected
-                ? AppColors.primary
-                : theme.colorScheme.outline,
+            color: selected ? AppColors.primary : theme.colorScheme.outline,
           ),
         ),
         child: Text(
@@ -326,8 +324,8 @@ class _EmptyState extends StatelessWidget {
           Text(
             isFiltered ? 'No exercises match your filters' : 'No exercises yet',
             style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

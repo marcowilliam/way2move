@@ -23,7 +23,8 @@ void main() {
   Widget wrap({Exercise? exercise}) {
     return ProviderScope(
       overrides: [
-        exerciseDetailProvider('ex_deadbug').overrideWith((ref) async => exercise),
+        exerciseDetailProvider('ex_deadbug')
+            .overrideWith((ref) async => exercise),
       ],
       child: const MaterialApp(
         home: ExerciseDetailPage(exerciseId: 'ex_deadbug'),

@@ -106,8 +106,7 @@ class _DayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRest = day.isRestDay;
     final textColor = isRest ? AppColors.accent : AppColors.textOnPrimary;
-    final cardColor =
-        isRest ? Colors.transparent : AppColors.primary;
+    final cardColor = isRest ? Colors.transparent : AppColors.primary;
     final borderColor = isRest ? AppColors.accent : AppColors.primary;
 
     return AnimatedContainer(
@@ -162,9 +161,7 @@ class _DayCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              isRest
-                                  ? 'Rest'
-                                  : (day.focus ?? 'Training day'),
+                              isRest ? 'Rest' : (day.focus ?? 'Training day'),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: textColor.withValues(alpha: 0.85),
                               ),
@@ -178,8 +175,8 @@ class _DayCard extends StatelessWidget {
                               horizontal: AppSpacing.sm + 2,
                               vertical: AppSpacing.xs),
                           decoration: BoxDecoration(
-                            color: AppColors.textOnPrimary
-                                .withValues(alpha: 0.2),
+                            color:
+                                AppColors.textOnPrimary.withValues(alpha: 0.2),
                             borderRadius:
                                 BorderRadius.circular(AppSpacing.radiusSm),
                           ),
@@ -195,7 +192,9 @@ class _DayCard extends StatelessWidget {
                         const SizedBox(width: AppSpacing.sm),
                         IconButton(
                           icon: Icon(
-                            isRest ? Icons.add_circle_outline : Icons.remove_circle_outline,
+                            isRest
+                                ? Icons.add_circle_outline
+                                : Icons.remove_circle_outline,
                             color: textColor,
                           ),
                           onPressed: onToggle,

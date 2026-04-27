@@ -103,9 +103,8 @@ class _ProgramBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final trainingDays = program.weekTemplate.days.values
-        .where((d) => !d.isRestDay)
-        .length;
+    final trainingDays =
+        program.weekTemplate.days.values.where((d) => !d.isRestDay).length;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(

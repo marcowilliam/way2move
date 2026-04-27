@@ -40,14 +40,12 @@ void main() {
 
       // The wordmark's interval starts at 22% of the 900ms timeline, so at
       // 16ms it is still nearly fully hidden.
-      final earlyWordmarkOpacity =
-          firstFade(find.text('WAY')).opacity.value;
+      final earlyWordmarkOpacity = firstFade(find.text('WAY')).opacity.value;
       expect(earlyWordmarkOpacity, lessThan(0.1));
 
       // After the full entrance the wordmark is fully visible.
       await tester.pump(const Duration(milliseconds: 950));
-      final lateWordmarkOpacity =
-          firstFade(find.text('WAY')).opacity.value;
+      final lateWordmarkOpacity = firstFade(find.text('WAY')).opacity.value;
       expect(lateWordmarkOpacity, greaterThan(0.9));
     });
   });

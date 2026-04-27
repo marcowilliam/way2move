@@ -71,7 +71,9 @@ Map<String, dynamic> writeAssistantMeta({
 AssistantMeta readAssistantMeta(Map<String, dynamic> data) {
   final raw = data['source'] as String?;
   return AssistantMeta(
-    source: (raw != null && WriteSource.isValid(raw)) ? raw : WriteSource.inAppTyped,
+    source: (raw != null && WriteSource.isValid(raw))
+        ? raw
+        : WriteSource.inAppTyped,
     idempotencyKey: data['idempotencyKey'] as String?,
   );
 }

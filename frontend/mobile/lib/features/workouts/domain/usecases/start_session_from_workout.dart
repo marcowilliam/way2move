@@ -25,9 +25,8 @@ class StartSessionFromWorkout {
     bool includeParked = false,
     String? sessionId,
   }) {
-    final blocks = includeParked
-        ? workout.exerciseBlocks
-        : workout.activeBlocks;
+    final blocks =
+        includeParked ? workout.exerciseBlocks : workout.activeBlocks;
 
     final session = Session(
       id: sessionId ?? '',
