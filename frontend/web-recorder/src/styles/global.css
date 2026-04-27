@@ -1,0 +1,250 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Way2Move brand v1 — see docs/branding/brand-identity-plan.md
+   This file mirrors the tokens, type scale, and component recipes in
+   docs/branding/preview.html. When the canonical brand changes, change
+   THERE first, then port the diff here.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+
+:root {
+  /* ── Brand colors (verbatim from brand-identity-plan.md §3) ───────────── */
+  --terracotta: #C4622D;          /* primary */
+  --burnt-umber: #9B4A1F;         /* primary dark — pressed */
+  --peach-sand: #E89062;          /* primary light — hover */
+  --sage: #7A9B76;                /* accent — body awareness, never CTAs */
+  --mist-sage: #C4D5BE;           /* resolved compensations */
+  --soft-gold: #D4A84B;           /* reward — milestones only, rare */
+  --soft-gold-ink: #8F6B20;       /* reward text on tinted bg */
+
+  --warm-linen: #FAF6F0;          /* light bg */
+  --off-white: #FFFDFA;           /* light surface — never #FFFFFF */
+  --cream: #F5EDE1;               /* light surface raised */
+  --warm-charcoal: #1A1612;       /* dark bg — never #000000 */
+  --espresso: #25201B;            /* dark surface */
+  --warm-slate: #322A22;          /* dark surface raised */
+
+  --espresso-ink: #1F1815;        /* light text */
+  --warm-paper: #F5EFE7;          /* dark text */
+  --stone: #716660;               /* light text secondary */
+  --mushroom: #A89D94;            /* dark text secondary */
+  --soft-stone-light: #B8ADA6;    /* light text disabled */
+  --soft-stone-dark: #5C524A;     /* dark text disabled */
+
+  --fog: #EAE2D5;                 /* light border */
+  --smoke: #3A322B;               /* dark border */
+
+  --clay-red: #BE4A3A;            /* error */
+  --honey: #D99434;               /* warning */
+  --dusk-blue: #5A7A96;           /* info */
+
+  /* ── Light-first semantic mapping (brand intent: light is default) ────── */
+  --bg: var(--warm-linen);
+  --surface: var(--off-white);
+  --surface-raised: var(--cream);
+  --border: var(--fog);
+  --text: var(--espresso-ink);
+  --text-secondary: var(--stone);
+  --text-disabled: var(--soft-stone-light);
+  --on-primary: var(--off-white);
+
+  --primary: var(--terracotta);
+  --primary-pressed: var(--burnt-umber);
+  --primary-hover: var(--peach-sand);
+  --accent: var(--sage);
+  --accent-soft: var(--mist-sage);
+  --reward: var(--soft-gold);
+  --error: var(--clay-red);
+  --warning: var(--honey);
+  --info: var(--dusk-blue);
+
+  /* ── Type scale (matches frontend/mobile/lib/core/theme/app_typography.dart) ── */
+  --font-display: "Fraunces", Georgia, ui-serif, serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ── Radii (matches preview.html component recipes) ──────────────────── */
+  --radius-input: 10px;
+  --radius-button: 10px;
+  --radius-card: 14px;
+  --radius-pill: 999px;
+
+  /* ── Motion (mirrors WayMotion in app_motion.dart) ───────────────────── */
+  --motion-standard: 280ms;
+  --motion-settled: 450ms;
+  --motion-breath: 2400ms;
+  --easing-standard: cubic-bezier(0.25, 1.0, 0.5, 1.0);  /* easeStandard, out-quart */
+  --easing-settled:  cubic-bezier(0.2, 0.9, 0.3, 1.0);   /* easeSettled, slow tail */
+}
+
+/* Dark-mode override (system preference). Brand is light-first; dark
+   is supported for after-hours. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--warm-charcoal);
+    --surface: var(--espresso);
+    --surface-raised: var(--warm-slate);
+    --border: var(--smoke);
+    --text: var(--warm-paper);
+    --text-secondary: var(--mushroom);
+    --text-disabled: var(--soft-stone-dark);
+  }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Type scale (display = Fraunces, UI = Manrope) ────────────────────── */
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+}
+h1 { font-size: 52px; letter-spacing: -1px; }     /* displayLarge */
+h2 { font-size: 32px; letter-spacing: -0.3px; }   /* displaySmall */
+h3 { font-family: var(--font-body); font-size: 22px; font-weight: 700; line-height: 1.3; }
+h4 { font-family: var(--font-body); font-size: 17px; font-weight: 600; line-height: 1.3; }
+
+p { margin: 0; }
+
+.text-secondary { color: var(--text-secondary); }
+.text-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ── Buttons (recipes from preview.html §4) ───────────────────────────── */
+
+button, .btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 20px;
+  border-radius: var(--radius-button);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  transition: background var(--motion-standard) var(--easing-standard),
+              border-color var(--motion-standard) var(--easing-standard),
+              transform var(--motion-standard) var(--easing-standard),
+              opacity var(--motion-standard) var(--easing-standard);
+}
+button:hover:not(:disabled) { background: var(--primary-pressed); }
+button:active:not(:disabled) { transform: scale(0.99); }
+button:disabled {
+  background: var(--border);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+button.primary { background: var(--primary); color: var(--on-primary); }
+button.primary:hover:not(:disabled) { background: var(--primary-pressed); }
+
+/* Sage = body-awareness confirmation, NOT CTA. Use for "log set", "improving". */
+button.accent { background: var(--accent); color: var(--on-primary); }
+button.accent:hover:not(:disabled) { background: #6A8A66; }
+
+button.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+button.ghost:hover:not(:disabled) {
+  background: var(--surface-raised);
+  border-color: var(--text-secondary);
+}
+
+button.danger { background: var(--error); color: var(--on-primary); }
+
+button.big {
+  padding: 18px 28px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+
+/* ── Inputs (recipes from preview.html §6) ────────────────────────────── */
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input:not([type]),
+select {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color var(--motion-standard) var(--easing-standard);
+}
+input:focus, select:focus { outline: none; border-color: var(--primary); }
+
+/* ── Pills (recipes from preview.html §5) ─────────────────────────────── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.pill-primary { background: rgba(196, 98, 45, 0.12); color: var(--primary); }
+.pill-sage    { background: rgba(122, 155, 118, 0.15); color: var(--accent); }
+.pill-outline { border: 1.5px solid var(--border); color: var(--text-secondary); padding: 4.5px 10.5px; }
+.pill-reward  { background: rgba(212, 168, 75, 0.15); color: var(--soft-gold-ink); }
+.pill-clay    { background: rgba(190, 74, 58, 0.10); color: var(--error); }
+
+/* ── Cards (recipes from preview.html §7) ─────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
+.card.accent-edge { border-left: 4px solid var(--primary); }
+.card.sage-edge   { border-left: 4px solid var(--accent); }
+
+/* ── Animations (from preview.html §8 — "Breath, not bounce") ─────────── */
+
+/* The canonical breath: scale 1 → 1.04, opacity 1 → 0.85, 2.4s ease-in-out. */
+@keyframes breath {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%      { transform: scale(1.04); opacity: 0.85; }
+}
+
+@keyframes breath-glow {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(122, 155, 118, 0.35); }
+  50%      { box-shadow: 0 0 0 2px var(--accent), 0 0 28px rgba(122, 155, 118, 0.4); }
+}
+
+@keyframes fade-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

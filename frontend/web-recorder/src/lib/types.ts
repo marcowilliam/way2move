@@ -1,0 +1,119 @@
+// Mirrors way2move's session domain so the recorder can swap localStorage
+// for Firestore later without changing screens.
+// Reference: way2move/main/frontend/mobile/lib/features/sessions/domain/entities/session.dart
+
+export type SessionStatus = "planned" | "in_progress" | "completed" | "skipped";
+export type SessionType = "training" | "recovery" | "mobility" | "breathing";
+export type Source =
+  | "in-app-typed"
+  | "in-app-voice"
+  | "in-app-recorder"   // <- new value for v1 web recorder
+  | "assistant-ingest"
+  | "assistant-edit";
+
+export type EffortKind = "reps" | "time";
+
+// One row of effort inside a set. A set is reps-OR-time-based per row,
+// so a single set can log multiple rows — e.g. "15s @ 5kg" then "15s @ 2kg"
+// when the athlete drops the weight mid-set.
+export interface EffortRow {
+  id: string;
+  kind: EffortKind;
+  reps?: number;      // set when kind === "reps"
+  seconds?: number;   // set when kind === "time"
+  weight?: number;    // optional
+}
+
+export interface SetEntry {
+  setNumber: number;
+  rows: EffortRow[];
+  completed: boolean;
+  // Legacy top-level fields — kept optional for forwards-readability of
+  // old localStorage blobs; new writes never populate them.
+  reps?: number;
+  weight?: number;
+}
+
+export interface ExerciseBlock {
+  id: string;
+  exerciseId: string;
+  exerciseName: string;
+  plannedSets: number;
+  plannedReps: number;
+  plannedSeconds?: number;         // for time-based (isometric) exercises
+  defaultEffortKind?: EffortKind;  // "reps" (default) or "time"
+  plannedWeight?: number;          // optional hint for the first log row
+  restSeconds: number;
+  actualSets: SetEntry[];
+  rpe?: number;
+  notes?: string;
+}
+
+export interface Recording {
+  id: string;
+  exerciseBlockId: string;
+  setNumber: number;     // which set this recording belongs to
+  takeNumber: number;    // 1, 2, 3 if redone
+  localPath: string;     // absolute path on disk where the file lives
+  fileName: string;
+  mimeType: string;
+  durationSec: number;
+  recordedAt: string;    // ISO timestamp
+}
+
+// Body check-in vocabulary matches the brand's "your body is listening"
+// frame — words, not emoji faces.
+export type BodyFeeling = "calm" | "neutral" | "fatigued" | "depleted";
+
+export interface Session {
+  id: string;
+  userId: string;        // in v1 just "marco"
+  programId?: string;
+  type: SessionType;
+  focus?: string;
+  date: string;          // YYYY-MM-DD
+  status: SessionStatus;
+  exerciseBlocks: ExerciseBlock[];
+  recordings: Recording[];
+  notes?: string;
+  durationMinutes?: number;
+  // Session-level finalization fields (set in the review screen).
+  rpe?: number;                 // 1-10 Rate of Perceived Exertion
+  bodyFeeling?: BodyFeeling;    // post-session body check-in
+  source: Source;
+  idempotencyKey: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+// Canonical library entry. Seed exercises ship with the app; "user-created"
+// ones go to the evaluate bucket until an AI promotes them. See memory:
+// evaluate_exercises_pattern.md for the full architectural context.
+export type ExerciseSource = "seed" | "user-created" | "promoted";
+export type ExerciseEvaluationStatus = "pending" | "promoted" | "rejected" | "merged";
+
+export interface Exercise {
+  id: string;
+  name: string;
+  defaultEffortKind: EffortKind;
+  defaultReps?: number;
+  defaultSeconds?: number;
+  defaultWeight?: number;
+  defaultSets?: number;
+  defaultRestSeconds?: number;
+  source: ExerciseSource;
+  evaluationStatus?: ExerciseEvaluationStatus;
+  canonicalExerciseId?: string;
+  createdAt: string;
+}
+
+export interface CameraAssignment {
+  slot: 0 | 1 | 2;
+  deviceId: string;
+  label: string;
+}
+
+export interface RecorderSettings {
+  cameras: CameraAssignment[];
+  rootFolderName?: string;   // display only — the actual handle is in IndexedDB
+}
