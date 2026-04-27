@@ -10,6 +10,13 @@
     buildGroundUpSession,
     GROUND_UP_WORKOUT_ID,
   } from "../lib/seeds/groundUp";
+  import { notionWorkouts } from "../lib/seeds/notionWorkouts";
+  import {
+    loadUserTemplates,
+    instantiateSession,
+    isPhysioStyle,
+    type WorkoutTemplate,
+  } from "../lib/workoutTemplates";
   import type { Session } from "../lib/types";
 
   let sessions = $state<Session[]>(loadSessions());
@@ -130,6 +137,35 @@
   );
   const groundUpExerciseCount = 11;
 
+  // ── Workout templates (Notion-imported + user-pasted) ────────────────
+  let userTemplates = $state<WorkoutTemplate[]>(loadUserTemplates());
+  const allTemplates = $derived<WorkoutTemplate[]>([
+    ...notionWorkouts,
+    ...userTemplates,
+  ]);
+
+  const todaySessionForWorkout = (workoutId: string): Session | undefined =>
+    todaySessions.find((s) => s.workoutId === workoutId);
+
+  const startTemplate = (template: WorkoutTemplate) => {
+    const existing = todaySessionForWorkout(template.id);
+    if (existing) {
+      openSession(existing);
+      return;
+    }
+    const fresh = instantiateSession(template, todayISO);
+    upsertSession(fresh);
+    sessions = loadSessions();
+    openSession(fresh);
+  };
+
+  const templateButtonLabel = (t: WorkoutTemplate): string => {
+    const existing = todaySessionForWorkout(t.id);
+    if (existing?.status === "in_progress") return "Continue →";
+    if (existing?.status === "completed") return "Done · review";
+    return "Start";
+  };
+
   const startGroundUp = () => {
     if (todayGroundUp) {
       // Heal sessions written by the earlier seed bug (placeholder actualSets
@@ -209,6 +245,45 @@
       </button>
     </div>
   </section>
+
+  <!-- Workout templates — Notion-imported + user-pasted. Tap to start a
+       fresh session OR open today's existing one for that workout. -->
+  {#if allTemplates.length > 0}
+    <section class="workouts">
+      <header class="workouts-head">
+        <h3 class="workouts-title">Workouts</h3>
+        <span class="workouts-meta mono">{allTemplates.length} available</span>
+      </header>
+      <div class="workouts-grid">
+        {#each allTemplates as t (t.id)}
+          {@const existing = todaySessionForWorkout(t.id)}
+          {@const physio = isPhysioStyle(t)}
+          <button
+            class="workout-card"
+            class:physio
+            class:done={existing?.status === "completed"}
+            class:active={existing?.status === "in_progress"}
+            onclick={() => startTemplate(t)}
+          >
+            <div class="wc-head">
+              {#if t.emoji}<span class="wc-emoji">{t.emoji}</span>{/if}
+              <span class="wc-name">{t.name}</span>
+            </div>
+            <div class="wc-meta">
+              <span class="mono">{t.blocks.length}</span> exercises
+              {#if t.primaryPlane}· {t.primaryPlane}{/if}
+            </div>
+            {#if t.intent}
+              <p class="wc-intent">{t.intent}</p>
+            {/if}
+            <div class="wc-cta">
+              <span class="wc-btn">{templateButtonLabel(t)}</span>
+            </div>
+          </button>
+        {/each}
+      </div>
+    </section>
+  {/if}
 
   <!-- Today hero — state-driven primary CTA -->
   <section class="today" data-state={todayState}>
@@ -516,6 +591,109 @@
   }
   .big.sage:hover { background: #6c8b69; }
   .big.sage:active { transform: scale(0.98); }
+
+  /* ─ Workouts grid ────────────────────────────────────────────────── */
+  .workouts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .workouts-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 4px;
+  }
+  .workouts-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .workouts-meta { font-size: 11px; color: var(--text-secondary); }
+  .workouts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .workout-card {
+    appearance: none;
+    cursor: pointer;
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color var(--motion-standard) var(--easing-settled),
+                background var(--motion-standard) var(--easing-settled),
+                transform var(--motion-standard) var(--easing-settled);
+  }
+  .workout-card:hover { border-color: var(--text-secondary); transform: translateY(-1px); }
+  .workout-card.physio {
+    background: rgba(122, 155, 118, 0.05);
+    border-left: 3px solid var(--sage);
+  }
+  .workout-card.physio:hover { background: rgba(122, 155, 118, 0.1); }
+  .workout-card.active {
+    border-color: var(--primary);
+    border-left: 3px solid var(--primary);
+  }
+  .workout-card.done { opacity: 0.7; }
+  .wc-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .wc-emoji { font-size: 20px; line-height: 1; flex-shrink: 0; }
+  .wc-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.1px;
+    line-height: 1.2;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .wc-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+  }
+  .wc-intent {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .wc-cta {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2px;
+  }
+  .wc-btn {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+  }
+  .workout-card.physio .wc-btn { color: var(--sage); }
+  .workout-card.done .wc-btn { color: var(--text-secondary); }
 
   /* ─ Today hero ───────────────────────────────────────────────────── */
   .today {

@@ -9,12 +9,20 @@
     getPreferredVoice,
     speak,
   } from "../lib/voice";
+  import {
+    loadUserTemplates,
+    saveUserTemplate,
+    deleteUserTemplate,
+    type WorkoutTemplate,
+  } from "../lib/workoutTemplates";
+  import { notionWorkouts } from "../lib/seeds/notionWorkouts";
 
-  type Category = "recording" | "voice" | "about";
+  type Category = "recording" | "voice" | "workouts" | "about";
 
   const categories: { id: Category; label: string; hint: string }[] = [
     { id: "recording", label: "Recording", hint: "Cameras + save folder" },
     { id: "voice",     label: "Voice",     hint: "Coach voice + pacing" },
+    { id: "workouts",  label: "Workouts",  hint: "Imported + custom" },
     { id: "about",     label: "About",     hint: "Version + brand" },
   ];
 
@@ -62,6 +70,49 @@
   };
 
   const testVoice = () => speak(testText);
+
+  // --- Workout templates ---
+  let userTemplates = $state<WorkoutTemplate[]>(loadUserTemplates());
+  let pasteText = $state<string>("");
+  let pasteError = $state<string | null>(null);
+  let pasteSuccess = $state<string | null>(null);
+  // Stored as a string so Svelte's template parser doesn't try to interpret
+  // the example JSON's curly braces.
+  const pastePlaceholder =
+    '{"id":"my-workout","name":"…","blocks":[{"exerciseId":"…","exerciseName":"…"}]}';
+
+  const importPasted = () => {
+    pasteError = null;
+    pasteSuccess = null;
+    const raw = pasteText.trim();
+    if (!raw) { pasteError = "Paste a workout JSON first."; return; }
+    let parsed: any;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      pasteError = "Not valid JSON: " + (e as Error).message;
+      return;
+    }
+    const templates: WorkoutTemplate[] = Array.isArray(parsed) ? parsed : [parsed];
+    let added = 0;
+    for (const t of templates) {
+      if (!t.id || !t.name || !Array.isArray(t.blocks)) {
+        pasteError = "Each workout needs id, name, blocks[]. Got: " + JSON.stringify(t).slice(0, 80);
+        return;
+      }
+      saveUserTemplate({ ...t, source: "user-paste" });
+      added++;
+    }
+    userTemplates = loadUserTemplates();
+    pasteText = "";
+    pasteSuccess = `Imported ${added} workout${added === 1 ? "" : "s"}.`;
+  };
+
+  const removeTemplate = (id: string) => {
+    if (!confirm("Delete this workout template?")) return;
+    deleteUserTemplate(id);
+    userTemplates = loadUserTemplates();
+  };
 </script>
 
 <div class="page">
@@ -174,6 +225,77 @@
                 Local voices like eSpeak work offline but sound flatter.
               </p>
             {/if}
+          </section>
+        </div>
+      {:else if active === "workouts"}
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Workouts</h2>
+            <p class="text-secondary">
+              Built-in workouts are imported from Marco's Notion. Paste a workout JSON below
+              to add a custom one — it'll appear on the home page next to the others.
+            </p>
+          </div>
+
+          <section class="section">
+            <div class="section-head">
+              <h3>Built-in (Notion)</h3>
+              <span class="pill pill-outline">{notionWorkouts.length} workouts</span>
+            </div>
+            <ul class="wt-list">
+              {#each notionWorkouts as t (t.id)}
+                <li class="wt-row">
+                  <span class="wt-icon">{t.emoji ?? "•"}</span>
+                  <span class="wt-name">{t.name}</span>
+                  <span class="wt-meta mono">{t.blocks.length} ex</span>
+                </li>
+              {/each}
+            </ul>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <h3>Your custom workouts</h3>
+              <span class="pill pill-outline">{userTemplates.length} saved</span>
+            </div>
+            {#if userTemplates.length === 0}
+              <p class="text-secondary text-small">None yet. Paste one below to get started.</p>
+            {:else}
+              <ul class="wt-list">
+                {#each userTemplates as t (t.id)}
+                  <li class="wt-row">
+                    <span class="wt-icon">{t.emoji ?? "•"}</span>
+                    <span class="wt-name">{t.name}</span>
+                    <span class="wt-meta mono">{t.blocks.length} ex</span>
+                    <button class="wt-delete" onclick={() => removeTemplate(t.id)} aria-label="Delete">×</button>
+                  </li>
+                {/each}
+              </ul>
+            {/if}
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <h3>Add a workout (paste JSON)</h3>
+            </div>
+            <textarea
+              class="wt-paste"
+              bind:value={pasteText}
+              placeholder={pastePlaceholder}
+              rows="10"
+            ></textarea>
+            <div class="wt-paste-actions">
+              <button class="primary" onclick={importPasted}>Import</button>
+              {#if pasteError}<span class="wt-error">{pasteError}</span>{/if}
+              {#if pasteSuccess}<span class="wt-ok">{pasteSuccess}</span>{/if}
+            </div>
+            <p class="text-secondary text-small">
+              Required fields per workout: <code>id</code>, <code>name</code>, <code>blocks[]</code>.
+              Each block needs <code>exerciseId</code> and <code>exerciseName</code>.
+              Optional: <code>emoji</code>, <code>intent</code>, and per-block
+              <code>category</code>, <code>directions</code>, <code>cuesOverride[]</code>,
+              <code>phase</code> (warmUp/main/coolDown), <code>level</code> (foundation/developmental/advanced).
+            </p>
           </section>
         </div>
       {:else if active === "about"}
@@ -364,6 +486,67 @@
     box-shadow: 0 0 0 3px rgba(122, 155, 118, 0.15);
   }
   .text-small { font-size: 12px; }
+
+  /* Workouts tab */
+  .wt-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .wt-row {
+    display: grid;
+    grid-template-columns: 30px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+  }
+  .wt-icon { font-size: 16px; line-height: 1; }
+  .wt-name { font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wt-meta { font-size: 11px; color: var(--text-secondary); }
+  .wt-delete {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .wt-delete:hover { color: var(--error); border-color: var(--error); }
+  .wt-paste {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .wt-paste:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(122, 155, 118, 0.15);
+  }
+  .wt-paste-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .wt-error { color: var(--error); font-size: 12px; }
+  .wt-ok { color: var(--sage); font-size: 12px; font-weight: 600; }
 
   @media (max-width: 760px) {
     .layout {
