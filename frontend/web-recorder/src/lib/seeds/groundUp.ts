@@ -3,21 +3,15 @@
 //   frontend/mobile/lib/features/protocols/domain/usecases/seed_ground_up_for_user.dart
 // All exercises every day, 1 set each, 6 weeks. Sage-tinted "daily routine".
 
-import type {
-  ExerciseBlock,
-  Session,
-  SetEntry,
-} from "../types";
+import type { ExerciseBlock, Session } from "../types";
 import { newId } from "../sessionStore";
 
 export const GROUND_UP_WORKOUT_ID = "ground-up";
 export const GROUND_UP_USER_ID = "marco";
 
-const emptySet = (n: number): SetEntry => ({
-  setNumber: n,
-  rows: [],
-  completed: false,
-});
+// actualSets stays empty until the user logs each set — the completion
+// chips/progress bar count `actualSets.length >= plannedSets` as "done",
+// so pre-filling here would open the session 100%-complete on Start.
 
 // All 11 exercise blocks, prescribed by physio (2026-04-26).
 // Order matters — the routine is meant to be done top-to-bottom.
@@ -40,7 +34,7 @@ const block = (
   plannedSeconds,
   defaultEffortKind: plannedSeconds ? "time" : "reps",
   restSeconds: 30,
-  actualSets: [emptySet(1)],
+  actualSets: [],
   phase: "main",
   level: "foundation",
   category,
@@ -115,7 +109,6 @@ const blocks = (): ExerciseBlock[] => [
       6,
     ),
     plannedSets: 2,
-    actualSets: [emptySet(1), emptySet(2)],
   },
   {
     ...block(
@@ -127,7 +120,6 @@ const blocks = (): ExerciseBlock[] => [
       7,
     ),
     plannedSets: 2,
-    actualSets: [emptySet(1), emptySet(2)],
   },
   {
     ...block(
@@ -139,7 +131,6 @@ const blocks = (): ExerciseBlock[] => [
       8,
     ),
     plannedSets: 2,
-    actualSets: [emptySet(1), emptySet(2)],
   },
   block(
     "gu-kickstand-chop",

@@ -132,7 +132,18 @@
 
   const startGroundUp = () => {
     if (todayGroundUp) {
-      openSession(todayGroundUp);
+      // Heal sessions written by the earlier seed bug (placeholder actualSets
+      // with no rows made everything render as completed). Drop empty entries.
+      const healed = {
+        ...todayGroundUp,
+        exerciseBlocks: todayGroundUp.exerciseBlocks.map((b) => ({
+          ...b,
+          actualSets: b.actualSets.filter((s) => s.rows.length > 0 || s.completed),
+        })),
+      };
+      upsertSession(healed);
+      sessions = loadSessions();
+      openSession(healed);
       return;
     }
     const fresh = buildGroundUpSession(todayISO);

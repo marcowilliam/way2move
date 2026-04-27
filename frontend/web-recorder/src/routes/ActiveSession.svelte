@@ -131,6 +131,19 @@
     if (kind === "good") sensationGood = sensationGood.filter((c) => c !== chip);
     else sensationStruggling = sensationStruggling.filter((c) => c !== chip);
   };
+
+  // Mid-training set count editor. Bumping +/- mutates block.plannedSets,
+  // which `steps` is $derived from, so chips/progress recompute. Min is
+  // bounded by the number of sets already logged so we never lose data.
+  const bumpSets = (delta: 1 | -1) => {
+    if (!session || !block) return;
+    const next = block.plannedSets + delta;
+    const minAllowed = Math.max(block.actualSets.length, 1);
+    if (next < minAllowed) return;
+    if (next > 20) return; // sanity ceiling
+    block.plannedSets = next;
+    upsertSession($state.snapshot(session));
+  };
   // Web Speech Recognition for note dictation — separate from the command
   // listener (which matches start/stop/next/previous).
   let dictating = $state(false);
@@ -877,7 +890,26 @@
           {/if}
           <div class="strip-meta">
             <span class="strip-position">
-              Set <span class="mono">{activeSetN}</span> <span class="dim">of</span> <span class="mono">{block.plannedSets}</span>
+              Set <span class="mono">{activeSetN}</span> <span class="dim">of</span>
+              <span class="set-stepper" role="group" aria-label="Edit planned set count">
+                <button
+                  type="button"
+                  class="set-step"
+                  aria-label="Remove a set"
+                  title="Remove a set"
+                  onclick={() => bumpSets(-1)}
+                  disabled={block.plannedSets <= Math.max(block.actualSets.length, 1)}
+                >−</button>
+                <span class="mono set-step-num">{block.plannedSets}</span>
+                <button
+                  type="button"
+                  class="set-step"
+                  aria-label="Add a set"
+                  title="Add a set"
+                  onclick={() => bumpSets(1)}
+                  disabled={block.plannedSets >= 20}
+                >+</button>
+              </span>
             </span>
             {#if totalBlocks > 1}
               <span class="strip-sep" aria-hidden="true">·</span>
@@ -1446,7 +1478,43 @@
     color: var(--sage);
     font-weight: 700;
   }
-  .strip-position { font-weight: 600; }
+  .strip-position { font-weight: 600; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .set-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+  }
+  .set-step {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--motion-standard) var(--easing-settled),
+                color var(--motion-standard) var(--easing-settled);
+  }
+  .set-step:hover:not(:disabled) { background: var(--surface-raised); }
+  .set-step:disabled { opacity: 0.35; cursor: not-allowed; }
+  .set-step-num {
+    min-width: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text);
+  }
   .strip-position .dim,
   .strip-block .dim { color: var(--text-secondary); font-weight: 500; }
   .strip-sep { color: var(--text-secondary); }
