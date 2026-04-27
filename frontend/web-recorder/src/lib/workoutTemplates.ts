@@ -25,6 +25,12 @@ export interface TemplateBlock {
   level?: ExerciseLevel | null;
   order?: number | null;
   currentlyIncluded?: boolean;
+
+  // Educational metadata — see ExerciseBlock for the framing.
+  intent?: string | null;
+  joints?: string[];
+  compensations?: string[];
+  muscles?: string[];
 }
 
 export interface WorkoutTemplate {
@@ -113,6 +119,10 @@ export const instantiateSession = (
     cuesOverride: tb.cuesOverride && tb.cuesOverride.length > 0 ? tb.cuesOverride : undefined,
     currentlyIncluded: tb.currentlyIncluded !== false,
     order: tb.order ?? i + 1,
+    intent: tb.intent ?? undefined,
+    joints: tb.joints && tb.joints.length > 0 ? tb.joints : undefined,
+    compensations: tb.compensations && tb.compensations.length > 0 ? tb.compensations : undefined,
+    muscles: tb.muscles && tb.muscles.length > 0 ? tb.muscles : undefined,
   }));
 
   const status: SessionStatus = "planned";

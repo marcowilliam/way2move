@@ -86,6 +86,14 @@ export interface ExerciseBlock {
   cuesOverride?: string[];
   currentlyIncluded?: boolean;
   order?: number;
+
+  // Educational metadata — the "why" of this exercise. Written by Marco /
+  // drafted by AI from cues + name. Renders in a Sage card above the cues.
+  // Marco's training framing: PRI/DNS, body-listening, compensation patterns.
+  intent?: string;          // 1-2 sentences: what am I teaching my body
+  joints?: string[];        // joint actions worked, e.g. "hip extension"
+  compensations?: string[]; // patterns being trained AGAINST, e.g. "lumbar hyperextension"
+  muscles?: string[];       // primary + stabilizers, e.g. "glute max (lower fibers)"
 }
 
 export interface Recording {

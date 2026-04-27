@@ -1008,16 +1008,56 @@
       </nav>
     </section>
 
-    {#if block.cuesOverride && block.cuesOverride.length > 0}
-      <!-- Movement cues for this block — physio overrides for the canonical
-           exercise. Sage-tinted because they're body-listening, not effort. -->
+    {#if block.intent || (block.joints && block.joints.length) || (block.compensations && block.compensations.length) || (block.muscles && block.muscles.length) || (block.cuesOverride && block.cuesOverride.length)}
+      <!-- The "why" of this exercise: intent + joints + compensations +
+           muscles + cues. All sections optional — only those with data show. -->
       <section class="cues-card">
-        <p class="label-xs cues-label">Cues</p>
-        <ul class="cues-list">
-          {#each block.cuesOverride as cue}
-            <li class="cue">{cue}</li>
-          {/each}
-        </ul>
+        {#if block.intent}
+          <div class="why-block">
+            <p class="label-xs cues-label">Why this exercise</p>
+            <p class="intent-text">{block.intent}</p>
+          </div>
+        {/if}
+
+        {#if (block.joints && block.joints.length) || (block.compensations && block.compensations.length) || (block.muscles && block.muscles.length)}
+          <div class="anat-grid">
+            {#if block.joints && block.joints.length}
+              <div class="anat-row">
+                <p class="label-xs anat-label">Joints</p>
+                <div class="chips">
+                  {#each block.joints as j (j)}<span class="anat-chip joints">{j}</span>{/each}
+                </div>
+              </div>
+            {/if}
+            {#if block.compensations && block.compensations.length}
+              <div class="anat-row">
+                <p class="label-xs anat-label">Compensations addressed</p>
+                <div class="chips">
+                  {#each block.compensations as c (c)}<span class="anat-chip comps">{c}</span>{/each}
+                </div>
+              </div>
+            {/if}
+            {#if block.muscles && block.muscles.length}
+              <div class="anat-row">
+                <p class="label-xs anat-label">Muscles</p>
+                <div class="chips">
+                  {#each block.muscles as m (m)}<span class="anat-chip muscles">{m}</span>{/each}
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/if}
+
+        {#if block.cuesOverride && block.cuesOverride.length > 0}
+          <div class="cues-block">
+            <p class="label-xs cues-label">Cues</p>
+            <ul class="cues-list">
+              {#each block.cuesOverride as cue}
+                <li class="cue">{cue}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
       </section>
     {/if}
 
@@ -1547,6 +1587,54 @@
     color: var(--sage);
     margin: 0 0 6px;
   }
+  .why-block, .cues-block, .anat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .why-block + .anat-grid, .anat-grid + .cues-block, .why-block + .cues-block {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(122, 155, 118, 0.25);
+  }
+  .intent-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .anat-row { display: flex; flex-direction: column; gap: 4px; }
+  .anat-label { color: var(--text-secondary); margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .anat-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .anat-chip.joints {
+    background: rgba(122, 155, 118, 0.1);
+    border-color: rgba(122, 155, 118, 0.35);
+    color: var(--sage);
+  }
+  .anat-chip.comps {
+    background: rgba(190, 74, 58, 0.08);
+    border-color: rgba(190, 74, 58, 0.3);
+    color: var(--primary);
+  }
+  .anat-chip.muscles {
+    background: rgba(180, 140, 30, 0.1);
+    border-color: rgba(180, 140, 30, 0.35);
+    color: var(--soft-gold-ink, #a07c10);
+  }
+
   .cues-list {
     list-style: none;
     margin: 0;
