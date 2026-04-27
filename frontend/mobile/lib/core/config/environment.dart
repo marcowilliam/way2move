@@ -2,6 +2,7 @@
 ///
 /// Pass --dart-define=ENV=staging to target the staging environment.
 /// Pass --dart-define=ENV=emulator (default) to use local Firebase emulators.
+library;
 
 enum AppEnvironment { emulator, staging }
 
