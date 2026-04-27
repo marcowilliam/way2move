@@ -78,13 +78,76 @@ export class VoiceListener {
 
 // --- TTS ---
 
+// Default voice on Linux/Chrome is eSpeak (robotic). We auto-pick the best
+// English voice — preferring neural Google voices, then Microsoft / Apple
+// neural, then any en-US, then any English. The voiceschanged event is
+// honored because the voice list often arrives async after page load.
+let pickedVoice: SpeechSynthesisVoice | null = null;
+let userPreferredVoiceName: string | null = null;
+
+const pickBestVoice = (): SpeechSynthesisVoice | null => {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+
+  if (userPreferredVoiceName) {
+    const match = voices.find((v) => v.name === userPreferredVoiceName);
+    if (match) return match;
+  }
+
+  const isEn = (v: SpeechSynthesisVoice) => v.lang.toLowerCase().startsWith("en");
+  const isGoogle = (v: SpeechSynthesisVoice) => /google/i.test(v.name);
+  const isMs = (v: SpeechSynthesisVoice) => /microsoft/i.test(v.name);
+  const isApple = (v: SpeechSynthesisVoice) =>
+    /samantha|daniel|karen|moira|tessa|fiona|siri/i.test(v.name);
+
+  return (
+    voices.find((v) => isGoogle(v) && v.lang === "en-US") ??
+    voices.find((v) => isGoogle(v) && isEn(v)) ??
+    voices.find((v) => isMs(v) && isEn(v)) ??
+    voices.find((v) => isApple(v) && isEn(v)) ??
+    voices.find((v) => v.lang === "en-US") ??
+    voices.find((v) => v.lang === "en-GB") ??
+    voices.find(isEn) ??
+    voices[0]
+  );
+};
+
+const ensureVoice = (): void => {
+  if (!pickedVoice) pickedVoice = pickBestVoice();
+};
+
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    pickedVoice = pickBestVoice();
+  };
+  ensureVoice();
+}
+
+export const listEnglishVoices = (): SpeechSynthesisVoice[] => {
+  if (!("speechSynthesis" in window)) return [];
+  return window.speechSynthesis
+    .getVoices()
+    .filter((v) => v.lang.toLowerCase().startsWith("en"));
+};
+
+export const setPreferredVoice = (name: string | null): void => {
+  userPreferredVoiceName = name;
+  pickedVoice = pickBestVoice();
+};
+
+export const getPreferredVoice = (): SpeechSynthesisVoice | null => pickedVoice;
+
 export const speak = (text: string, opts: { rate?: number; pitch?: number } = {}): void => {
   if (!("speechSynthesis" in window)) return;
+  ensureVoice();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = opts.rate ?? 1;
+  // 0.95 is slightly slower than default — movement cues read better when
+  // the athlete has time to apply each one before the next.
+  u.rate = opts.rate ?? 0.95;
   u.pitch = opts.pitch ?? 1;
-  u.lang = "en-US";
-  // Cancel anything queued — we usually want to interrupt for the latest cue.
+  u.lang = pickedVoice?.lang ?? "en-US";
+  if (pickedVoice) u.voice = pickedVoice;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 };
