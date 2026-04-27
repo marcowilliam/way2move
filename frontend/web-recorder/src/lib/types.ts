@@ -13,6 +13,34 @@ export type Source =
 
 export type EffortKind = "reps" | "time";
 
+// Training-week organizer extensions. Mirror way2move's domain enums.
+export type ExercisePhase = "warmUp" | "main" | "coolDown";
+export type ExerciseLevel = "foundation" | "developmental" | "advanced";
+export type WorkoutKind =
+  | "fromGroundUp"
+  | "abcde"
+  | "snack"
+  | "bodybuilding"
+  | "themed";
+export type SessionSlot =
+  | "morning"
+  | "midday"
+  | "afternoon"
+  | "evening"
+  | "flexible";
+export type SessionPlace = "home" | "gym" | "outdoor" | "other";
+export type DurationCategory = "snack" | "short" | "medium" | "long";
+
+// Sensation capture — body-listening, not effort. Mirrors Flutter
+// SensationFeedback shape (good/struggling chips, 1-5, notes).
+export interface SensationFeedback {
+  goodAreas: string[];
+  strugglingAreas: string[];
+  score: number; // 1-5
+  notes?: string;
+  capturedAt?: string;
+}
+
 // One row of effort inside a set. A set is reps-OR-time-based per row,
 // so a single set can log multiple rows — e.g. "15s @ 5kg" then "15s @ 2kg"
 // when the athlete drops the weight mid-set.
@@ -47,6 +75,17 @@ export interface ExerciseBlock {
   actualSets: SetEntry[];
   rpe?: number;
   notes?: string;
+
+  // Training-week organizer extensions (all optional, forward-compat).
+  // When `category` is set, the hero card prefers it over `exerciseName`.
+  // `cuesOverride` replaces the exercise's default cues for THIS block.
+  phase?: ExercisePhase;
+  level?: ExerciseLevel;
+  category?: string;
+  directions?: string;
+  cuesOverride?: string[];
+  currentlyIncluded?: boolean;
+  order?: number;
 }
 
 export interface Recording {
@@ -84,6 +123,14 @@ export interface Session {
   idempotencyKey: string;
   startedAt?: string;
   completedAt?: string;
+
+  // Training-week organizer extensions (all optional).
+  workoutId?: string;
+  kind?: WorkoutKind;
+  slot?: SessionSlot;
+  place?: SessionPlace;
+  durationCategory?: DurationCategory;
+  sensationFeedback?: SensationFeedback;
 }
 
 // Canonical library entry. Seed exercises ship with the app; "user-created"

@@ -8,7 +8,22 @@
   import { type RecordingResult } from "../lib/recorder";
   import { loadSessions, upsertSession, newId } from "../lib/sessionStore";
   import { app } from "../stores/app.svelte.ts";
-  import type { Session, ExerciseBlock, SetEntry, Recording, BodyFeeling } from "../lib/types";
+  import type {
+    Session,
+    ExerciseBlock,
+    SetEntry,
+    Recording,
+    BodyFeeling,
+    ExercisePhase,
+    ExerciseLevel,
+    SensationFeedback,
+  } from "../lib/types";
+
+  // Training-week organizer label helpers. Pure presentation.
+  const phaseLabel = (p: ExercisePhase): string =>
+    p === "warmUp" ? "Warm-up" : p === "coolDown" ? "Cool-down" : "Main";
+  const levelLabel = (l: ExerciseLevel): string =>
+    l === "foundation" ? "Foundation" : l === "developmental" ? "Developmental" : "Advanced";
 
   // UX model: voice-first, one mode at a time. Each exercise is a linear
   // sequence of steps — [set 1, rest 1, set 2, rest 2, ..., set N]. The page
@@ -89,6 +104,33 @@
   let finalRpe = $state<number | null>(null);
   let finalBody = $state<BodyFeeling | null>(null);
   let finalNotes = $state<string>("");
+
+  // Sensation capture (training-week organizer). Mirrors Flutter shape:
+  // good areas + struggling areas (chip lists), 1-5 score, notes.
+  let sensationGood = $state<string[]>([]);
+  let sensationStruggling = $state<string[]>([]);
+  let sensationScore = $state<number | null>(null);
+  let sensationNotes = $state<string>("");
+  let sensationGoodInput = $state<string>("");
+  let sensationStrugglingInput = $state<string>("");
+
+  const addChip = (kind: "good" | "struggling") => {
+    if (kind === "good") {
+      const v = sensationGoodInput.trim();
+      if (!v) return;
+      if (!sensationGood.includes(v)) sensationGood = [...sensationGood, v];
+      sensationGoodInput = "";
+    } else {
+      const v = sensationStrugglingInput.trim();
+      if (!v) return;
+      if (!sensationStruggling.includes(v)) sensationStruggling = [...sensationStruggling, v];
+      sensationStrugglingInput = "";
+    }
+  };
+  const removeChip = (kind: "good" | "struggling", chip: string) => {
+    if (kind === "good") sensationGood = sensationGood.filter((c) => c !== chip);
+    else sensationStruggling = sensationStruggling.filter((c) => c !== chip);
+  };
   // Web Speech Recognition for note dictation — separate from the command
   // listener (which matches start/stop/next/previous).
   let dictating = $state(false);
@@ -102,6 +144,14 @@
     if (!session || finalizing) return;
     if (finalRpe === null && session.rpe != null) finalRpe = session.rpe;
     if (finalBody === null && session.bodyFeeling) finalBody = session.bodyFeeling;
+    // Pre-fill sensation feedback from prior save so the user can edit.
+    const sf = session.sensationFeedback;
+    if (sf && sensationGood.length === 0 && sensationStruggling.length === 0 && sensationScore === null) {
+      sensationGood = [...sf.goodAreas];
+      sensationStruggling = [...sf.strugglingAreas];
+      sensationScore = sf.score;
+      sensationNotes = sf.notes ?? "";
+    }
     if (!finalNotes && session.notes) finalNotes = session.notes;
   });
 
@@ -171,7 +221,7 @@
     if (!block || !currentStep) return;
     stopSpeaking();
     if (currentStep.kind === "set") {
-      speak(`Set ${currentStep.n} of ${block.plannedSets}. ${block.exerciseName}. ${block.plannedReps} reps. Say start when ready.`);
+      speak(`Set ${currentStep.n} of ${block.plannedSets}. ${block.category ?? block.exerciseName}. ${block.plannedReps} reps. Say start when ready.`);
     } else {
       speak(`Rest ${block.restSeconds} seconds. Log your reps.`);
     }
@@ -278,6 +328,22 @@
     session.notes = finalNotes.trim() || undefined;
     session.rpe = finalRpe ?? undefined;
     session.bodyFeeling = finalBody ?? undefined;
+    // Persist sensation feedback if anything was captured.
+    if (
+      sensationGood.length > 0 ||
+      sensationStruggling.length > 0 ||
+      sensationScore !== null ||
+      sensationNotes.trim().length > 0
+    ) {
+      const sf: SensationFeedback = {
+        goodAreas: sensationGood,
+        strugglingAreas: sensationStruggling,
+        score: sensationScore ?? 3,
+        notes: sensationNotes.trim() || undefined,
+        capturedAt: new Date().toISOString(),
+      };
+      session.sensationFeedback = sf;
+    }
     session.status = "completed";
     // Preserve the original completedAt / durationMinutes on re-save.
     if (!wasCompleted) {
@@ -596,6 +662,85 @@
           </div>
         </section>
 
+        <!-- Sensation capture — body areas. Sage = body-listening.
+             Press Enter or , to commit a chip. -->
+        <section class="f-section sensation">
+          <p class="label-xs sensation-label">Sensation</p>
+
+          <div class="sensation-field">
+            <label for="sensation-good" class="sensation-sublabel">What felt good?</label>
+            <div class="chip-input-wrap">
+              {#each sensationGood as chip (chip)}
+                <span class="sensation-chip good">
+                  {chip}
+                  <button class="chip-x" aria-label="Remove" onclick={() => removeChip("good", chip)}>×</button>
+                </span>
+              {/each}
+              <input
+                id="sensation-good"
+                class="chip-input"
+                type="text"
+                bind:value={sensationGoodInput}
+                placeholder="add area, hit Enter…"
+                onkeydown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addChip("good"); }
+                }}
+                onblur={() => addChip("good")}
+              />
+            </div>
+          </div>
+
+          <div class="sensation-field">
+            <label for="sensation-struggling" class="sensation-sublabel">What's struggling?</label>
+            <div class="chip-input-wrap">
+              {#each sensationStruggling as chip (chip)}
+                <span class="sensation-chip struggling">
+                  {chip}
+                  <button class="chip-x" aria-label="Remove" onclick={() => removeChip("struggling", chip)}>×</button>
+                </span>
+              {/each}
+              <input
+                id="sensation-struggling"
+                class="chip-input"
+                type="text"
+                bind:value={sensationStrugglingInput}
+                placeholder="add area, hit Enter…"
+                onkeydown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addChip("struggling"); }
+                }}
+                onblur={() => addChip("struggling")}
+              />
+            </div>
+          </div>
+
+          <div class="sensation-field">
+            <label for="sensation-score" class="sensation-sublabel">Overall sensation</label>
+            <div class="score-row">
+              {#each [1, 2, 3, 4, 5] as n (n)}
+                <button
+                  type="button"
+                  class="score-pip"
+                  class:active={sensationScore === n}
+                  aria-pressed={sensationScore === n}
+                  onclick={() => (sensationScore = n)}
+                >{n}</button>
+              {/each}
+              <span class="score-hint">1 = poor · 5 = great</span>
+            </div>
+          </div>
+
+          <div class="sensation-field">
+            <label for="sensation-notes" class="sensation-sublabel">Sensation notes</label>
+            <textarea
+              id="sensation-notes"
+              class="notes-area"
+              bind:value={sensationNotes}
+              placeholder="Anything your body told you during the session."
+              rows="2"
+            ></textarea>
+          </div>
+        </section>
+
         <!-- Notes + voice dictation. Separate recognizer from command voice. -->
         <section class="f-section">
           <p class="label-xs">Notes</p>
@@ -635,7 +780,7 @@
               {@const isComplete = b.actualSets.length >= b.plannedSets}
               <li class="ex-row" class:complete={isComplete}>
                 <span class="ex-dot" aria-hidden="true"></span>
-                <span class="ex-name">{b.exerciseName}</span>
+                <span class="ex-name">{b.category ?? b.exerciseName}</span>
                 <span class="ex-stats mono">
                   {b.actualSets.length}/{b.plannedSets} sets · {takes} take{takes === 1 ? "" : "s"}
                 </span>
@@ -716,7 +861,20 @@
     <section class="progress-strip" aria-label="Exercise progress">
       <div class="strip-head">
         <div class="strip-title">
-          <h2 class="strip-ex-name">{block.exerciseName}</h2>
+          {#if block.phase || block.level}
+            <div class="strip-tags">
+              {#if block.phase}
+                <span class="phase-pill" data-phase={block.phase}>{phaseLabel(block.phase)}</span>
+              {/if}
+              {#if block.level}
+                <span class="level-chip">{levelLabel(block.level)}</span>
+              {/if}
+            </div>
+          {/if}
+          <h2 class="strip-ex-name">{block.category ?? block.exerciseName}</h2>
+          {#if block.directions}
+            <p class="strip-directions">{block.directions}</p>
+          {/if}
           <div class="strip-meta">
             <span class="strip-position">
               Set <span class="mono">{activeSetN}</span> <span class="dim">of</span> <span class="mono">{block.plannedSets}</span>
@@ -767,6 +925,19 @@
         {/each}
       </nav>
     </section>
+
+    {#if block.cuesOverride && block.cuesOverride.length > 0}
+      <!-- Movement cues for this block — physio overrides for the canonical
+           exercise. Sage-tinted because they're body-listening, not effort. -->
+      <section class="cues-card">
+        <p class="label-xs cues-label">Cues</p>
+        <ul class="cues-list">
+          {#each block.cuesOverride as cue}
+            <li class="cue">{cue}</li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
 
     <!-- Hero: videos on top (full width, consistent between set and rest),
          info + log cards in a 2-up row below. CTA under the frame. -->
@@ -1200,6 +1371,81 @@
     color: var(--text);
     flex-wrap: wrap;
   }
+  .strip-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+  .phase-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .phase-pill[data-phase="warmUp"]   { color: var(--soft-gold-ink, #a07c10); border-color: rgba(180, 140, 30, 0.4); }
+  .phase-pill[data-phase="main"]     { color: var(--primary, #be4a3a); border-color: rgba(190, 74, 58, 0.4); }
+  .phase-pill[data-phase="coolDown"] { color: var(--sage, #7a9b76); border-color: rgba(122, 155, 118, 0.4); }
+  .level-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border);
+    letter-spacing: 0.04em;
+  }
+  .strip-directions {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  .cues-card {
+    background: rgba(122, 155, 118, 0.06);
+    border: 1px solid rgba(122, 155, 118, 0.2);
+    border-left: 3px solid var(--sage);
+    border-radius: var(--radius-card);
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+  .cues-label {
+    color: var(--sage);
+    margin: 0 0 6px;
+  }
+  .cues-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cue {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+    padding-left: 14px;
+    position: relative;
+  }
+  .cue::before {
+    content: "›";
+    position: absolute;
+    left: 0;
+    color: var(--sage);
+    font-weight: 700;
+  }
   .strip-position { font-weight: 600; }
   .strip-position .dim,
   .strip-block .dim { color: var(--text-secondary); font-weight: 500; }
@@ -1530,6 +1776,123 @@
     border-color: var(--sage);
     color: var(--sage);
     font-weight: 600;
+  }
+
+  /* Sensation card — Sage = body-listening, never CTA terracotta */
+  .f-section.sensation {
+    background: rgba(122, 155, 118, 0.06);
+    border: 1px solid rgba(122, 155, 118, 0.2);
+    border-left: 3px solid var(--sage);
+    border-radius: var(--radius-card);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sensation-label {
+    color: var(--sage);
+    margin: 0 0 -4px;
+  }
+  .sensation-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sensation-sublabel {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .chip-input-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    min-height: 44px;
+  }
+  .chip-input-wrap:focus-within {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(122, 155, 118, 0.15);
+  }
+  .chip-input {
+    flex: 1 1 120px;
+    min-width: 80px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text);
+    padding: 4px 0;
+  }
+  .sensation-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 4px 3px 10px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    background: rgba(122, 155, 118, 0.18);
+    color: var(--text);
+    border: 1px solid rgba(122, 155, 118, 0.4);
+  }
+  .sensation-chip.struggling {
+    background: rgba(180, 140, 30, 0.14);
+    border-color: rgba(180, 140, 30, 0.4);
+  }
+  .chip-x {
+    appearance: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--text-secondary);
+    padding: 2px 5px;
+    border-radius: 50%;
+  }
+  .chip-x:hover { color: var(--error); background: rgba(190, 74, 58, 0.08); }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .score-pip {
+    appearance: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background var(--motion-standard) var(--easing-settled),
+                border-color var(--motion-standard) var(--easing-settled),
+                color var(--motion-standard) var(--easing-settled);
+  }
+  .score-pip:hover { border-color: var(--sage); }
+  .score-pip.active {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: white;
+  }
+  .score-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-left: 6px;
+    letter-spacing: 0.02em;
   }
 
   /* Notes + dictation */

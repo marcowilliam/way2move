@@ -1,11 +1,15 @@
 <script lang="ts">
   import { app } from "../stores/app.svelte.ts";
-  import { loadSessions, deleteSession } from "../lib/sessionStore";
+  import { loadSessions, deleteSession, upsertSession } from "../lib/sessionStore";
   import {
     ensureSeeded,
     canonicalExercises,
     evaluateBucket,
   } from "../lib/exerciseStore";
+  import {
+    buildGroundUpSession,
+    GROUND_UP_WORKOUT_ID,
+  } from "../lib/seeds/groundUp";
   import type { Session } from "../lib/types";
 
   let sessions = $state<Session[]>(loadSessions());
@@ -119,6 +123,24 @@
     app.goto("active");
   };
 
+  // "From the Ground Up" — Marco's physio daily routine. Idempotent:
+  // if today already has a ground-up session, open it; else create.
+  const todayGroundUp = $derived(
+    todaySessions.find((s) => s.workoutId === GROUND_UP_WORKOUT_ID),
+  );
+  const groundUpExerciseCount = 11;
+
+  const startGroundUp = () => {
+    if (todayGroundUp) {
+      openSession(todayGroundUp);
+      return;
+    }
+    const fresh = buildGroundUpSession(todayISO);
+    upsertSession(fresh);
+    sessions = loadSessions();
+    openSession(fresh);
+  };
+
   const handleDelete = (e: MouseEvent, s: Session) => {
     e.stopPropagation();
     const when = s.date === todayISO ? "today's" : `${shortDate(s.date)}`;
@@ -149,6 +171,33 @@
       </span>
     </div>
   </header>
+
+  <!-- Daily routine — physio "From the Ground Up". Sage = body-listening,
+       NEVER Terracotta. Idempotent: tap re-opens today's session if any. -->
+  <section
+    class="daily-routine"
+    data-state={todayGroundUp ? todayGroundUp.status : "idle"}
+  >
+    <div class="dr-left">
+      <p class="label-xs">Daily routine</p>
+      <h2 class="dr-title">From the Ground Up</h2>
+      <p class="dr-meta">
+        <span class="mono">{groundUpExerciseCount}</span> exercises ·
+        physio prescription · 6-week protocol
+      </p>
+    </div>
+    <div class="dr-right">
+      <button class="big sage" onclick={startGroundUp}>
+        {#if todayGroundUp?.status === "in_progress"}
+          Continue routine →
+        {:else if todayGroundUp?.status === "completed"}
+          Done today · review
+        {:else}
+          Start routine
+        {/if}
+      </button>
+    </div>
+  </section>
 
   <!-- Today hero — state-driven primary CTA -->
   <section class="today" data-state={todayState}>
@@ -394,6 +443,68 @@
   .status-chip[data-state="ok"] { color: var(--sage); }
   .status-chip[data-state="ok"]::before { background: var(--sage); }
   .status-chip[data-state="off"] { color: var(--text-secondary); }
+
+  /* ─ Daily routine card (Sage = body-listening, not CTA terracotta) ─ */
+  .daily-routine {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+    padding: 18px 22px;
+    background: rgba(122, 155, 118, 0.08); /* var(--sage) at 8% */
+    border: 1px solid rgba(122, 155, 118, 0.25);
+    border-radius: var(--radius-card);
+    border-left: 4px solid var(--sage);
+  }
+  .daily-routine[data-state="in_progress"] {
+    background: rgba(122, 155, 118, 0.14);
+  }
+  .daily-routine[data-state="completed"] {
+    opacity: 0.7;
+  }
+  @media (max-width: 720px) {
+    .daily-routine { grid-template-columns: 1fr; }
+    .dr-right { justify-content: flex-start; }
+  }
+  .dr-left { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .dr-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.2px;
+    line-height: 1.15;
+    margin: 0;
+    color: var(--text);
+  }
+  .dr-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .dr-right {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .big.sage {
+    /* mirrors brand button recipe but with sage tint instead of terracotta */
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    padding: 14px 22px;
+    min-height: 48px;
+    border-radius: var(--radius-pill);
+    background: var(--sage);
+    color: white;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    transition: transform var(--motion-standard) var(--easing-settled),
+                background var(--motion-standard) var(--easing-settled);
+  }
+  .big.sage:hover { background: #6c8b69; }
+  .big.sage:active { transform: scale(0.98); }
 
   /* ─ Today hero ───────────────────────────────────────────────────── */
   .today {
