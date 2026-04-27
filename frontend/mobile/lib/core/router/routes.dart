@@ -58,4 +58,8 @@ abstract class Routes {
 
   // Phase 4 — Recovery
   static const recovery = '/recovery';
+
+  // Workouts (training-week organizer)
+  static const workouts = '/workouts';
+  static String workoutDetail(String id) => '/workouts/$id';
 }

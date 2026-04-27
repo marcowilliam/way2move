@@ -598,7 +598,7 @@ class _ExerciseBlockHeader extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    exercise?.name ?? block.exerciseId,
+                    exercise?.name ?? block.category ?? block.exerciseId,
                     style: theme.textTheme.titleMedium,
                   ),
                   const SizedBox(height: 2),
@@ -758,9 +758,7 @@ class _SetRow extends StatelessWidget {
               height: 30,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isCompleted
-                    ? AppColors.accent
-                    : Colors.transparent,
+                color: isCompleted ? AppColors.accent : Colors.transparent,
                 border: Border.all(
                   color: isCompleted
                       ? AppColors.accent

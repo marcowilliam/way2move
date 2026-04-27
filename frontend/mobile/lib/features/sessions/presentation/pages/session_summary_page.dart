@@ -15,7 +15,10 @@ import '../../../progression/domain/entities/progression_suggestion.dart';
 import '../../../progression/domain/services/progression_service.dart';
 import '../../../progression/presentation/providers/progression_providers.dart';
 import '../../../progression/presentation/widgets/progression_suggestion_card.dart';
+import '../../data/repositories/session_repository_impl.dart';
+import '../../domain/entities/sensation_feedback.dart';
 import '../../domain/entities/session.dart';
+import '../../domain/usecases/update_session.dart';
 import '../providers/session_providers.dart';
 
 class SessionSummaryPage extends ConsumerStatefulWidget {
@@ -196,6 +199,13 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage>
                       FadeTransition(
                         opacity: _fadeIn,
                         child: _NotesCard(notes: session!.notes!),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
+                    if (session != null) ...[
+                      FadeTransition(
+                        opacity: _fadeIn,
+                        child: _SensationCard(session: session),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                     ],
@@ -488,7 +498,7 @@ class _ExerciseSummaryTile extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  exercise?.name ?? block.exerciseId,
+                  exercise?.name ?? block.category ?? block.exerciseId,
                   style: theme.textTheme.titleMedium,
                 ),
                 Text(
@@ -504,6 +514,287 @@ class _ExerciseSummaryTile extends ConsumerWidget {
             style: theme.textTheme.labelSmall?.copyWith(
               color: met ? AppColors.accent : AppColors.warning,
               fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Sensation feedback card (Sage tinted) ────────────────────────────────────
+
+/// Body-listening capture: free-text "good areas" and "struggling areas",
+/// 1-5 overall feel slider, free-text notes. Persists to the session via
+/// `UpdateSession` use case.
+///
+/// Stays Sage — never CTA Terracotta — because Sage is the brand's
+/// "your body is listening" colour.
+class _SensationCard extends ConsumerStatefulWidget {
+  final Session session;
+  const _SensationCard({required this.session});
+
+  @override
+  ConsumerState<_SensationCard> createState() => _SensationCardState();
+}
+
+class _SensationCardState extends ConsumerState<_SensationCard> {
+  late final TextEditingController _goodController;
+  late final TextEditingController _strugglingController;
+  late final TextEditingController _notesController;
+  late List<String> _good;
+  late List<String> _struggling;
+  late int _overall;
+  bool _saving = false;
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.session.sensationFeedback;
+    _good = List<String>.from(existing?.goodAreas ?? const []);
+    _struggling = List<String>.from(existing?.strugglingAreas ?? const []);
+    _overall = existing?.overallFeel ?? 3;
+    _goodController = TextEditingController();
+    _strugglingController = TextEditingController();
+    _notesController = TextEditingController(text: existing?.notes ?? '');
+  }
+
+  @override
+  void dispose() {
+    _goodController.dispose();
+    _strugglingController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  void _addGood() {
+    final v = _goodController.text.trim();
+    if (v.isEmpty) return;
+    setState(() {
+      _good = [..._good, v];
+      _goodController.clear();
+      _saved = false;
+    });
+  }
+
+  void _addStruggling() {
+    final v = _strugglingController.text.trim();
+    if (v.isEmpty) return;
+    setState(() {
+      _struggling = [..._struggling, v];
+      _strugglingController.clear();
+      _saved = false;
+    });
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    try {
+      final feedback = SensationFeedback(
+        goodAreas: _good,
+        strugglingAreas: _struggling,
+        overallFeel: _overall,
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
+      );
+      final updated = widget.session.copyWith(sensationFeedback: feedback);
+      final useCase = UpdateSession(ref.read(sessionRepositoryProvider));
+      final result = await useCase(updated);
+      if (!mounted) return;
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not save: $failure')),
+          );
+        },
+        (_) {
+          setState(() => _saved = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sensation saved')),
+          );
+        },
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      key: const Key('sensation_card'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.favorite_outline,
+                size: 18,
+                color: AppColors.accent,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                'How did your body feel?',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: AppColors.accent,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Anywhere that felt good',
+            style: theme.textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (_good.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  for (var i = 0; i < _good.length; i++)
+                    InputChip(
+                      label: Text(_good[i]),
+                      onDeleted: () => setState(() {
+                        _good = List.of(_good)..removeAt(i);
+                        _saved = false;
+                      }),
+                    ),
+                ],
+              ),
+            ),
+          TextField(
+            key: const Key('sensation_good_input'),
+            controller: _goodController,
+            decoration: const InputDecoration(
+              hintText: 'e.g. left glute, thoracic',
+              isDense: true,
+            ),
+            onSubmitted: (_) => _addGood(),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Anywhere that struggled',
+            style: theme.textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (_struggling.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  for (var i = 0; i < _struggling.length; i++)
+                    InputChip(
+                      label: Text(_struggling[i]),
+                      onDeleted: () => setState(() {
+                        _struggling = List.of(_struggling)..removeAt(i);
+                        _saved = false;
+                      }),
+                    ),
+                ],
+              ),
+            ),
+          TextField(
+            key: const Key('sensation_struggling_input'),
+            controller: _strugglingController,
+            decoration: const InputDecoration(
+              hintText: 'e.g. neck gripping, right SI',
+              isDense: true,
+            ),
+            onSubmitted: (_) => _addStruggling(),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Overall feel',
+            style: theme.textTheme.labelSmall,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: AppColors.accent,
+                    thumbColor: AppColors.accent,
+                    overlayColor: AppColors.accent.withValues(alpha: 0.2),
+                  ),
+                  child: Slider(
+                    key: const Key('sensation_overall_slider'),
+                    min: 1,
+                    max: 5,
+                    divisions: 4,
+                    value: _overall.toDouble(),
+                    label: '$_overall',
+                    onChanged: (v) => setState(() {
+                      _overall = v.round();
+                      _saved = false;
+                    }),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 28,
+                child: Text(
+                  '$_overall',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: AppColors.accent,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            key: const Key('sensation_notes_input'),
+            controller: _notesController,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText: 'Anything else worth remembering?',
+              isDense: true,
+            ),
+            onChanged: (_) {
+              if (_saved) setState(() => _saved = false);
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              key: const Key('sensation_save_button'),
+              onPressed: _saving ? null : _save,
+              icon: _saving
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.accent,
+                      ),
+                    )
+                  : Icon(
+                      _saved ? Icons.check_circle : Icons.save_outlined,
+                      color: AppColors.accent,
+                      size: 18,
+                    ),
+              label: Text(
+                _saved ? 'Saved' : 'Save sensation',
+                style: const TextStyle(color: AppColors.accent),
+              ),
             ),
           ),
         ],

@@ -13,8 +13,15 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../goals/domain/entities/goal.dart';
 import '../../../goals/presentation/providers/goal_providers.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../../protocols/domain/entities/protocol.dart';
+import '../../../protocols/presentation/providers/active_protocols_provider.dart';
+import '../../../sessions/data/repositories/session_repository_impl.dart';
 import '../../../sessions/domain/entities/session.dart';
 import '../../../sessions/presentation/providers/session_providers.dart';
+import '../../../workouts/domain/entities/workout.dart';
+import '../../../workouts/domain/entities/workout_enums.dart';
+import '../../../workouts/domain/usecases/start_session_from_workout.dart';
+import '../../../workouts/presentation/providers/workouts_provider.dart';
 import '../providers/home_providers.dart';
 
 /// Way2Move home dashboard. Six sections, top → bottom:
@@ -45,6 +52,7 @@ class HomePage extends ConsumerWidget {
               delegate: SliverChildListDelegate([
                 const _GreetingHeader(),
                 const SizedBox(height: AppSpacing.lg),
+                const _DailyRoutineProtocolCard(),
                 const _TodayFocalCard(),
                 const SizedBox(height: AppSpacing.lg),
                 const _WeekStrip(),
@@ -169,9 +177,8 @@ class _TodayFocalCard extends ConsumerWidget {
         final inProgress = sessions
             .where((s) => s.status == SessionStatus.inProgress)
             .toList();
-        final completed = sessions
-            .where((s) => s.status == SessionStatus.completed)
-            .toList();
+        final completed =
+            sessions.where((s) => s.status == SessionStatus.completed).toList();
         final planned =
             sessions.where((s) => s.status == SessionStatus.planned).toList();
 
@@ -566,12 +573,11 @@ class _WeekStrip extends ConsumerWidget {
                   Text(
                     _dayLabels[i],
                     style: theme.textTheme.labelSmall?.copyWith(
-                          color: isToday
-                              ? AppColors.primary
-                              : theme.colorScheme.onSurfaceVariant,
-                          fontWeight:
-                              isToday ? FontWeight.w700 : FontWeight.normal,
-                        ),
+                      color: isToday
+                          ? AppColors.primary
+                          : theme.colorScheme.onSurfaceVariant,
+                      fontWeight: isToday ? FontWeight.w700 : FontWeight.normal,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.xs + 2),
                   AnimatedContainer(
@@ -581,7 +587,8 @@ class _WeekStrip extends ConsumerWidget {
                     height: 32,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isCompleted ? AppColors.accent : Colors.transparent,
+                      color:
+                          isCompleted ? AppColors.accent : Colors.transparent,
                       border: Border.all(
                         color: isToday
                             ? AppColors.primary
@@ -665,9 +672,9 @@ class _MonthlyHeatMap extends ConsumerWidget {
               Text(
                 '${completedDays.length} session${completedDays.length == 1 ? '' : 's'}',
                 style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.accent,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -682,8 +689,8 @@ class _MonthlyHeatMap extends ConsumerWidget {
                       l,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 )
@@ -743,19 +750,18 @@ class _MonthlyHeatMap extends ConsumerWidget {
                       Text(
                         '$day',
                         style: theme.textTheme.labelSmall?.copyWith(
-                              fontSize: 9,
-                              color: isDone
-                                  ? AppColors.textOnPrimary
-                                  : isFuture
-                                      ? theme.colorScheme.onSurfaceVariant
-                                          .withValues(alpha: 0.4)
-                                      : isToday
-                                          ? AppColors.primary
-                                          : theme.colorScheme.onSurfaceVariant,
-                              fontWeight: isToday
-                                  ? FontWeight.w700
-                                  : FontWeight.normal,
-                            ),
+                          fontSize: 9,
+                          color: isDone
+                              ? AppColors.textOnPrimary
+                              : isFuture
+                                  ? theme.colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.4)
+                                  : isToday
+                                      ? AppColors.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                          fontWeight:
+                              isToday ? FontWeight.w700 : FontWeight.normal,
+                        ),
                       ),
                 ),
               );
@@ -898,9 +904,9 @@ class _GoalMiniCard extends StatelessWidget {
                 Text(
                   '${(progress * 100).round()}%',
                   style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -1020,6 +1026,185 @@ class _LogPill extends StatelessWidget {
         label,
         style: theme.textTheme.labelMedium?.copyWith(color: AppColors.accent),
       ),
+    );
+  }
+}
+
+// ── Daily routine (protocol pin) ───────────────────────────────────────────
+
+/// Renders one card per active Protocol's pinned workout above the focal
+/// card. Tap → starts a `flexible`-slot session for today and navigates
+/// straight into the active session view.
+///
+/// Hidden when there are no active protocols (returns SizedBox.shrink to
+/// preserve the parent's spacing without leaving a visible gap).
+class _DailyRoutineProtocolCard extends ConsumerWidget {
+  const _DailyRoutineProtocolCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncProtocols = ref.watch(activeProtocolsProvider);
+    return asyncProtocols.maybeWhen(
+      data: (protocols) {
+        final now = DateTime.now();
+        final relevant = protocols.where((p) => p.isActiveOn(now)).toList();
+        if (relevant.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          children: [
+            for (final protocol in relevant)
+              for (final workoutId in protocol.workoutIds)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: _ProtocolWorkoutTile(
+                    protocol: protocol,
+                    workoutId: workoutId,
+                  ),
+                ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _ProtocolWorkoutTile extends ConsumerStatefulWidget {
+  final Protocol protocol;
+  final String workoutId;
+
+  const _ProtocolWorkoutTile({
+    required this.protocol,
+    required this.workoutId,
+  });
+
+  @override
+  ConsumerState<_ProtocolWorkoutTile> createState() =>
+      _ProtocolWorkoutTileState();
+}
+
+class _ProtocolWorkoutTileState extends ConsumerState<_ProtocolWorkoutTile> {
+  bool _starting = false;
+
+  Future<void> _start(Workout workout) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    setState(() => _starting = true);
+    try {
+      final useCase = StartSessionFromWorkout(
+        ref.read(sessionRepositoryProvider),
+      );
+      final result = await useCase(
+        workout: workout,
+        userId: userId,
+        date: DateTime.now(),
+        slot: SessionSlot.flexible,
+      );
+      if (!mounted) return;
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not start: $failure')),
+          );
+        },
+        (session) {
+          ref
+              .read(activeSessionProvider.notifier)
+              .loadSession(session.copyWith(status: SessionStatus.inProgress));
+          context.go(Routes.sessionActive);
+        },
+      );
+    } finally {
+      if (mounted) setState(() => _starting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final asyncWorkout = ref.watch(workoutByIdProvider(widget.workoutId));
+    final dayIndex = widget.protocol.dayIndexFor(DateTime.now());
+
+    return asyncWorkout.maybeWhen(
+      data: (workout) {
+        if (workout == null) return const SizedBox.shrink();
+        final activeCount = workout.activeBlocks.length;
+        return Material(
+          color: AppColors.accent.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: InkWell(
+            key: const Key('daily_routine_card'),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            onTap: _starting ? null : () => _start(workout),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColors.accent.withValues(alpha: 0.25),
+                ),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      workout.iconEmoji ?? '🌱',
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Daily routine',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.accent,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Text(
+                          workout.name,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          dayIndex != null
+                              ? 'Day $dayIndex of ${widget.protocol.durationWeeks * 7} · $activeCount exercises'
+                              : '$activeCount exercises',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _starting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(
+                          Icons.play_arrow_rounded,
+                          color: AppColors.primary,
+                          size: 28,
+                        ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

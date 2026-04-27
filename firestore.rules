@@ -201,5 +201,47 @@ service cloud.firestore {
       allow delete: if isSignedIn()
         && request.auth.uid == resource.data.userId;
     }
+
+    // Workouts: reusable templates — own data only
+    match /workouts/{workoutId} {
+      allow read: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+    }
+
+    // Protocols: time-bounded prescriptions — own data only
+    match /protocols/{protocolId} {
+      allow read: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+    }
+
+    // Week plans: themed weekly schedules (doc id = {userId}_{isoYearWeek})
+    match /weekPlans/{weekPlanId} {
+      allow read: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.userId
+        && isAssistantMetaImmutable();
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId
+        && isValidSource();
+      allow delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+    }
   }
 }

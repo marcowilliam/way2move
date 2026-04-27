@@ -44,6 +44,8 @@ import '../../features/journal/presentation/pages/journal_history_page.dart';
 import '../../features/journal/presentation/pages/review_auto_created_page.dart';
 import '../../features/progression/presentation/pages/progression_settings_page.dart';
 import '../../features/sessions/presentation/pages/create_standalone_session_page.dart';
+import '../../features/workouts/presentation/pages/workout_detail_page.dart';
+import '../../features/workouts/presentation/pages/workout_library_page.dart';
 import '../../features/sessions/presentation/pages/session_summary_page.dart';
 import '../../features/sessions/presentation/pages/session_view.dart';
 import '../../features/sleep/presentation/pages/sleep_history_page.dart';
@@ -161,6 +163,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                   key: state.pageKey,
                   child: ExerciseDetailPage(
                     exerciseId: state.pathParameters['exerciseId']!,
+                  ),
+                  transitionsBuilder: _slideTransition,
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: Routes.workouts,
+            pageBuilder: (_, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const WorkoutLibraryPage(),
+              transitionsBuilder: _fadeTransition,
+            ),
+            routes: [
+              GoRoute(
+                path: ':workoutId',
+                pageBuilder: (_, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: WorkoutDetailPage(
+                    workoutId: state.pathParameters['workoutId']!,
                   ),
                   transitionsBuilder: _slideTransition,
                 ),
