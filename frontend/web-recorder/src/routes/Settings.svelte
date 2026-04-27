@@ -1,12 +1,20 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import CameraPicker from "../components/CameraPicker.svelte";
   import FolderPicker from "../components/FolderPicker.svelte";
   import { app } from "../stores/app.svelte.ts";
+  import {
+    listEnglishVoices,
+    setPreferredVoice,
+    getPreferredVoice,
+    speak,
+  } from "../lib/voice";
 
-  type Category = "recording" | "about";
+  type Category = "recording" | "voice" | "about";
 
   const categories: { id: Category; label: string; hint: string }[] = [
     { id: "recording", label: "Recording", hint: "Cameras + save folder" },
+    { id: "voice",     label: "Voice",     hint: "Coach voice + pacing" },
     { id: "about",     label: "About",     hint: "Version + brand" },
   ];
 
@@ -14,6 +22,46 @@
 
   const onCameras = (ids: [string, string, string]) => { app.cameraIds = ids; };
   const onFolder = (handle: FileSystemDirectoryHandle) => { app.saveFolder = handle; };
+
+  // Voice picker state. Voices arrive async on most browsers — re-read on
+  // mount AND on the voiceschanged event (which our voice.ts wires globally).
+  const VOICE_PREF_KEY = "way2train.preferredVoice.v1";
+  let voices = $state<SpeechSynthesisVoice[]>([]);
+  let selectedVoiceName = $state<string>("");
+  let testText = $state<string>(
+    "Set one of one. Foam roller bridge. Jelly belly, push through the inside edge of the foot.",
+  );
+
+  const refreshVoices = () => {
+    voices = listEnglishVoices();
+    if (!selectedVoiceName) {
+      selectedVoiceName = getPreferredVoice()?.name ?? "";
+    }
+  };
+
+  onMount(() => {
+    // Pull persisted preference, apply to the global picker, then refresh.
+    const stored = localStorage.getItem(VOICE_PREF_KEY);
+    if (stored) {
+      setPreferredVoice(stored);
+      selectedVoiceName = stored;
+    }
+    refreshVoices();
+    if ("speechSynthesis" in window) {
+      const handler = () => refreshVoices();
+      window.speechSynthesis.addEventListener("voiceschanged", handler);
+      return () => window.speechSynthesis.removeEventListener("voiceschanged", handler);
+    }
+  });
+
+  const onVoiceChange = (name: string) => {
+    selectedVoiceName = name;
+    setPreferredVoice(name || null);
+    if (name) localStorage.setItem(VOICE_PREF_KEY, name);
+    else localStorage.removeItem(VOICE_PREF_KEY);
+  };
+
+  const testVoice = () => speak(testText);
 </script>
 
 <div class="page">
@@ -72,6 +120,60 @@
               {/if}
             </div>
             <CameraPicker onConfirm={onCameras} />
+          </section>
+        </div>
+      {:else if active === "voice"}
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Voice</h2>
+            <p class="text-secondary">
+              Pick the coach voice for cues, prep announcements, and rest timer.
+              Google voices sound the most natural; eSpeak is local but robotic.
+            </p>
+          </div>
+
+          <section class="section">
+            <div class="section-head">
+              <h3>Coach voice</h3>
+              {#if selectedVoiceName}
+                <span class="pill pill-sage">Saved</span>
+              {:else}
+                <span class="pill pill-outline">Auto-pick</span>
+              {/if}
+            </div>
+
+            {#if voices.length === 0}
+              <p class="text-secondary">
+                No English voices found yet. If this persists, your TTS engine may not be installed.
+              </p>
+            {:else}
+              <select
+                class="voice-select"
+                value={selectedVoiceName}
+                onchange={(e) => onVoiceChange((e.currentTarget as HTMLSelectElement).value)}
+                aria-label="Coach voice"
+              >
+                <option value="">Auto (best available)</option>
+                {#each voices as v (v.name)}
+                  <option value={v.name}>{v.name} — {v.lang}</option>
+                {/each}
+              </select>
+
+              <div class="voice-test">
+                <textarea
+                  class="voice-test-text"
+                  bind:value={testText}
+                  rows="2"
+                  aria-label="Voice test text"
+                ></textarea>
+                <button class="ghost" onclick={testVoice}>▶ Test voice</button>
+              </div>
+
+              <p class="text-secondary text-small">
+                Some voices need a network connection (Google ones stream from Google's servers).
+                Local voices like eSpeak work offline but sound flatter.
+              </p>
+            {/if}
           </section>
         </div>
       {:else if active === "about"}
@@ -219,6 +321,49 @@
   .about-val { color: var(--text); font-size: 14px; }
 
   .done-btn { align-self: flex-start; }
+
+  /* Voice picker */
+  .voice-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+  .voice-select:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(122, 155, 118, 0.15);
+  }
+  .voice-test {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .voice-test-text {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .voice-test-text:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(122, 155, 118, 0.15);
+  }
+  .text-small { font-size: 12px; }
 
   @media (max-width: 760px) {
     .layout {
