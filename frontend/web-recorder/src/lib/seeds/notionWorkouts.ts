@@ -32,7 +32,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 1,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Reset the rib-pelvis stack and let the diaphragm do the work without the abs gripping. The baseline that every other exercise builds on.",
+        "joints": [
+          "rib-pelvis stack",
+          "diaphragm excursion"
+        ],
+        "compensations": [
+          "anterior rib flare",
+          "ab bracing instead of breathing"
+        ],
+        "muscles": [
+          "diaphragm",
+          "transverse abdominis (passive)",
+          "intercostals"
+        ]
       },
       {
         "exerciseId": "supine-arm-reach-dns",
@@ -45,7 +59,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 2,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Reach overhead while the ribs stay down — teach scapular upward rotation without rib flare or lumbar extension.",
+        "joints": [
+          "shoulder flexion",
+          "scapular upward rotation",
+          "thoracic anti-extension"
+        ],
+        "compensations": [
+          "anterior rib flare",
+          "lumbar extension during reach"
+        ],
+        "muscles": [
+          "serratus anterior",
+          "lower trap",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "supine-hip-flexion-control",
@@ -58,7 +87,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 3,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Lift the leg from the hip flexors with the pelvis quiet — train hip dissociation from the lumbar spine.",
+        "joints": [
+          "hip flexion",
+          "lumbo-pelvic stability"
+        ],
+        "compensations": [
+          "anterior pelvic tilt during hip flexion",
+          "lumbar extension"
+        ],
+        "muscles": [
+          "psoas",
+          "iliacus",
+          "transverse abdominis"
+        ]
       },
       {
         "exerciseId": "hip-flexor-kick-out",
@@ -71,7 +114,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 4,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Train the high-end of hip flexor strength (above 90°) slowly and under control — build endurance where the leg is most demanding to hold.",
+        "joints": [
+          "hip flexion (>90°)",
+          "knee extension"
+        ],
+        "compensations": [
+          "lumbar extension to substitute for psoas"
+        ],
+        "muscles": [
+          "psoas",
+          "iliacus",
+          "rectus femoris (terminal)"
+        ]
       },
       {
         "exerciseId": "quadruped-arm-lift",
@@ -84,7 +140,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": 5,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Reach an arm forward without the ribs shifting — anti-rotation under load through the trunk.",
+        "joints": [
+          "shoulder flexion",
+          "thoracic anti-rotation",
+          "rib-pelvis stack"
+        ],
+        "compensations": [
+          "rib shift toward unloaded side",
+          "lumbar rotation"
+        ],
+        "muscles": [
+          "obliques (anti-rotation)",
+          "serratus anterior",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "dead-bug",
@@ -95,7 +166,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": 6,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Move opposite arm and leg while the lumbar spine stays glued to the floor — disconnect limb motion from spine motion.",
+        "joints": [
+          "hip flexion + extension",
+          "shoulder flexion + extension",
+          "lumbar anti-extension"
+        ],
+        "compensations": [
+          "lumbar extension off the floor as limbs lengthen"
+        ],
+        "muscles": [
+          "transverse abdominis",
+          "obliques",
+          "psoas"
+        ]
       },
       {
         "exerciseId": "seated-floor-straight-leg-raises",
@@ -108,7 +193,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": 7,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Posterior pelvic tilt FIRST, then lift — teach the deep core to tilt the pelvis before the hip flexors fire.",
+        "joints": [
+          "hip flexion",
+          "posterior pelvic tilt",
+          "knee extension"
+        ],
+        "compensations": [
+          "anterior pelvic tilt",
+          "lumbar extension"
+        ],
+        "muscles": [
+          "transverse abdominis",
+          "psoas",
+          "rectus femoris",
+          "rectus abdominis"
+        ]
       },
       {
         "exerciseId": "bent-knee-l-sit",
@@ -121,7 +222,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": 8,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Hold a tall spine with knees lifted — train hip flexor endurance with active scapular depression.",
+        "joints": [
+          "hip flexion",
+          "scapular depression",
+          "thoracic upright"
+        ],
+        "compensations": [
+          "pelvic shift to one side",
+          "shoulder shrug to lift"
+        ],
+        "muscles": [
+          "psoas",
+          "lower trap",
+          "lats",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "reverse-squat",
@@ -135,7 +252,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": 9,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Slow eccentric lowering with a tall spine — load the hip flexors and quads through full range with no spine compensation.",
+        "joints": [
+          "hip flexion",
+          "knee flexion",
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "knee valgus"
+        ],
+        "muscles": [
+          "quads (eccentric)",
+          "psoas",
+          "glute max",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "deep-squat-breath",
@@ -146,7 +279,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": 10,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Sit in the bottom of the squat and breathe into the back of the body — restore hip + ankle range while the diaphragm works.",
+        "joints": [
+          "hip flexion (deep)",
+          "ankle dorsiflexion",
+          "thoracic upright"
+        ],
+        "compensations": [
+          "heel lift",
+          "lumbar flexion collapse"
+        ],
+        "muscles": [
+          "diaphragm",
+          "adductors (length)",
+          "soleus (length)"
+        ]
       },
       {
         "exerciseId": "standing-overhead-press-isometric-hold",
@@ -160,7 +308,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Hold a light load overhead with ribs stacked and scaps upwardly rotated — train the standing posture under shoulder load.",
+        "joints": [
+          "shoulder flexion (terminal)",
+          "scapular upward rotation",
+          "rib-pelvis stack"
+        ],
+        "compensations": [
+          "anterior rib flare under load",
+          "lumbar extension"
+        ],
+        "muscles": [
+          "serratus anterior",
+          "lower trap",
+          "deep core",
+          "deltoid"
+        ]
       },
       {
         "exerciseId": "loaded-butterfly",
@@ -171,7 +335,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Lengthen the inner thigh and hip rotators under light load — prep the hips for deep flexion.",
+        "joints": [
+          "hip external rotation",
+          "hip abduction",
+          "lumbar anti-extension"
+        ],
+        "compensations": [
+          "lumbar extension to deepen the stretch"
+        ],
+        "muscles": [
+          "adductors (length)",
+          "deep hip rotators (length)",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "hanging-leg-raise",
@@ -185,7 +363,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Raise the legs from the deep core, not the hip flexors — posterior pelvic tilt first, then the legs follow.",
+        "joints": [
+          "hip flexion",
+          "posterior pelvic tilt",
+          "lumbar flexion"
+        ],
+        "compensations": [
+          "swinging momentum",
+          "anterior pelvic tilt"
+        ],
+        "muscles": [
+          "rectus abdominis (lower fibers)",
+          "transverse abdominis",
+          "psoas"
+        ]
       },
       {
         "exerciseId": "l-sit",
@@ -196,7 +389,24 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Static hold with legs out straight and scaps depressed — full anterior chain + scapular endurance.",
+        "joints": [
+          "hip flexion",
+          "knee extension",
+          "scapular depression"
+        ],
+        "compensations": [
+          "pelvic asymmetry",
+          "shoulder elevation"
+        ],
+        "muscles": [
+          "psoas",
+          "rectus femoris",
+          "lower trap",
+          "lats",
+          "transverse abdominis"
+        ]
       },
       {
         "exerciseId": "push-up-plus",
@@ -207,7 +417,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "After the push-up's top, push further to upwardly rotate the scaps — train serratus anterior, the missing piece of most push-ups.",
+        "joints": [
+          "shoulder flexion",
+          "scapular protraction + upward rotation"
+        ],
+        "compensations": [
+          "winging scapula",
+          "rib flare at the top"
+        ],
+        "muscles": [
+          "serratus anterior",
+          "pec minor (length)",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "active-hang",
@@ -221,7 +445,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Hang with scaps slightly depressed and upwardly rotated, no elbow bend — build a stable shoulder under traction.",
+        "joints": [
+          "shoulder flexion (overhead)",
+          "scapular depression + upward rotation"
+        ],
+        "compensations": [
+          "passive shoulder shrug",
+          "elbow bend"
+        ],
+        "muscles": [
+          "lower trap",
+          "lats",
+          "rotator cuff",
+          "grip"
+        ]
       }
     ]
   },
@@ -247,7 +486,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Hip extension that comes from glutes + hamstrings while the lumbar stays quiet — knees lightly hugging the roller adds adductor engagement.",
+        "joints": [
+          "hip extension",
+          "knee adduction (light)",
+          "lumbar anti-extension"
+        ],
+        "compensations": [
+          "lumbar hyperextension",
+          "knee bowing out"
+        ],
+        "muscles": [
+          "glute max (lower fibers)",
+          "hamstrings",
+          "adductor magnus"
+        ]
       },
       {
         "exerciseId": "glute-bridge",
@@ -262,7 +516,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Drive the hips up through the midfoot, ribs stay down — the cleanest entry to glute-driven hip extension.",
+        "joints": [
+          "hip extension",
+          "ankle dorsiflexion (heel pressure)"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "hamstring cramp from over-shortening"
+        ],
+        "muscles": [
+          "glute max",
+          "hamstrings",
+          "transverse abdominis"
+        ]
       },
       {
         "exerciseId": "supine-arm-extension",
@@ -275,7 +543,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Take the arm overhead in extension without the ribs popping or the neck pulling — teach end-range shoulder extension with anterior chain control.",
+        "joints": [
+          "shoulder extension (overhead)",
+          "thoracic anti-extension"
+        ],
+        "compensations": [
+          "rib flare",
+          "neck protraction"
+        ],
+        "muscles": [
+          "lats (length)",
+          "pec major (length)",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "prone-on-elbows-breathing",
@@ -290,7 +572,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Breathe into the BACK of the ribs with the pubic bone heavy on the floor — open the posterior chest wall.",
+        "joints": [
+          "thoracic anti-extension",
+          "cervical neutral",
+          "rib-pelvis anchor"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "neck cranking"
+        ],
+        "muscles": [
+          "diaphragm (posterior excursion)",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "45-back-extension",
@@ -301,7 +597,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Bend at the hips, not the lumbar — train hip extension under gravity at a controlled angle.",
+        "joints": [
+          "hip extension",
+          "lumbar neutral"
+        ],
+        "compensations": [
+          "lumbar extension to substitute for hip"
+        ],
+        "muscles": [
+          "glute max",
+          "hamstrings",
+          "erector spinae (isometric)"
+        ]
       },
       {
         "exerciseId": "quadruped-spine-control",
@@ -316,7 +625,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Spread extension through the thoracic spine while the lumbar stays quiet — teach segmental control above and below the curve.",
+        "joints": [
+          "thoracic extension + flexion",
+          "lumbar neutral",
+          "scapular control"
+        ],
+        "compensations": [
+          "lumbar extension dominance",
+          "scapular winging"
+        ],
+        "muscles": [
+          "thoracic erectors",
+          "serratus anterior",
+          "transverse abdominis"
+        ]
       },
       {
         "exerciseId": "bent-knee-reverse-tabletop",
@@ -331,7 +655,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Press arms into floor so the ribs support the arms, not the other way around — entry to scap posterior tilt + hip extension under load.",
+        "joints": [
+          "shoulder extension",
+          "scapular posterior tilt",
+          "hip extension"
+        ],
+        "compensations": [
+          "anterior rib flare",
+          "shoulder shrugging"
+        ],
+        "muscles": [
+          "lower trap",
+          "glute max",
+          "triceps",
+          "lats"
+        ]
       },
       {
         "exerciseId": "single-leg-midfoot-bridge",
@@ -342,7 +682,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Same hip extension as the double-leg bridge but on one side — exposes left/right asymmetry in glute timing.",
+        "joints": [
+          "hip extension (unilateral)",
+          "ankle plantarflexion",
+          "pelvic stability"
+        ],
+        "compensations": [
+          "lateral pelvis drop",
+          "foot supination"
+        ],
+        "muscles": [
+          "glute max",
+          "hamstrings",
+          "tibialis posterior"
+        ]
       },
       {
         "exerciseId": "hip-hinge",
@@ -357,7 +712,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Send the hips back with shins vertical, ribs stacked, neck following the spine — the foundation of every deadlift and back-extension pattern.",
+        "joints": [
+          "hip flexion (hinge)",
+          "knee slight flexion",
+          "neutral spine"
+        ],
+        "compensations": [
+          "lumbar flexion",
+          "knee shooting forward",
+          "neck extension"
+        ],
+        "muscles": [
+          "hamstrings (eccentric)",
+          "glute max",
+          "erector spinae (isometric)"
+        ]
       },
       {
         "exerciseId": "seated-hinge-with-dumbbells-light-slow",
@@ -370,7 +741,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Let the weight pull you into the hips, not the spine — teach the hip hinge from the seated start without standing-leg compensation.",
+        "joints": [
+          "hip flexion (hinge)",
+          "neutral spine"
+        ],
+        "compensations": [
+          "lumbar flexion under load"
+        ],
+        "muscles": [
+          "hamstrings (eccentric)",
+          "glute max",
+          "erector spinae"
+        ]
       },
       {
         "exerciseId": "posterior-capsule-stretch",
@@ -381,7 +765,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Lengthen the back of the hip socket without flexing the spine — pelvis slides into the stretching side, torso stays upright.",
+        "joints": [
+          "hip extension (end-range)",
+          "pelvic translation"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "trunk side bend"
+        ],
+        "muscles": [
+          "posterior hip capsule (passive)",
+          "psoas (length)",
+          "glute max (length)"
+        ]
       },
       {
         "exerciseId": "reverse-plank",
@@ -392,7 +790,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Full-body hip extension hold on hands — train shoulder extension and glute max simultaneously.",
+        "joints": [
+          "hip extension",
+          "shoulder extension",
+          "scapular posterior tilt"
+        ],
+        "compensations": [
+          "sagging hips",
+          "scapular winging"
+        ],
+        "muscles": [
+          "glute max",
+          "lower trap",
+          "triceps",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "reverse-tabletop",
@@ -403,7 +817,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Same posterior chain hold as reverse plank, but knees bent — reduces hamstring length demand so glutes can dominate.",
+        "joints": [
+          "hip extension",
+          "shoulder extension",
+          "knee flexion"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "shoulder shrugging"
+        ],
+        "muscles": [
+          "glute max",
+          "lower trap",
+          "triceps"
+        ]
       },
       {
         "exerciseId": "unilateral-db-rdl",
@@ -414,7 +843,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Hinge on one leg with a single dumbbell — teach the standing hip to extend while the trunk resists rotation.",
+        "joints": [
+          "hip extension (stance)",
+          "thoracic anti-rotation",
+          "neutral spine"
+        ],
+        "compensations": [
+          "trunk rotation toward weighted side",
+          "lumbar flexion"
+        ],
+        "muscles": [
+          "hamstrings (eccentric)",
+          "glute max",
+          "obliques (anti-rotation)"
+        ]
       },
       {
         "exerciseId": "coiling-core-posterior-capsule",
@@ -425,7 +869,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Posterior capsule stretch + active core coil — ribs come over the pelvis to deepen the hip extension while staying organized.",
+        "joints": [
+          "hip extension",
+          "thoracic flexion (light coil)"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "rib flare"
+        ],
+        "muscles": [
+          "transverse abdominis",
+          "obliques",
+          "posterior hip capsule (passive)"
+        ]
       }
     ]
   },
@@ -449,7 +907,19 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Breathe into the up-side of the ribs — restore lateral rib expansion that gets lost in chronic asymmetry.",
+        "joints": [
+          "thoracic lateral expansion",
+          "rib-pelvis stack"
+        ],
+        "compensations": [
+          "bilateral chest breathing"
+        ],
+        "muscles": [
+          "diaphragm (asymmetric)",
+          "intercostals (up-side)"
+        ]
       },
       {
         "exerciseId": "side-lying-scissor-slides",
@@ -464,7 +934,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Sweep the leg through hip flexion + extension with pelvis stacked — train hip dissociation in the frontal plane.",
+        "joints": [
+          "hip flexion + extension",
+          "pelvic stability (frontal)"
+        ],
+        "compensations": [
+          "spinal rolling",
+          "pelvic shift"
+        ],
+        "muscles": [
+          "psoas",
+          "hamstrings",
+          "lateral hip stabilizers"
+        ]
       },
       {
         "exerciseId": "side-bend-seated",
@@ -475,7 +959,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Active lateral flexion to one side — teach the trunk to bend through the ribs without collapsing the bottom waist.",
+        "joints": [
+          "thoracic lateral flexion",
+          "lumbar neutral"
+        ],
+        "compensations": [
+          "bottom-waist collapse",
+          "rotation"
+        ],
+        "muscles": [
+          "obliques (concentric/eccentric)",
+          "QL"
+        ]
       },
       {
         "exerciseId": "single-leg-balance",
@@ -488,7 +985,24 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Stand on one foot barefoot — let the foot tripod and the hip stabilizers find the line of gravity.",
+        "joints": [
+          "ankle stability",
+          "subtalar pronation/supination control",
+          "hip abduction"
+        ],
+        "compensations": [
+          "foot supination",
+          "pelvic drop",
+          "knee valgus"
+        ],
+        "muscles": [
+          "intrinsic foot",
+          "tib post",
+          "peroneus longus",
+          "glute med"
+        ]
       },
       {
         "exerciseId": "side-plank-short-lever",
@@ -503,7 +1017,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Bottom shoulder supports the ribs, pelvis stacked — frontal plane anti-collapse with reduced length demand.",
+        "joints": [
+          "shoulder stability",
+          "lateral trunk anti-flexion"
+        ],
+        "compensations": [
+          "pelvic rotation",
+          "rib flare"
+        ],
+        "muscles": [
+          "obliques",
+          "QL",
+          "glute med",
+          "serratus anterior"
+        ]
       },
       {
         "exerciseId": "step-down",
@@ -514,7 +1043,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Lower one leg to the floor with control — teach the standing leg's hip + knee + foot to absorb the drop.",
+        "joints": [
+          "hip flexion (stance)",
+          "knee flexion",
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "knee valgus",
+          "pelvic drop",
+          "trunk lean"
+        ],
+        "muscles": [
+          "quads (eccentric)",
+          "glute med",
+          "tib post"
+        ]
       },
       {
         "exerciseId": "split-squat",
@@ -529,7 +1074,24 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Front foot tripod, pelvis drops straight down, knee tracks second toe — learn the split position before loading it.",
+        "joints": [
+          "hip flexion (front)",
+          "hip extension (back)",
+          "knee flexion (front)"
+        ],
+        "compensations": [
+          "knee valgus",
+          "pelvic shift",
+          "lumbar extension"
+        ],
+        "muscles": [
+          "quads",
+          "glute max (back)",
+          "adductor magnus",
+          "glute med (front)"
+        ]
       },
       {
         "exerciseId": "outer-hip-circuit",
@@ -540,7 +1102,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Multi-position hit on the lateral hip stabilizers — wake up glute med so the pelvis doesn't drop in single-leg work.",
+        "joints": [
+          "hip abduction",
+          "hip external rotation",
+          "pelvic frontal-plane stability"
+        ],
+        "compensations": [
+          "TFL substitution for glute med",
+          "lumbar side-bend"
+        ],
+        "muscles": [
+          "glute med",
+          "glute min",
+          "deep hip rotators"
+        ]
       },
       {
         "exerciseId": "seated-er",
@@ -555,7 +1132,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Rotate the shoulder externally with ribs stacked — train the rotator cuff in a position the trunk can't help from.",
+        "joints": [
+          "shoulder external rotation",
+          "scapular stability"
+        ],
+        "compensations": [
+          "elbow drift",
+          "trunk lean"
+        ],
+        "muscles": [
+          "infraspinatus",
+          "teres minor",
+          "lower trap"
+        ]
       },
       {
         "exerciseId": "pallof-hold",
@@ -570,7 +1161,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Resist rotational pull with ribs facing forward — anti-rotation endurance through the trunk and hips.",
+        "joints": [
+          "thoracic anti-rotation",
+          "hip stability"
+        ],
+        "compensations": [
+          "hip gripping",
+          "rib rotation"
+        ],
+        "muscles": [
+          "obliques (anti-rotation)",
+          "transverse abdominis",
+          "glute med"
+        ]
       },
       {
         "exerciseId": "supine-shin-lift",
@@ -583,7 +1188,17 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Lift the foot toward the shin slowly — wake up the tibialis anterior, the muscle that controls foot landing in gait.",
+        "joints": [
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "toe extension to substitute for tib ant"
+        ],
+        "muscles": [
+          "tibialis anterior"
+        ]
       },
       {
         "exerciseId": "side-lying-leg-lift",
@@ -598,7 +1213,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Lift the top leg with heel slightly back, no hip hike — isolate glute med without TFL substitution.",
+        "joints": [
+          "hip abduction",
+          "slight hip extension"
+        ],
+        "compensations": [
+          "hip hike",
+          "TFL substitution (leg drifts forward)"
+        ],
+        "muscles": [
+          "glute med",
+          "glute min"
+        ]
       },
       {
         "exerciseId": "half-kneeling-adductor-pullback",
@@ -613,7 +1241,21 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Pelvis shifts back, inner thigh lengthens under control, ribcage stays stacked — open the groin without losing the trunk.",
+        "joints": [
+          "hip abduction (groin opening)",
+          "lumbar neutral"
+        ],
+        "compensations": [
+          "lumbar extension",
+          "rib flare"
+        ],
+        "muscles": [
+          "adductor magnus (length)",
+          "deep core",
+          "glute med"
+        ]
       },
       {
         "exerciseId": "long-lever-side-plank",
@@ -624,7 +1266,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Full-length side plank — the high-end of frontal-plane anti-collapse.",
+        "joints": [
+          "lateral trunk anti-flexion",
+          "shoulder stability",
+          "hip abduction"
+        ],
+        "compensations": [
+          "sagging pelvis",
+          "rotation"
+        ],
+        "muscles": [
+          "obliques",
+          "QL",
+          "glute med",
+          "serratus anterior"
+        ]
       },
       {
         "exerciseId": "full-range-split-squat",
@@ -640,7 +1298,24 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Deeper split squat at full range — STOP if pelvis shifts, foot collapses, or low back tightens. Quality over depth.",
+        "joints": [
+          "hip flexion (deep)",
+          "knee flexion (deep)",
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "pelvic shift",
+          "foot collapse",
+          "lumbar tightening"
+        ],
+        "muscles": [
+          "quads (deep)",
+          "glute max",
+          "adductors",
+          "soleus"
+        ]
       },
       {
         "exerciseId": "seated-tibialis-raise",
@@ -651,7 +1326,17 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Lift the toes toward the shin with a heavy heel — wake up the tibialis anterior in a strict seated position.",
+        "joints": [
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "foot rolling outward"
+        ],
+        "muscles": [
+          "tibialis anterior"
+        ]
       },
       {
         "exerciseId": "reverse-step-up",
@@ -666,7 +1351,23 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Step DOWN slowly with heel staying down, knee tracking forward — train the standing leg's controlled lengthening.",
+        "joints": [
+          "hip flexion (stance)",
+          "knee flexion (stance)",
+          "ankle dorsiflexion"
+        ],
+        "compensations": [
+          "knee valgus",
+          "pelvic drop",
+          "heel lift"
+        ],
+        "muscles": [
+          "quads (eccentric)",
+          "glute med",
+          "soleus"
+        ]
       },
       {
         "exerciseId": "foot-flattener-back-foot-off-floor",
@@ -677,7 +1378,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Heavy heel, relaxed toes — load the heel and arch so the foot spreads flat under the body's weight.",
+        "joints": [
+          "ankle dorsiflexion",
+          "subtalar pronation",
+          "hip flexion (stance)"
+        ],
+        "compensations": [
+          "ankle inversion",
+          "toe gripping"
+        ],
+        "muscles": [
+          "tib post",
+          "peroneus longus",
+          "intrinsic foot"
+        ]
       },
       {
         "exerciseId": "pigeon-stretch",
@@ -688,7 +1404,20 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "coolDown",
         "level": null,
         "order": null,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Lengthen the deep external rotators of the hip — open the back of the hip socket in flexion.",
+        "joints": [
+          "hip external rotation (length)",
+          "hip flexion"
+        ],
+        "compensations": [
+          "pelvic rotation off-square"
+        ],
+        "muscles": [
+          "piriformis (length)",
+          "deep hip rotators",
+          "glute max (length)"
+        ]
       }
     ]
   },
@@ -707,73 +1436,150 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "exerciseId": "supine-cross-body-reach",
         "exerciseName": "Supine cross-body reach",
         "order": 1,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "pallof-hold",
         "exerciseName": "Pallof hold",
         "order": 2,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Resist rotational pull with ribs facing forward — anti-rotation endurance through the trunk and hips.",
+        "joints": [
+          "thoracic anti-rotation",
+          "hip stability"
+        ],
+        "compensations": [
+          "hip gripping",
+          "rib rotation"
+        ],
+        "muscles": [
+          "obliques (anti-rotation)",
+          "transverse abdominis",
+          "glute med"
+        ]
       },
       {
         "exerciseId": "kickstand-chop",
         "exerciseName": "Kickstand chop",
         "order": 3,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "standing-anti-rotation",
         "exerciseName": "Standing anti-rotation",
         "order": 4,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "split-squat-rotation",
         "exerciseName": "Split squat rotation",
         "order": 5,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "split-stance-cable-rotation",
         "exerciseName": "Split-stance cable rotation",
         "order": 6,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "side-lying-er-ribs-stacked",
         "exerciseName": "Side-lying ER (ribs stacked)",
         "order": 7,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "seated-er",
         "exerciseName": "Seated ER",
         "order": 8,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Rotate the shoulder externally with ribs stacked — train the rotator cuff in a position the trunk can't help from.",
+        "joints": [
+          "shoulder external rotation",
+          "scapular stability"
+        ],
+        "compensations": [
+          "elbow drift",
+          "trunk lean"
+        ],
+        "muscles": [
+          "infraspinatus",
+          "teres minor",
+          "lower trap"
+        ]
       },
       {
         "exerciseId": "standing-single-arm-er",
         "exerciseName": "Standing single-arm ER",
         "order": 9,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "split-stance-er",
         "exerciseName": "Split-stance ER",
         "order": 10,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       },
       {
         "exerciseId": "side-bend-seated",
         "exerciseName": "Side bend (seated)",
         "order": 11,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": "Active lateral flexion to one side — teach the trunk to bend through the ribs without collapsing the bottom waist.",
+        "joints": [
+          "thoracic lateral flexion",
+          "lumbar neutral"
+        ],
+        "compensations": [
+          "bottom-waist collapse",
+          "rotation"
+        ],
+        "muscles": [
+          "obliques (concentric/eccentric)",
+          "QL"
+        ]
       },
       {
         "exerciseId": "stand-mid-back-isometric-hold",
         "exerciseName": "Stand mid-back isometric hold",
         "order": 12,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       }
     ]
   },
@@ -805,7 +1611,22 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 1,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Continuous low-amplitude rope flow — let the arms float from the ribs and the pelvis respond, not lead. Easy breathing throughout.",
+        "joints": [
+          "thoracic rotation",
+          "shoulder reciprocal motion",
+          "pelvic counter-rotation"
+        ],
+        "compensations": [
+          "shoulder tension",
+          "pelvis leading the motion"
+        ],
+        "muscles": [
+          "serratus anterior",
+          "obliques (reciprocal)",
+          "deep core"
+        ]
       },
       {
         "exerciseId": "marching-drills",
@@ -820,7 +1641,24 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": "warmUp",
         "level": "foundation",
         "order": 2,
-        "currentlyIncluded": false
+        "currentlyIncluded": false,
+        "intent": "Heel rolls to midfoot, pelvis alternates smoothly, arm swing stays reciprocal — train the contralateral pattern at walking speed.",
+        "joints": [
+          "hip flexion + extension (alternating)",
+          "ankle plantarflexion → dorsiflexion roll",
+          "thoracic counter-rotation"
+        ],
+        "compensations": [
+          "heel slap (no roll)",
+          "pelvic stiffness",
+          "ipsilateral arm swing"
+        ],
+        "muscles": [
+          "psoas",
+          "tib ant",
+          "glute med",
+          "obliques"
+        ]
       }
     ]
   },
@@ -844,7 +1682,11 @@ export const notionWorkouts: WorkoutTemplate[] = [
         "phase": null,
         "level": "foundation",
         "order": null,
-        "currentlyIncluded": true
+        "currentlyIncluded": true,
+        "intent": null,
+        "joints": [],
+        "compensations": [],
+        "muscles": []
       }
     ]
   }

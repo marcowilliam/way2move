@@ -21,6 +21,15 @@ import sys
 import json
 from pathlib import Path
 
+# Load per-exercise educational content (intent / joints / compensations /
+# muscles), keyed by slug. Edits made to educational_content.py persist
+# across re-runs of this import script.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from educational_content import EDUCATIONAL_CONTENT
+except ImportError:
+    EDUCATIONAL_CONTENT = {}
+
 if len(sys.argv) < 2:
     print(__doc__, file=sys.stderr)
     sys.exit(1)
@@ -129,8 +138,10 @@ def parse_block_csv(csv_path, expected_workout_norm=None):
                     continue
             included_raw = (row.get("Current Included", "") or "").strip().lower()
             currently_included = included_raw not in ("no", "false", "0")
+            sl = slug(ex_name)
+            edu = EDUCATIONAL_CONTENT.get(sl, {})
             blocks.append({
-                "exerciseId": slug(ex_name),
+                "exerciseId": sl,
                 "exerciseName": ex_name,
                 "category": (row.get("Category", "") or "").strip() or None,
                 "directions": (row.get("Directions", "") or "").strip() or None,
@@ -139,6 +150,10 @@ def parse_block_csv(csv_path, expected_workout_norm=None):
                 "level": map_level(row.get("Level", "") or ""),
                 "order": parse_int_or_none(row.get("Order", "")),
                 "currentlyIncluded": currently_included,
+                "intent": edu.get("intent"),
+                "joints": edu.get("joints", []),
+                "compensations": edu.get("compensations", []),
+                "muscles": edu.get("muscles", []),
             })
     blocks.sort(key=lambda b: (b.get("order") or 9999))
     return blocks
@@ -168,11 +183,17 @@ def main():
             if not blocks:
                 exs = parse_exercises_field(row.get("exercises", "") or "")
                 for i, ex_name in enumerate(exs, 1):
+                    sl = slug(ex_name)
+                    edu = EDUCATIONAL_CONTENT.get(sl, {})
                     blocks.append({
-                        "exerciseId": slug(ex_name),
+                        "exerciseId": sl,
                         "exerciseName": ex_name,
                         "order": i,
                         "currentlyIncluded": True,
+                        "intent": edu.get("intent"),
+                        "joints": edu.get("joints", []),
+                        "compensations": edu.get("compensations", []),
+                        "muscles": edu.get("muscles", []),
                     })
                 source_note = (source_note + " + name-only fallback") if source_note else "name-only (no CSV)"
 
