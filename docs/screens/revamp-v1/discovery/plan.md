@@ -209,11 +209,11 @@ tokens from `brand-identity-plan.md §3`. `MaterialApp.themeMode` is forced to
 - [x] 19 Sleep log — `sleep_log_entry_page.dart`: Fraunces display "How'd you sleep?" body title (app-bar keeps "Log Sleep" for test compatibility), inline bed/wake rows with sage accent, Fraunces 40px duration number with "in bed" caption, 5 emoji quality chips (😣 😕 🌙 🌠 ✨) with numeric label beneath so existing tap-by-number tests stay green, underline notes field, terracotta Save CTA at 56px.
 - [x] 20 Profile — `profile_page.dart`: 80px avatar with sage ring, Fraunces `displaySmall` name, 13px Manrope stone email, compact "Day Streak · Sessions · Goals" stats row (Fraunces 28px + labelSmall) with inline dividers, sage-tinted onboarding CTA when incomplete, four 14px-radius grouped cards (Training / Body awareness / Daily / You) with terracotta leading icons + divided rows, sign out as a stone ghost `TextButton` at the bottom. Outer `ListView` swapped to `SingleChildScrollView` + `Column` so every group stays in the tree (the old test relied on `ListView` cache extent and broke once the screen got taller). The "goals" nav tile is labelled **Movement Goals** so the stats-row "Goals" label stays the unique match for the existing `find.text('Goals')` assertion.
 
-**Deeper restructures deferred to v1.1:**
-- Home dashboard 9→6 section collapse (today focal card, week-strip circles, quick-log pill row) — landed minimal greeting update in v1.0 to keep 9 widget tests green
-- Onboarding steps 1–5 (body info, goal, activity level, sports, equipment) — v1.0 only refreshed the welcome step
+**Deeper restructures (revamp v1.1) — shipped 2026-04-26:**
+- [x] Home dashboard 8→6 section collapse — `home_page.dart`: new `_TodayFocalCard` (folds session card + recovery banner + missed banner), 32px week-strip circles, monthly heat-map theme tokens, goal section capped at 2 + see-all link, `_QuickLogPillRow` (4 pills replacing the two 2×2 grids). New `today_focal_card_test.dart` covering all 4 focal states.
+- [x] Onboarding steps 1–5 visual revamp — `onboarding_flow.dart`: Fraunces italic prompts, 6 stretching progress dots replacing the linear bar, `_OnboardingOptionCard` with 4px terracotta strip on goal + activity steps, `_OnboardingTagPill` (sage outlined) on sports + equipment steps. All form state, controllers, enums preserved.
 
-**Test health after this pass:** 721 passing, 10 pre-existing failures in `journal_entry_page_test.dart` (Firebase `[DEFAULT]` app not initialized in test setup — unrelated to the revamp; confirmed present before these changes).
+**Test health after revamp v1.1 (2026-04-26):** 747 passing, 0 failing. Journal-entry test failures resolved (Phase D fix in `voice_input_widget.dart` + `journal_entry_page_test.dart`).
 
 ## Out of scope (v1)
 

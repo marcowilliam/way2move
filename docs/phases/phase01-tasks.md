@@ -19,7 +19,14 @@ Brand identity v1 translated to Flutter. Token foundation shipped; screens
 - [x] Screen 3 — Sign Up (same language as Login)
 - [x] Screen 4 — Onboarding welcome (Fraunces italic centerpiece + sage grounded figure on terracotta baseline)
 - [x] Screen 5 — Home dashboard greeting (Fraunces displaySmall via inline sliver header)
-- [ ] Screens 6–20 — deferred to revamp v1.1
+- [x] Screens 6–20 — shipped per `docs/screens/revamp-v1/discovery/plan.md`
+  - Session: `session_view.dart`, `session_summary_page.dart`
+  - Exercise: `exercise_list_page.dart`, `exercise_card.dart`, `exercise_detail_page.dart`, `program_detail_page.dart`
+  - Assessment: `initial_assessment_flow.dart`, `ai_recommendation_review_page.dart`
+  - Body awareness: `compensation_profile_page.dart`, `compensation_body_map.dart`, `goal_list_page.dart`, `goal_detail_page.dart`
+  - Daily logging: `journal_entry_page.dart`, `voice_input_widget.dart`, `meal_log_page.dart`, `sleep_log_entry_page.dart`
+  - Profile: `profile_page.dart`
+- [x] Revamp v1.1 (2026-04-26) — `home_page.dart` 8→6 section collapse + `_TodayFocalCard` + `_QuickLogPillRow`; `onboarding_flow.dart` steps 1–5 visual revamp with Fraunces prompts + stretching dots + option cards + tag pills; `voice_input_widget.dart` Riverpod-lifecycle fix for journal tests
 
 
 ---

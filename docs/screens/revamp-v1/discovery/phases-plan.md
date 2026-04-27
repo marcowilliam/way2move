@@ -83,6 +83,8 @@ These were explicitly deferred from v1.0 to v1.1 in `plan.md`. Both are containe
 
 #### C1 — Home Dashboard: 8-section → 6-section collapse
 
+**Status:** ✅ shipped 2026-04-26 — see `handoff-2026-04-26.md`
+
 **File.** `frontend/mobile/lib/features/dashboard/presentation/pages/home_page.dart` (1059 lines)
 **Test.** `frontend/mobile/lib/features/dashboard/presentation/pages/home_page_test.dart` (9 tests)
 **Providers (no new ones needed).** All state already lives in `home_providers.dart`.
@@ -104,6 +106,8 @@ These were explicitly deferred from v1.0 to v1.1 in `plan.md`. Both are containe
 **Risk.** Existing tests use `find.byType(_QuickActionsGrid)` — those will fail and look like regressions. Mitigation: read every test before deleting a widget; update assertions to match new components rather than restoring the old.
 
 #### C2 — Onboarding Steps 1–5: visual revamp (NOT a rewrite)
+
+**Status:** ✅ shipped 2026-04-26 — see `handoff-2026-04-26.md`
 
 **File.** `frontend/mobile/lib/features/profile/presentation/pages/onboarding_flow.dart` (804 lines)
 **Test.** `frontend/mobile/lib/features/profile/presentation/pages/onboarding_flow_test.dart` (9 tests)
@@ -134,6 +138,8 @@ Plus: replace the existing `_progressController.animateTo` indicator with the **
 ---
 
 ### Phase D — Journal Test Fix (parallel with Phase C, 1 unit)
+
+**Status:** ✅ shipped 2026-04-26 — see `handoff-2026-04-26.md`
 
 **File.** `frontend/mobile/lib/features/journal/presentation/pages/journal_entry_page_test.dart` (10 tests, all failing with `Firebase [DEFAULT] app has not been initialized`)
 
@@ -219,12 +225,12 @@ Calendar was explicitly out of scope in v1. Same process as v1:
 
 ## Priority for "what to dispatch first"
 
-1. **C1 + C2 + D in parallel** (highest gating value: unblocks E + G)
-2. **A** (cheap, run alongside or just before)
-3. **E** (gating for G)
-4. **G** (deploy)
-5. **B1–B7** (specs add confidence, never block deploy — fill in opportunistically)
-6. **F** (calendar v2 — its own deliverable, schedule when capacity allows)
+C1 + C2 + D shipped 2026-04-26; A docs sync follow-up shipped 2026-04-27. What's left:
+
+1. **E** (final QA sweep — gating for G)
+2. **G** (deploy)
+3. **B1–B7** (specs add confidence, never block deploy — fill in opportunistically)
+4. **F** (calendar v2 — its own deliverable, schedule when capacity allows)
 
 ---
 
