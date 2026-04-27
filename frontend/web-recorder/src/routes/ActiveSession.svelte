@@ -246,10 +246,13 @@
     stopSpeaking();
     if (app.isRecordingReady && recorderRef) {
       recorderRef.start();
-      speak("Recording.");
-    } else {
-      speak("Go.");
     }
+    // Single utterance — speak() cancels prior speech, so chained calls
+    // would clip earlier cues. Joining with periods lets the TTS pause
+    // naturally between cues.
+    const lead = app.isRecordingReady && recorderRef ? "Recording." : "Go.";
+    const cuesText = (block?.cuesOverride ?? []).join(". ");
+    speak(cuesText ? `${lead} Cues. ${cuesText}.` : lead);
     recState = "recording";
     recordingStartedAt = Date.now();
     recordingElapsedSec = 0;
