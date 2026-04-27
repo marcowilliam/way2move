@@ -414,12 +414,46 @@
     dictationInterim = "";
   };
 
+  // Find the next block (>= from) that isn't excluded by `currentlyIncluded`.
+  // Returns -1 if none. Used by both nextStep() and skipExercise().
+  const findNextIncludedBlockIdx = (from: number): number => {
+    if (!session) return -1;
+    for (let i = from; i < session.exerciseBlocks.length; i++) {
+      if (session.exerciseBlocks[i].currentlyIncluded !== false) return i;
+    }
+    return -1;
+  };
+
   const nextStep = () => {
     if (!session) return;
     if (stepIdx < steps().length - 1) { stepIdx++; return; }
-    if (isLastBlock) { startFinalize(); return; }
-    blockIdx++;
+    const next = findNextIncludedBlockIdx(blockIdx + 1);
+    if (next === -1) { startFinalize(); return; }
+    blockIdx = next;
     stepIdx = 0;
+  };
+
+  // Skip the current exercise: mark it not-included, persist, advance to the
+  // next included block. If nothing left, jump to finalize.
+  const skipExercise = () => {
+    if (!session || !block) return;
+    if (recState === "recording") return;
+    if (!confirm(`Skip "${block.category ?? block.exerciseName}" for this session?`)) return;
+    block.currentlyIncluded = false;
+    upsertSession($state.snapshot(session));
+    const next = findNextIncludedBlockIdx(blockIdx + 1);
+    if (next === -1) { startFinalize(); return; }
+    blockIdx = next;
+    stepIdx = 0;
+  };
+
+  // Un-skip a previously skipped block (called from the sidebar on a skipped node).
+  const unskipBlock = (i: number) => {
+    if (!session) return;
+    const b = session.exerciseBlocks[i];
+    if (!b || b.currentlyIncluded !== false) return;
+    b.currentlyIncluded = true;
+    upsertSession($state.snapshot(session));
   };
 
   const prevStep = () => {
@@ -830,17 +864,20 @@
             {@const status = blockStatus(i)}
             {@const isViewing = i === blockIdx}
             {@const clickable = status !== "upcoming" && recState !== "recording"}
-            <li class="block-node" data-status={status} data-viewing={isViewing}>
+            {@const skipped = b.currentlyIncluded === false}
+            <li class="block-node" data-status={status} data-viewing={isViewing} data-skipped={skipped}>
               <button
                 type="button"
                 class="block-btn"
-                onclick={() => jumpToBlock(i)}
-                disabled={!clickable || isViewing}
+                onclick={() => skipped ? unskipBlock(i) : jumpToBlock(i)}
+                disabled={(!clickable || isViewing) && !skipped}
                 aria-current={isViewing ? "step" : undefined}
-                title={status === "upcoming" ? "Reach this exercise first" : b.exerciseName}
+                title={skipped ? "Tap to un-skip" : status === "upcoming" ? "Reach this exercise first" : (b.category ?? b.exerciseName)}
               >
                 <span class="block-marker" aria-hidden="true">
-                  {#if status === "completed"}
+                  {#if skipped}
+                    <span class="block-num" style="text-decoration: line-through;">{i + 1}</span>
+                  {:else if status === "completed"}
                     <svg viewBox="0 0 14 14" width="10" height="10" aria-hidden="true">
                       <path d="M2 7.5 L6 11 L12 3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -851,7 +888,7 @@
                   {/if}
                 </span>
                 <span class="block-body">
-                  <span class="block-name">{b.exerciseName}</span>
+                  <span class="block-name">{b.category ?? b.exerciseName}</span>
                   <span class="block-meta mono">
                     {b.actualSets.length}/{b.plannedSets} sets
                     {#if b.defaultEffortKind === "time" && b.plannedSeconds}
@@ -887,7 +924,17 @@
               {/if}
             </div>
           {/if}
-          <h2 class="strip-ex-name">{block.category ?? block.exerciseName}</h2>
+          <div class="strip-name-row">
+            <h2 class="strip-ex-name">{block.category ?? block.exerciseName}</h2>
+            <button
+              type="button"
+              class="skip-ex-btn"
+              onclick={skipExercise}
+              disabled={recState === "recording"}
+              title="Skip this exercise for today's session"
+              aria-label="Skip this exercise"
+            >Skip exercise</button>
+          </div>
           {#if block.directions}
             <p class="strip-directions">{block.directions}</p>
           {/if}
@@ -1406,6 +1453,47 @@
     color: var(--text);
     flex-wrap: wrap;
   }
+  .strip-name-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .skip-ex-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    transition: color var(--motion-standard) var(--easing-settled),
+                border-color var(--motion-standard) var(--easing-settled),
+                background var(--motion-standard) var(--easing-settled);
+  }
+  .skip-ex-btn:hover:not(:disabled) {
+    color: var(--text);
+    border-color: var(--text-secondary);
+  }
+  .skip-ex-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .block-node[data-skipped="true"] .block-btn {
+    opacity: 0.4;
+  }
+  .block-node[data-skipped="true"] .block-name {
+    text-decoration: line-through;
+  }
+  .block-node[data-skipped="true"] .block-btn:hover {
+    opacity: 0.6;
+  }
+
   .strip-tags {
     display: flex;
     align-items: center;
