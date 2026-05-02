@@ -16,7 +16,7 @@ pre-push:
   commands:
     flutter-test:
       glob: "frontend/mobile/**/*.dart"
-      run: cd frontend/mobile && flutter test
+      run: cd frontend/mobile && flutter test test/ lib/
     functions-test:
       glob: "backend/functions/src/**/*.ts"
       run: cd backend/functions && npm test
