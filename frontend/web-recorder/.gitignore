@@ -4,3 +4,7 @@ dist
 .svelte-kit
 *.log
 .DS_Store
+
+# Python sidecar bytecode (scripts/)
+__pycache__/
+*.pyc
