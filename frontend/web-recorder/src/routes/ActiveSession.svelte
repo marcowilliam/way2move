@@ -68,7 +68,7 @@
   let stepIdx = $state(_resume.stepIdx);
 
   const block = $derived<ExerciseBlock | null>(session?.exerciseBlocks[blockIdx] ?? null);
-  const steps = $derived<Step[]>(() => {
+  const steps = $derived.by<Step[]>(() => {
     if (!block) return [];
     const out: Step[] = [];
     for (let n = 1; n <= block.plannedSets; n++) {
@@ -77,9 +77,9 @@
     }
     return out;
   });
-  const currentStep = $derived<Step | null>(steps()[stepIdx] ?? null);
+  const currentStep = $derived<Step | null>(steps[stepIdx] ?? null);
   const isLastBlock = $derived(session ? blockIdx >= session.exerciseBlocks.length - 1 : false);
-  const isLastStep = $derived(stepIdx >= steps().length - 1);
+  const isLastStep = $derived(stepIdx >= steps.length - 1);
   const activeSetN = $derived<number>(
     currentStep
       ? currentStep.kind === "set"
@@ -426,7 +426,7 @@
 
   const nextStep = () => {
     if (!session) return;
-    if (stepIdx < steps().length - 1) { stepIdx++; return; }
+    if (stepIdx < steps.length - 1) { stepIdx++; return; }
     const next = findNextIncludedBlockIdx(blockIdx + 1);
     if (next === -1) { startFinalize(); return; }
     blockIdx = next;
@@ -458,12 +458,12 @@
 
   const prevStep = () => {
     if (stepIdx > 0) { stepIdx--; return; }
-    if (blockIdx > 0) { blockIdx--; stepIdx = Math.max(0, steps().length - 1); }
+    if (blockIdx > 0) { blockIdx--; stepIdx = Math.max(0, steps.length - 1); }
   };
 
   const jumpTo = (i: number) => {
     if (recState === "recording") return;
-    if (i < 0 || i >= steps().length) return;
+    if (i < 0 || i >= steps.length) return;
     stepIdx = i;
   };
 
@@ -980,7 +980,7 @@
       </div>
 
       <nav class="chip-track" aria-label="Steps of this exercise">
-        {#each steps() as step, i (step.id)}
+        {#each steps as step, i (step.id)}
           {@const status = stepStatus(i)}
           {@const isBlocked = status === "upcoming" || (recState === "recording" && i !== stepIdx)}
           <button
@@ -1155,7 +1155,7 @@
             />
           </div>
 
-        {:else}
+        {:else if currentStep?.kind === "rest"}
           <div class="info-card timer">
             <p class="small-label">Resting</p>
             <RestTimer
@@ -1189,7 +1189,7 @@
             <button class="big ghost" onclick={onStop}>Stop set</button>
             <span class="text-secondary voice-hint">or say <em>"stop"</em></span>
           {/if}
-        {:else}
+        {:else if currentStep?.kind === "rest"}
           <button class="big primary" onclick={nextStep}>
             {isLastStep && isLastBlock ? "Finish session" : `Next set → (set ${currentStep.afterSetN + 1})`}
           </button>

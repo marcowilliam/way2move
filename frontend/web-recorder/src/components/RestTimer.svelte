@@ -10,7 +10,11 @@
   }
   let { seconds, onDone, autoStart = true, speakCues = true }: Props = $props();
 
+  // Initial values are captured intentionally — the timer is mounted fresh per
+  // rest block, so prop changes after mount aren't a real concern.
+  // svelte-ignore state_referenced_locally
   let remaining = $state(seconds);
+  // svelte-ignore state_referenced_locally
   let running = $state(autoStart);
   let interval: ReturnType<typeof setInterval> | null = null;
 
